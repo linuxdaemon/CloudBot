@@ -9,7 +9,6 @@ from functools import partial
 from pathlib import Path
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from watchdog.observers import Observer
 
 from .client import Client
@@ -19,7 +18,7 @@ from .hooks.actions import Action
 from .plugin import PluginManager
 from .reloader import PluginReloader, ConfigReloader
 from .util.async_util import run_coroutine_threadsafe, create_future
-from .util.database import ContextSession
+from .util.database import Session, Base
 from .util.formatting import get_text_list
 
 logger = logging.getLogger("cloudbot")
@@ -83,7 +82,6 @@ class CloudBot:
     :type config_reloader: ConfigReloader
     :type plugin_reloader: PluginReloader
     :type db_engine: sqlalchemy.engine.Engine
-    :type db_session: sqlalchemy.orm.scoping.scoped_session
     """
 
     def __init__(self, loop=asyncio.get_event_loop()):
@@ -131,7 +129,8 @@ class CloudBot:
         # setup db
         db_path = self.config.get('database', 'sqlite:///cloudbot.db')
         self.db_engine = create_engine(db_path)
-        self.db_session = scoped_session(sessionmaker(bind=self.db_engine))
+        Session.configure(bind=self.db_engine)
+        Base.metadata.bind = self.db_engine
 
         logger.debug("Database system initialised.")
 
@@ -152,9 +151,6 @@ class CloudBot:
         self.plugin_manager = PluginManager(self)
 
         self.reload_config()
-
-    def get_db_session(self):
-        return ContextSession(self.db_session())
 
     def run(self):
         """

@@ -1,19 +1,15 @@
-"""
-database - contains variables set by cloudbot to be easily access
-"""
-
 from sqlalchemy.ext.declarative import declarative_base as _declarative_base
+from sqlalchemy.orm import sessionmaker as _sessionmaker, scoped_session as _scoped_session
 
 Base = _declarative_base()
+Session = _scoped_session(_sessionmaker())
+
 metadata = Base.metadata
 
 
 class ContextSession:
-    def __init__(self, session):
-        """
-        :type session: sqlalchemy.orm.Session
-        """
-        self._session = session
+    def __init__(self):
+        self._session = Session()
 
     def __enter__(self):
         return self.session
@@ -30,8 +26,9 @@ class ContextSession:
             self.session.rollback()
             self.session.commit()
 
-        self.session.close()
-
     @property
     def session(self):
+        """
+        :rtype: sqlalchemy.orm.Session
+        """
         return self._session

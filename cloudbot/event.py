@@ -3,6 +3,7 @@ import enum
 import logging
 from functools import partial
 
+from cloudbot.util.database import ContextSession
 from .clients.irc.parser import Message
 
 logger = logging.getLogger("cloudbot")
@@ -132,7 +133,7 @@ class Event:
             self.irc_ctcp_text = irc_ctcp_text
 
     def db_session(self):
-        return self.bot.get_db_session()
+        return ContextSession()
 
     @property
     def event(self):
