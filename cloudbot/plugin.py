@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import importlib
 import logging
 import sys
@@ -16,7 +17,7 @@ from .hook import get_hooks
 from .hooks.basic import BaseHook
 from .hooks.types import HookTypes
 from .util.async_util import run_func_with_args, wrap_future
-from .util.database import metadata
+from .util.database import metadata, Base
 
 logger = logging.getLogger("cloudbot")
 
@@ -42,7 +43,7 @@ def find_hooks(parent, module):
         for hook_type, func_hook in func_hooks.items():  # type: str, BaseHook
             hooks[hook_type].append(func_hook.make_full_hook(parent))
 
-    return hooks
+    return dict(hooks)
 
 
 def find_tables(code):
@@ -52,6 +53,9 @@ def find_tables(code):
     """
     tables = []
     for _, obj in code.__dict__.items():
+        if issubclass(obj, Base):
+            obj = obj.__table__
+
         if isinstance(obj, sqlalchemy.Table) and obj.metadata is metadata:
             # if it's a Table, and it's using our metadata, append it to the list
             tables.append(obj)
@@ -291,6 +295,7 @@ class PluginManager:
         if self.bot.config.get("logging", {}).get("show_plugin_loading", True):
             logger.info("Unloaded all plugins from {}".format(plugin.title))
 
+        gc.collect()
         return True
 
     def log_hook(self, hook):
