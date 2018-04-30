@@ -131,11 +131,10 @@ class PluginManager:
     def do_loop(self):
         while self.bot.running:
             task = yield from self.hook_queue.get()
-            if task is None:
-                continue
+            if task is not None:
+                _hook, event = task
+                wrap_future(self.launch(_hook, event))
 
-            _hook, event = task
-            wrap_future(self.launch(_hook, event))
             self.hook_queue.task_done()
             yield from asyncio.sleep(0)
 
