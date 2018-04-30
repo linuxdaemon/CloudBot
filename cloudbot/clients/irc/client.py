@@ -380,100 +380,103 @@ class _IrcProtocol(asyncio.Protocol):
 
         while b"\r\n" in self._input_buffer:
             line_data, self._input_buffer = self._input_buffer.split(b"\r\n", 1)
-            line = decode(line_data)
+            self.line_received(line_data)
 
-            try:
-                message = Message.parse(line)
-            except Exception:
-                logger.exception(
-                    "[%s] Error occurred while parsing IRC line '%s' from %s",
-                    self.conn.name, line, self.conn.describe_server()
-                )
-                continue
+    def line_received(self, line_data):
+        line = decode(line_data)
 
-            command = message.command
-            command_params = message.parameters
-
-            # Reply to pings immediately
-
-            if command == "PING":
-                self.conn.send("PONG " + command_params[-1], log=False)
-
-            # Parse the command and params
-
-            # Content
-            if command_params.has_trail:
-                content_raw = command_params[-1]
-                content = irc_clean(content_raw)
-            else:
-                content_raw = None
-                content = None
-
-            # Event type
-            if command in irc_command_to_event_type:
-                event_type = irc_command_to_event_type[command]
-            else:
-                event_type = EventType.other
-
-            # Target (for KICK, INVITE)
-            if event_type is EventType.kick:
-                target = command_params[1]
-            elif command == "INVITE":
-                target = command_params[0]
-            else:
-                # TODO: Find more commands which give a target
-                target = None
-
-            # Parse for CTCP
-            if event_type is EventType.message and content_raw.count("\x01") >= 2 and content_raw.startswith("\x01"):
-                # Remove the first \x01, then rsplit to remove the last one, and ignore text after the last \x01
-                ctcp_text = content_raw[1:].rsplit("\x01", 1)[0]
-                ctcp_text_split = ctcp_text.split(None, 1)
-                if ctcp_text_split[0] == "ACTION":
-                    # this is a CTCP ACTION, set event_type and content accordingly
-                    event_type = EventType.action
-                    content = ctcp_text_split[1]
-                else:
-                    # this shouldn't be considered a regular message
-                    event_type = EventType.other
-            else:
-                ctcp_text = None
-
-            # Channel
-            channel = None
-            if command_params:
-                if command in ["NOTICE", "PRIVMSG", "KICK", "JOIN", "PART", "MODE"]:
-                    channel = command_params[0]
-                elif command == "INVITE":
-                    channel = command_params[1]
-                elif len(command_params) > 2 or not (command_params.has_trail and len(command_params) == 1):
-                    channel = command_params[0]
-
-            prefix = message.prefix
-
-            nick = prefix.nick
-            user = prefix.user
-            host = prefix.host
-            mask = prefix.mask
-
-            if channel:
-                # TODO Migrate plugins to accept the original case of the channel
-                channel = channel.lower()
-
-                channel = channel.split()[0]  # Just in case there is more data
-
-                if channel == self.conn.nick.lower():
-                    channel = nick.lower()
-
-            # Set up parsed message
-            # TODO: Do we really want to send the raw `prefix` and `command_params` here?
-            event = Event(
-                bot=self.bot, conn=self.conn, event_type=event_type, content_raw=content_raw, content=content,
-                target=target, channel=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
-                irc_prefix=mask, irc_command=command, irc_paramlist=command_params, irc_ctcp_text=ctcp_text
+        try:
+            message = Message.parse(line)
+        except Exception:
+            logger.exception(
+                "[%s] Error occurred while parsing IRC line '%s' from %s",
+                self.conn.name, line, self.conn.describe_server()
             )
+            return
 
-            self.bot.event_queue.put_nowait(event)
+        command = message.command
+        command_params = message.parameters
+
+        # Reply to pings immediately
+
+        if command == "PING":
+            self.conn.send("PONG " + command_params[-1], log=False)
+
+        # Parse the command and params
+
+        # Content
+        if command_params.has_trail:
+            content_raw = command_params[-1]
+            content = irc_clean(content_raw)
+        else:
+            content_raw = None
+            content = None
+
+        # Event type
+        if command in irc_command_to_event_type:
+            event_type = irc_command_to_event_type[command]
+        else:
+            event_type = EventType.other
+
+        # Target (for KICK, INVITE)
+        if event_type is EventType.kick:
+            target = command_params[1]
+        elif command == "INVITE":
+            target = command_params[0]
+        else:
+            # TODO: Find more commands which give a target
+            target = None
+
+        # Parse for CTCP
+        if event_type is EventType.message and content_raw.count("\x01") >= 2 and content_raw.startswith("\x01"):
+            # Remove the first \x01, then rsplit to remove the last one, and ignore text after the last \x01
+            ctcp_text = content_raw[1:].rsplit("\x01", 1)[0]
+            ctcp_text_split = ctcp_text.split(None, 1)
+            if ctcp_text_split[0] == "ACTION":
+                # this is a CTCP ACTION, set event_type and content accordingly
+                event_type = EventType.action
+                content = ctcp_text_split[1]
+            else:
+                # this shouldn't be considered a regular message
+                event_type = EventType.other
+        else:
+            ctcp_text = None
+
+        # Channel
+        channel = None
+        if command_params:
+            if command in ["NOTICE", "PRIVMSG", "KICK", "JOIN", "PART", "MODE"]:
+                channel = command_params[0]
+            elif command == "INVITE":
+                channel = command_params[1]
+            elif len(command_params) > 2 or not (command_params.has_trail and len(command_params) == 1):
+                channel = command_params[0]
+
+        prefix = message.prefix
+
+        nick = prefix.nick
+        user = prefix.user
+        host = prefix.host
+        mask = prefix.mask
+
+        if channel:
+            # TODO Migrate plugins to accept the original case of the channel
+            channel = channel.lower()
+
+            channel = channel.split()[0]  # Just in case there is more data
+
+            if channel == self.conn.nick.lower():
+                channel = nick.lower()
+
+        # Set up parsed message
+        # TODO: Do we really want to send the raw `prefix` and `command_params` here?
+        event = Event(
+            bot=self.bot, conn=self.conn, event_type=event_type, content_raw=content_raw, content=content,
+            target=target, channel=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
+            irc_prefix=mask, irc_command=command, irc_paramlist=command_params, irc_ctcp_text=ctcp_text
+        )
+
+        self.bot.event_queue.put_nowait(event)
 
     @property
     def connected(self):
