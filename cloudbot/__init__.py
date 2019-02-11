@@ -10,10 +10,12 @@ import logging.config
 import logging
 import os
 
+from .decorators import api
+
 __version__ = "1.0.9"
 
 __all__ = ["clients", "util", "bot", "client", "config", "event", "hook", "permissions", "plugin", "reloader",
-           "logging_info"]
+           "logging_info", 'api']
 
 
 class LoggingInfo:

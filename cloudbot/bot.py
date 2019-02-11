@@ -184,6 +184,10 @@ class CloudBot:
 
         self.plugin_manager = PluginManager(self)
 
+    @property
+    def apis(self):
+        return self.plugin_manager.apis
+
     def run(self):
         """
         Starts CloudBot.

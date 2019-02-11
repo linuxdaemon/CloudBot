@@ -13,11 +13,13 @@ from pathlib import Path
 from weakref import WeakValueDictionary
 
 import sqlalchemy
+from venusian import Scanner
 
 from cloudbot.event import Event, PostHookEvent
 from cloudbot.hook import Priority, Action
 from cloudbot.util import database, async_util
 from cloudbot.util.func_utils import call_with_args
+from cloudbot.util.mapping import AttrMapping
 
 logger = logging.getLogger("cloudbot")
 
@@ -104,6 +106,7 @@ class PluginManager:
         self.hook_hooks = defaultdict(list)
         self.perm_hooks = defaultdict(list)
         self._hook_waiting_queues = {}
+        self.apis = AttrMapping()
 
     def find_plugin(self, title):
         """
@@ -192,6 +195,9 @@ class PluginManager:
                 # unregister databases
                 plugin.unregister_tables(self.bot)
                 return
+
+        for name, api_cls in plugin.apis.items():
+            self.apis[name] = api_cls(self.bot)
 
         self.plugins[plugin.file_path] = plugin
         self._plugin_name_map[plugin.title] = plugin
@@ -307,6 +313,9 @@ class PluginManager:
 
         # get the loaded plugin
         plugin = self.plugins[str(file_path)]
+
+        for name in plugin.apis:
+            del self.apis[name]
 
         for on_cap_available_hook in plugin.hooks["on_cap_available"]:
             available_hooks = self.cap_hooks["on_available"]
@@ -614,6 +623,12 @@ class Plugin:
         self.tables = find_tables(code)
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
+
+        self.apis = {}
+
+        self.scanner = Scanner(plugin=self)
+
+        self.scanner.scan(self.code)
 
     async def create_tables(self, bot):
         """
