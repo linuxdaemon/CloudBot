@@ -13,9 +13,11 @@ from typing import Type
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
+from venusian import Scanner
 from watchdog.observers import Observer
 
-from cloudbot.client import Client, CLIENTS
+from . import clients
+from cloudbot.client import Client
 from cloudbot.config import Config
 from cloudbot.event import Event, CommandEvent, RegexEvent, EventType
 from cloudbot.hook import Action
@@ -121,6 +123,7 @@ class CloudBot:
         # future which will be called when the bot stopsIf you
         self.stopped_future = async_util.create_future(self.loop)
 
+        self.clients = {}
         # stores each bot server connection
         self.connections = {}
 
@@ -188,6 +191,9 @@ class CloudBot:
     def apis(self):
         return self.plugin_manager.apis
 
+    def add_client(self, name, cls):
+        self.clients[name] = cls
+
     def run(self):
         """
         Starts CloudBot.
@@ -207,7 +213,7 @@ class CloudBot:
         return restart
 
     def get_client(self, name: str) -> Type[Client]:
-        return CLIENTS[name]
+        return self.clients[name]
 
     def create_connections(self):
         """ Create a BotConnection for all the networks defined in the config """
@@ -218,7 +224,8 @@ class CloudBot:
             _type = config.get("type", "irc")
 
             self.connections[name] = self.get_client(_type)(
-                self, name, nick, config=config, channels=config['channels']
+                self, _type, name, nick, config=config,
+                channels=config['channels']
             )
             logger.debug("[{}] Created connection.".format(name))
 
@@ -306,11 +313,8 @@ class CloudBot:
         """
         Load all clients from the "clients" directory
         """
-        client_dir = self.base_dir / "cloudbot" / "clients"
-        for path in client_dir.rglob('*.py'):
-            rel_path = path.relative_to(self.base_dir)
-            mod_path = '.'.join(rel_path.parts).rsplit('.', 1)[0]
-            importlib.import_module(mod_path)
+        scanner = Scanner(bot=self)
+        scanner.scan(clients, categories=['cloudbot.client'])
 
     async def process(self, event):
         """

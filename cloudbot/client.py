@@ -8,17 +8,6 @@ from cloudbot.util import async_util
 
 logger = logging.getLogger("cloudbot")
 
-CLIENTS = {}
-
-
-def client(_type):
-    def _decorate(cls):
-        CLIENTS[_type] = cls
-        cls._type = _type
-        return cls
-
-    return _decorate
-
 
 class ClientConnectError(Exception):
     def __init__(self, client_name, server):
@@ -41,9 +30,7 @@ class Client:
     :type permissions: PermissionManager
     """
 
-    _type = None
-
-    def __init__(self, bot, name, nick, *, channels=None, config=None):
+    def __init__(self, bot, _type, name, nick, *, channels=None, config=None):
         """
         :type bot: cloudbot.bot.CloudBot
         :type name: str
@@ -52,6 +39,7 @@ class Client:
         :type config: dict[str, unknown]
         """
         self.bot = bot
+        self._type = _type
         self.loop = bot.loop
         self.name = name
         self.nick = nick

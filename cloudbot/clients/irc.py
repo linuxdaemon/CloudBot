@@ -9,7 +9,8 @@ from functools import partial
 
 from irclib.parser import Message
 
-from cloudbot.client import Client, client, ClientConnectError
+from cloudbot.client import Client, ClientConnectError
+from cloudbot.decorators import client
 from cloudbot.event import Event, EventType, IrcOutEvent
 from cloudbot.util import async_util
 
@@ -56,7 +57,7 @@ class IrcClient(Client):
     :type _ignore_cert_errors: bool
     """
 
-    def __init__(self, bot, name, nick, *, channels=None, config=None):
+    def __init__(self, bot, _type, name, nick, *, channels=None, config=None):
         """
         :type bot: cloudbot.bot.CloudBot
         :type name: str
@@ -64,7 +65,9 @@ class IrcClient(Client):
         :type channels: list[str]
         :type config: dict[str, unknown]
         """
-        super().__init__(bot, name, nick, channels=channels, config=config)
+        super().__init__(
+            bot, _type, name, nick, channels=channels, config=config
+        )
 
         self.use_ssl = config['connection'].get('ssl', False)
         self._ignore_cert_errors = config['connection'].get('ignore_cert', False)
