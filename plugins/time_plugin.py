@@ -2,51 +2,14 @@ import datetime
 import re
 import time
 
-import requests
-
 from cloudbot import hook
-from cloudbot.bot import bot
-
-# Define some constants
-base_url = 'https://maps.googleapis.com/maps/api/'
-geocode_api = base_url + 'geocode/json'
-timezone_api = base_url + 'timezone/json'
-
-# Change this to a ccTLD code (eg. uk, nz) to make results more targeted towards that specific country.
-# <https://developers.google.com/maps/documentation/geocoding/#RegionCodes>
-bias = None
-
-
-def check_status(status, api):
-    """ A little helper function that checks an API error code and returns a nice message.
-        Returns None if no errors found """
-    if status == 'REQUEST_DENIED':
-        return 'The ' + api + ' API is off in the Google Developers Console.'
-
-    if status == 'ZERO_RESULTS':
-        return 'No results found.'
-
-    if status == 'OVER_QUERY_LIMIT':
-        return 'The ' + api + ' API quota has run out.'
-
-    if status == 'UNKNOWN_ERROR':
-        return 'Unknown Error.'
-
-    if status == 'INVALID_REQUEST':
-        return 'Invalid Request.'
-
-    if status == 'OK':
-        return None
-
-    # !!!
-    return 'Unknown Demons.'
 
 
 @hook.command("time")
-def time_command(text, reply):
+def time_command(text, reply, bot):
     """<location> - Gets the current time in <location>."""
-    dev_key = bot.config.get_api_key("google_dev_key")
-    if not dev_key:
+    googlemaps_api = bot.apis.googlemaps
+    if not googlemaps_api:
         return "This command requires a Google Developers Console API key."
 
     if text.lower().startswith("utc") or text.lower().startswith("gmt"):
@@ -68,33 +31,12 @@ def time_command(text, reply):
             formatted_time = datetime.datetime.strftime(tztime, '%I:%M %p, %A, %B %d, %Y')
             return "\x02{}\x02 ({})".format(formatted_time, timezone)
 
-    # Use the Geocoding API to get co-ordinates from the input
-    params = {"address": text, "key": dev_key}
-    if bias:
-        params['region'] = bias
-
-    json = requests.get(geocode_api, params=params).json()
-
-    error = check_status(json['status'], "geocoding")
-    if error:
-        return error
-
-    result = json['results'][0]
-
-    location_name = result['formatted_address']
-    location = result['geometry']['location']
-
-    # Now we have the co-ordinates, we use the Timezone API to get the timezone
-    formatted_location = "{lat},{lng}".format(**location)
+    location = googlemaps_api.geocode_get_coords(text)
+    location_name = location['formatted_address']
 
     epoch = time.time()
 
-    params = {"location": formatted_location, "timestamp": epoch, "key": dev_key}
-    json = requests.get(timezone_api, params=params).json()
-
-    error = check_status(json['status'], "timezone")
-    if error:
-        return error
+    json = googlemaps_api.timezone(location, timestamp=epoch)
 
     # Work out the current time
     offset = json['rawOffset'] + json['dstOffset']
