@@ -24,29 +24,6 @@ from cloudbot.util.mapping import AttrMapping
 logger = logging.getLogger("cloudbot")
 
 
-def find_hooks(parent, module):
-    """
-    :type parent: Plugin
-    :type module: object
-    :rtype: dict
-    """
-    # set the loaded flag
-    module._cloudbot_loaded = True
-    hooks = defaultdict(list)
-    for name, func in module.__dict__.items():
-        if hasattr(func, "_cloudbot_hook"):
-            # if it has cloudbot hook
-            func_hooks = func._cloudbot_hook
-
-            for hook_type, func_hook in func_hooks.items():
-                hooks[hook_type].append(_hook_name_to_plugin[hook_type](parent, func_hook))
-
-            # delete the hook to free memory
-            del func._cloudbot_hook
-
-    return hooks
-
-
 def find_tables(code):
     """
     :type code: object
@@ -617,18 +594,26 @@ class Plugin:
         self.file_path = filepath
         self.file_name = filename
         self.title = title
-        self.hooks = find_hooks(self, code)
+        self.hooks = defaultdict(list)
         # we need to find tables for each plugin so that they can be unloaded from the global metadata when the
         # plugin is reloaded
         self.tables = find_tables(code)
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
 
+        self.code._cloudbot_loaded = True
+
         self.apis = {}
 
         self.scanner = Scanner(plugin=self)
 
         self.scanner.scan(self.code)
+
+    def register_hook(self, hook, func):
+        hook_type = hook.type
+        self.hooks[hook_type].append(
+            _hook_name_to_plugin[hook_type](self, hook)
+        )
 
     async def create_tables(self, bot):
         """

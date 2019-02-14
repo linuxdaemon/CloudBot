@@ -4,6 +4,8 @@ import re
 import textwrap
 from enum import Enum, unique, IntEnum
 
+import venusian
+
 from cloudbot.event import EventType
 
 valid_command_re = re.compile(r"^\w+$")
@@ -42,6 +44,14 @@ class _Hook:
         self.function = function
         self.type = _type
         self.kwargs = {}
+
+    def register(self, scanner, name, ob):
+        """Venusian callback"""
+        scanner.plugin.register_hook(self, ob)
+
+    @property
+    def category(self):
+        return 'cloudbot.hook.{}'.format(self.type)
 
     def _add_hook(self, kwargs):
         """
@@ -219,12 +229,14 @@ class _PermissionHook(_Hook):
         self.perms.update(perms)
 
 
-def _add_hook(func, hook):
+def _add_hook(func, hook: _Hook, depth=0):
     if not hasattr(func, "_cloudbot_hook"):
         func._cloudbot_hook = {}
     else:
         assert hook.type not in func._cloudbot_hook  # in this case the hook should be using the add_hook method
     func._cloudbot_hook[hook.type] = hook
+    info = venusian.attach(func, hook.register, category=hook.category, depth=2 + depth)
+    assert info.module.__name__.startswith('plugins.')
 
 
 def _get_hook(func, hook_type):
@@ -239,20 +251,20 @@ def command(*args, **kwargs):
     :type param: str | list[str] | function
     """
 
-    def _command_hook(func, alias_param=None):
+    def _command_hook(func, alias_param=args, depth=0):
         hook = _get_hook(func, "command")
         if hook is None:
             hook = _CommandHook(func)
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
 
         hook.add_hook(alias_param, kwargs)
         return func
 
     if len(args) == 1 and callable(args[0]):  # this decorator is being used directly
-        return _command_hook(args[0])
+        return _command_hook(args[0], alias_param=None, depth=1)
 
     # this decorator is being used indirectly, so return a decorator function
-    return lambda func: _command_hook(func, alias_param=args)
+    return _command_hook
 
 
 def irc_raw(triggers_param, **kwargs):
@@ -324,20 +336,20 @@ def sieve(param=None, **kwargs):
     :type param: function | None
     """
 
-    def _sieve_hook(func):
+    def _sieve_hook(func, depth=0):
         assert len(inspect.signature(func).parameters) == 3, \
             "Sieve plugin has incorrect argument count. Needs params: bot, input, plugin"
 
         hook = _get_hook(func, "sieve")
         if hook is None:
             hook = _Hook(func, "sieve")  # there's no need to have a specific SieveHook object
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
 
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _sieve_hook(param)
+        return _sieve_hook(param, 1)
 
     return _sieve_hook
 
@@ -368,17 +380,17 @@ def on_start(param=None, **kwargs):
     :type param: function | None
     """
 
-    def _on_start_hook(func):
+    def _on_start_hook(func, depth=0):
         hook = _get_hook(func, "on_start")
         if hook is None:
             hook = _Hook(func, "on_start")
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
 
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _on_start_hook(param)
+        return _on_start_hook(param, 1)
 
     return _on_start_hook
 
@@ -392,16 +404,16 @@ def on_stop(param=None, **kwargs):
     :type param: function | None
     """
 
-    def _on_stop_hook(func):
+    def _on_stop_hook(func, depth=0):
         hook = _get_hook(func, "on_stop")
         if hook is None:
             hook = _Hook(func, "on_stop")
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _on_stop_hook(param)
+        return _on_stop_hook(param, 1)
 
     return _on_stop_hook
 
@@ -444,16 +456,16 @@ def on_cap_ack(*caps, **kwargs):
 
 
 def on_connect(param=None, **kwargs):
-    def _on_connect_hook(func):
+    def _on_connect_hook(func, depth=0):
         hook = _get_hook(func, "on_connect")
         if hook is None:
             hook = _Hook(func, "on_connect")
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _on_connect_hook(param)
+        return _on_connect_hook(param, 1)
 
     return _on_connect_hook
 
@@ -462,17 +474,17 @@ connect = on_connect
 
 
 def irc_out(param=None, **kwargs):
-    def _decorate(func):
+    def _decorate(func, depth=0):
         hook = _get_hook(func, "irc_out")
         if hook is None:
             hook = _Hook(func, "irc_out")
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
 
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _decorate(param)
+        return _decorate(param, 1)
 
     return _decorate
 
@@ -482,17 +494,17 @@ def post_hook(param=None, **kwargs):
     This hook will be fired just after a hook finishes executing
     """
 
-    def _decorate(func):
+    def _decorate(func, depth=0):
         hook = _get_hook(func, "post_hook")
         if hook is None:
             hook = _Hook(func, "post_hook")
-            _add_hook(func, hook)
+            _add_hook(func, hook, depth=depth)
 
         hook._add_hook(kwargs)
         return func
 
     if callable(param):
-        return _decorate(param)
+        return _decorate(param, 1)
 
     return _decorate
 
