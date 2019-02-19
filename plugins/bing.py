@@ -5,7 +5,6 @@ from lxml import html
 from requests import HTTPError
 
 from cloudbot import hook
-from cloudbot.bot import bot
 from cloudbot.util import formatting, filesize, colors
 
 API_URL = "https://api.datamarket.azure.com/Bing/Search/v1/Composite"
@@ -91,7 +90,7 @@ def bing(text, bot, reply):
 
 
 @hook.command("bingimage", "bis")
-def bingimage(text, reply):
+def bingimage(text, bot, reply):
     """<query> - returns the first bing image search result for <query>"""
     data = do_lookup(bot, text, reply, 'Image')
     if not data:
