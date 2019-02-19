@@ -28,8 +28,8 @@ def CAHblackcard(text):
     CardText = text.strip()
 
     # noinspection PyUnusedLocal
-    def blankfiller(matchobj):
+    def blankfiller_cb(matchobj):
         return random.choice(gnomecards['white'])
 
-    out = re.sub(r'\b_\b', blankfiller, CardText)
+    out = re.sub(r'\b_\b', blankfiller_cb, CardText)
     return out

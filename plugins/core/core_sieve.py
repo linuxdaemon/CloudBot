@@ -17,7 +17,7 @@ def task_clear():
 
 
 @hook.sieve(priority=100)
-async def sieve_suite(bot, event, _hook):
+async def sieve_suite_cb(bot, event, _hook):
     conn = event.conn
 
     # check acls

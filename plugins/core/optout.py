@@ -159,7 +159,7 @@ def load_cache(db):
 
 # noinspection PyUnusedLocal
 @hook.sieve(priority=Priority.HIGHEST)
-def optout_sieve(bot, event, _hook):
+def optout_sieve_cb(bot, event, _hook):
     if not event.chan or not event.conn:
         return event
 

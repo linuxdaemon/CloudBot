@@ -103,7 +103,7 @@ class Shortener:
     def __init__(self):
         pass
 
-    def shorten(self, url, custom=None, key=None):
+    def shorten(self, url, custom=None, key=None):  # pylint: disable=unused-argument
         return url
 
     def try_shorten(self, url, custom=None, key=None):

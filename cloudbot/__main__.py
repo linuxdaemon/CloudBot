@@ -42,7 +42,7 @@ def main():
     # The handler is called with two arguments: the signal number and the current stack frame
     # These parameters should NOT be removed
     # noinspection PyUnusedLocal
-    def exit_gracefully(signum, frame):
+    def exit_gracefully_cb(signum, frame):
         nonlocal stopped_while_restarting
         if not _bot:
             # we are currently in the process of restarting
@@ -55,7 +55,7 @@ def main():
         # restore the original handler so if they do it again it triggers
         signal.signal(signal.SIGINT, original_sigint)
 
-    signal.signal(signal.SIGINT, exit_gracefully)
+    signal.signal(signal.SIGINT, exit_gracefully_cb)
 
     # start the bot master
 

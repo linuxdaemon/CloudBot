@@ -243,7 +243,7 @@ def log(event):
 
 # Log console separately to prevent lag
 @hook.irc_raw("*")
-async def console_log(bot, event):
+async def console_log(event):
     """
     :type bot: cloudbot.bot.CloudBot
     :type event: cloudbot.event.Event
