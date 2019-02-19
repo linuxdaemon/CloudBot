@@ -21,14 +21,14 @@ url_re = re.compile(
     r"""
     https? # Scheme
     ://
-    
+
     # Username and Password
     (?:
         (?:[^\[\]?/<~#`!@$%^&*()=+}|:";',>{\s]|%[0-9A-F]{2})*
         (?::(?:[^\[\]?/<~#`!@$%^&*()=+}|:";',>{\s]|%[0-9A-F]{2})*)?
         @
     )?
-    
+
     # Domain
     (?:
         # TODO Add support for IDNA hostnames as specified by RFC5891
@@ -39,13 +39,13 @@ url_re = re.compile(
         )
         (?<![.,?!\]])  # Invalid end chars
     )
-    
+
     (?::\d*)?  # port
-    
+
     (?:/(?:""" + no_parens(PATH_SEG_CHARS) + r""")*(?<![.,?!\]]))*  # Path segment
-    
+
     (?:\?(?:""" + no_parens(QUERY_CHARS) + r""")*(?<![.,!\]]))?  # Query
-    
+
     (?:\#(?:""" + no_parens(FRAG_CHARS) + r""")*(?<![.,?!\]]))?  # Fragment
     """,
     re.IGNORECASE | re.VERBOSE
