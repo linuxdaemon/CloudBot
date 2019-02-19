@@ -171,3 +171,5 @@ def time_parse(string, granularity='seconds'):
             # SECS is a float, we will return a float
             return sign * sum([MULTIPLIERS[k] * float(v) for (k, v) in
                                list(mdict.items()) if v is not None])
+
+    return None

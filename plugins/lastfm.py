@@ -59,6 +59,8 @@ def filter_tags(tags, artist, limit=4):
         if count == limit:
             return filtered_tags
 
+    return filtered_tags
+
 
 last_cache = {}
 
@@ -234,7 +236,7 @@ def lastfm(event, db, text, nick):
         user = get_account(nick)
         if not user:
             event.notice_doc()
-            return
+            return None
 
     response, err = api_request('user.getrecenttracks', user=user, limit=1)
     if err:
@@ -315,7 +317,7 @@ def getuserartistplaycount(event, text, nick):
     user = get_account(nick)
     if not user:
         event.notice_doc()
-        return
+        return None
 
     artist_info = getartistinfo(text, user)
 

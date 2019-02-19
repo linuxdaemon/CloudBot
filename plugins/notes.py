@@ -117,7 +117,7 @@ def note(text, conn, nick, db, notice):
         add_note(db, conn.name, nick, note_text)
 
         notice("Note added!")
-        return
+        return None
 
     if cmd in ['del', 'delete', 'remove']:
         # user is deleting a note
@@ -130,20 +130,20 @@ def note(text, conn, nick, db, notice):
 
         if not n:
             notice("#{} is not a valid note ID.".format(note_id))
-            return
+            return None
 
         # now we delete it
         delete_note(db, conn.name, nick, note_id)
 
         notice("Note #{} deleted!".format(note_id))
-        return
+        return None
 
     if cmd == 'clear':
         # user is deleting all notes
         delete_all_notes(db, conn.name, nick)
 
         notice("All notes deleted!")
-        return
+        return None
 
     if cmd == 'get':
         # user is getting a single note
@@ -155,12 +155,12 @@ def note(text, conn, nick, db, notice):
 
         if not n:
             notice("{} is not a valid note ID.".format(nick))
-            return
+            return None
 
         # show the note
         text = format_note(n)
         notice(text)
-        return
+        return None
 
     if cmd in ['share', 'show']:
         # user is sharing a single note
@@ -172,7 +172,7 @@ def note(text, conn, nick, db, notice):
 
         if not n:
             notice("{} is not a valid note ID.".format(nick))
-            return
+            return None
 
         # show the note
         text = format_note(n)
@@ -184,7 +184,7 @@ def note(text, conn, nick, db, notice):
 
         if not notes:
             notice("You have no notes.")
-            return
+            return None
 
         notice("All notes for {}:".format(nick))
 
@@ -192,13 +192,16 @@ def note(text, conn, nick, db, notice):
             # show the note
             text = format_note(n)
             notice(text)
-    elif cmd == 'listall':
+
+        return None
+
+    if cmd == 'listall':
         # user is getting all notes including deleted ones
         notes = read_all_notes(db, conn.name, nick, show_deleted=True)
 
         if not notes:
             notice("You have no notes.")
-            return
+            return None
 
         notice("All notes for {}:".format(nick))
 
@@ -206,5 +209,8 @@ def note(text, conn, nick, db, notice):
             # show the note
             text = format_note(n)
             notice(text)
-    else:
-        notice("Unknown command: {}".format(cmd))
+
+        return None
+
+    notice("Unknown command: {}".format(cmd))
+    return None

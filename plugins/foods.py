@@ -107,6 +107,7 @@ def basic_food(food):
             return "I can't give {} to that user.".format(food.unit)
 
         action(basic_format(nick, text, basic_food_data[food.name]))
+        return None
 
     func.__name__ = food.name
     func.__doc__ = "<user> - gives {} to [user]".format(food.unit)

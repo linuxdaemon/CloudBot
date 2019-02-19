@@ -60,6 +60,8 @@ def imdb_url(match, bot):
     if content['success'] is True:
         return movie_str(content['result'])
 
+    return None
+
 
 def movie_str(movie):
     movie['genre'] = ', '.join(movie['genres'])

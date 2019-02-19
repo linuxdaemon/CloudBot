@@ -103,11 +103,11 @@ def hookstats(text, bot, notice_doc):
         handler, arg_count = stats_funcs[stats_type]
     except LookupError:
         notice_doc()
-        return
+        return None
 
     if len(args) < arg_count:
         notice_doc()
-        return
+        return None
 
     headers, data = handler(data, *args[:arg_count])
 

@@ -50,3 +50,5 @@ def correction(match, conn, nick, chan, message):
                 conn.history[chan].append((name, timestamp, msg))
 
             break
+
+    return None

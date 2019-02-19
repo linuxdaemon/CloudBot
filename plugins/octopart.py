@@ -55,3 +55,5 @@ def octopart(text, reply):
 
         # print matched part
         reply("{} - {} - {}".format(part['brand']['name'], part['mpn'], part['octopart_url']))
+
+    return None

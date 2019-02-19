@@ -41,7 +41,7 @@ def do_lookup(bot, text, reply, key):
     api_key = bot.config.get_api_key('bing_azure')
     if not api_key:
         reply("Error: No Bing Azure API details.")
-        return
+        return None
 
     # why are these all differing formats and why does format have a $? ask microsoft
     params = {
@@ -64,7 +64,7 @@ def do_lookup(bot, text, reply, key):
 
     if not j[key]:
         reply("No results.")
-        return
+        return None
 
     return j[key]
 
@@ -74,7 +74,7 @@ def bing(text, bot, reply):
     """<query> - returns the first bing search result for <query>"""
     data = do_lookup(bot, text, reply, 'Web')
     if not data:
-        return
+        return None
 
     result = data[0]
 
@@ -94,7 +94,7 @@ def bingimage(text, bot, reply):
     """<query> - returns the first bing image search result for <query>"""
     data = do_lookup(bot, text, reply, 'Image')
     if not data:
-        return
+        return None
 
     # grab a random result from the top 10
     result = random.choice(data[:10])

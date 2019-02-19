@@ -67,15 +67,16 @@ def dice(text, notice):
             text, desc = match.groups()
         else:
             notice("Invalid dice roll '{}'".format(text))
-            return
+            return None
 
     if "d" not in text:
-        return
+        return None
 
     spec = whitespace_re.sub('', text)
     if not valid_diceroll.match(spec):
         notice("Invalid dice roll '{}'".format(text))
-        return
+        return None
+
     groups = sign_re.findall(spec)
 
     total = 0
@@ -127,7 +128,7 @@ def choose(text, event):
         choices = choices[0].split(' or ')
         if len(choices) == 1:
             event.notice_doc()
-            return
+            return None
 
     return random.choice([choice.strip() for choice in choices])
 

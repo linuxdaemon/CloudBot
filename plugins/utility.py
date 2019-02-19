@@ -155,7 +155,7 @@ def base64_decode(text, notice):
         decoded = base64.b64decode(text.encode()).decode(errors='ignore')
     except binascii.Error:
         notice("Invalid base64 string '{}'".format(text))
-        return
+        return None
 
     if repr(decoded)[1:-1] != decoded:
         return "Non printable characters detected in output, " \

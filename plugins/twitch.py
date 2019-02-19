@@ -59,6 +59,8 @@ def twitch_lookup(location, reply):
         viewers = "\x034\x02Offline\x02\x0f"
         return html.unescape(fmt.format(title, channel, playing, viewers))
 
+    return None
+
 
 @hook.regex(multitwitch_re)
 def multitwitch_url(match, reply):

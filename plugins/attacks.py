@@ -134,6 +134,7 @@ def basic_attack(attack):
         out = basic_format(nick, target, attack_data[attack.name])
 
         responses[attack.response](out)
+        return None
 
     func.__name__ = attack.name
     func.__doc__ = attack.doc

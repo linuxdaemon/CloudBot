@@ -76,7 +76,7 @@ def poll(text, conn, nick, chan, message, reply):
         reply("Your poll has been closed. Final results for \x02\"{}\"\x02:".format(p.question))
         message(p.format_results())
         del polls[uid]
-        return
+        return None
 
     if uid in polls.keys():
         return "You already have an active poll in this channel, you must close it before you can create a new one."
@@ -98,6 +98,7 @@ def poll(text, conn, nick, chan, message, reply):
     option_str = get_text_list([option.title for option in _poll.options.values()], "and")
     message('Created poll \x02\"{}\"\x02 with the following options: {}'.format(_poll.question, option_str))
     message("Use .vote {} <option> to vote on this poll!".format(nick.lower()))
+    return None
 
 
 @hook.command(autohelp=True)
@@ -120,6 +121,7 @@ def vote(text, nick, conn, chan, notice):
         return "{}".format(e)
 
     notice("Voted \x02\"{}\"\x02 on {}'s poll!".format(o.title, p.creator))
+    return None
 
 
 @hook.command(autohelp=False)
@@ -138,3 +140,4 @@ def results(text, conn, chan, nick, message, reply):
 
     reply("Results for \x02\"{}\"\x02 by \x02{}\x02:".format(p.question, p.creator))
     message(p.format_results())
+    return None

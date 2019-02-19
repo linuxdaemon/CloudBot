@@ -45,7 +45,7 @@ def namegen(text, bot, notice):
         message = "Available generators: "
         message += formatting.get_text_list(all_modules, 'and')
         notice(message)
-        return
+        return None
 
     if inp:
         selected_module = inp.split()[0]

@@ -77,6 +77,8 @@ def format_event(event):
     if event.irc_command is not None:
         return format_irc_event(event, args)
 
+    return None
+
 
 def format_irc_event(event, args):
     """

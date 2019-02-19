@@ -278,6 +278,8 @@ def tell_check(conn, nick):
         if (conn, nick.lower()) == (_conn, _target):
             return True
 
+    return False
+
 
 @hook.event([EventType.message, EventType.action], singlethread=True)
 def tellinput(event, conn, db, nick, notice):

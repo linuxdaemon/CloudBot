@@ -242,7 +242,7 @@ def increment_msg_counter(event, conn):
 def start_hunt(db, chan, message, conn):
     """- This command starts a duckhunt in your channel, to stop the hunt use .stophunt"""
     if is_opt_out(conn.name, chan):
-        return
+        return None
 
     if not chan.startswith("#"):
         return "No hunting by yourself, that isn't safe."
@@ -260,6 +260,7 @@ def start_hunt(db, chan, message, conn):
         "NOTE: Ducks now appear as a function of time and channel activity.",
         chan
     )
+    return None
 
 
 def set_ducktime(chan, conn):
@@ -284,7 +285,7 @@ def stop_hunt(db, chan, conn):
     :type conn: cloudbot.client.Client
     """
     if is_opt_out(conn.name, chan):
-        return
+        return None
 
     if get_state_table(conn.name, chan).game_on:
         set_game_state(db, conn, chan, active=False)
@@ -305,7 +306,7 @@ def no_duck_kick(db, text, chan, conn, notice_doc):
     :type notice_doc: function
     """
     if is_opt_out(conn.name, chan):
-        return
+        return None
 
     if text.lower() == 'enable':
         set_game_state(db, conn, chan, duck_kick=True)
@@ -458,7 +459,7 @@ def attack(event, nick, chan, db, conn, attack_type):
     :type attack_type: str
     """
     if is_opt_out(conn.name, chan):
-        return
+        return None
 
     network = conn.name
     status = get_state_table(network, chan)
@@ -494,7 +495,7 @@ def attack(event, nick, chan, db, conn, attack_type):
     if status.duck_status != 1:
         if status.no_duck_kick == 1:
             conn.cmd("KICK", chan, nick, no_duck)
-            return
+            return None
 
         return no_duck
 
@@ -508,7 +509,7 @@ def attack(event, nick, chan, db, conn, attack_type):
                     scripters[nick.lower()] - shoot
                 )
             )
-            return
+            return None
 
     chance = hit_or_miss(deploy, shoot)
     if not random.random() <= chance and chance > .05:
@@ -538,6 +539,7 @@ def attack(event, nick, chan, db, conn, attack_type):
         pluralize_auto(score, "duck"), chan
     ))
     set_ducktime(chan, conn.name)
+    return None
 
 
 @hook.command("bang", autohelp=False)
@@ -666,7 +668,7 @@ DISPLAY_FUNCS = {
 
 def display_scores(score_type: ScoreType, event, text, chan, conn, db):
     if is_opt_out(conn.name, chan):
-        return
+        return None
 
     global_pfx = "Duck {noun} scores across the network: ".format(
         noun=score_type.noun
@@ -682,7 +684,7 @@ def display_scores(score_type: ScoreType, event, text, chan, conn, db):
         func = DISPLAY_FUNCS[text.lower() or None]
     except KeyError:
         event.notice_doc()
-        return
+        return None
 
     scores_dict = call_with_args(func, {
         'db': db,
@@ -790,6 +792,8 @@ def hunt_opt_out(text, chan, db, conn):
         db.commit()
         load_optout(db)
 
+    return None
+
 
 @hook.command("duckmerge", permissions=["botcontrol"])
 def duck_merge(text, conn, db, message):
@@ -863,6 +867,8 @@ def duck_merge(text, conn, db, message):
         oldnick, newnick
     ))
 
+    return None
+
 
 @hook.command("ducks", autohelp=False)
 def ducks_user(text, nick, chan, conn, db, message):
@@ -912,7 +918,7 @@ def ducks_user(text, nick, chan, conn, db, message):
         message("{} has killed {} and befriended {} in {}.".format(
             name, pluralize_auto(ducks["chankilled"], "duck"), pluralize_auto(ducks["chanfriends"], "duck"), chan
         ))
-        return
+        return None
 
     kill_average = int(ducks["killed"] / ducks["chans"])
     friend_average = int(ducks["friend"] / ducks["chans"])
@@ -926,6 +932,7 @@ def ducks_user(text, nick, chan, conn, db, message):
             pluralize_auto(kill_average, "kill"), pluralize_auto(friend_average, "friend")
         )
     )
+    return None
 
 
 @hook.command("duckstats", autohelp=False)
@@ -972,3 +979,5 @@ def duck_stats(chan, conn, db, message):
             killerchan, pluralize_auto(killscore, "kill"),
             friendchan, pluralize_auto(friendscore, "friend")
         ))
+
+    return None

@@ -82,13 +82,13 @@ def twitter_url(match, conn):
     # Get the tweet using the tweepy API
     tw_api = container.api
     if tw_api is None:
-        return
+        return None
 
     try:
         tweet = tw_api.get_status(tweet_id, tweet_mode=get_tweet_mode(conn))
     except tweepy.TweepError as e:
         if e.api_code in IGNORE_ERRORS:
-            return
+            return None
 
         raise
 
@@ -203,7 +203,7 @@ def twuser(text, reply):
 
     tw_api = container.api
     if tw_api is None:
-        return
+        return None
 
     try:
         # try to get user by username

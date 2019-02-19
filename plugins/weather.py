@@ -128,7 +128,7 @@ def get_location(nick):
     """looks in location_cache for a saved location"""
     location = [row[1] for row in location_cache if nick.lower() == row[0]]
     if not location:
-        return
+        return None
 
     location = location[0]
     return location
@@ -239,6 +239,8 @@ def weather(reply, db, triggered_prefix, event):
         )
     )
 
+    return None
+
 
 @hook.command("forecast", "fc", autohelp=False)
 def forecast(reply, db, event):
@@ -302,3 +304,5 @@ def forecast(reply, db, event):
             url=url
         )
     )
+
+    return None

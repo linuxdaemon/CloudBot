@@ -132,9 +132,13 @@ def lastgrab(text, chan, message):
             lgrab = grab_cache[chan][text.lower()][-1]
     except (KeyError, IndexError):
         return "<{}> has never been grabbed.".format(text)
-    if lgrab:
-        quote = lgrab
-        message(format_grab(text, quote), chan)
+
+    if not lgrab:
+        return None
+
+    quote = lgrab
+    message(format_grab(text, quote), chan)
+    return None
 
 
 @hook.command("grabrandom", "grabr", autohelp=False)
@@ -167,6 +171,7 @@ def grabrandom(text, chan, message):
     name, quote_text = random.choice(matching_quotes)
 
     message(format_grab(name, quote_text))
+    return None
 
 
 @hook.command("grabsearch", "grabs", autohelp=False)

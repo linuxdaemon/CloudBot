@@ -159,7 +159,7 @@ def size(b, system=traditional):
         if b >= factor:
             break
     else:  # pragma: no cover
-        return
+        return None
 
     amount = int(b / factor)
     if isinstance(suffix, tuple):
@@ -168,4 +168,5 @@ def size(b, system=traditional):
             suffix = singular
         else:
             suffix = multiple
+
     return str(amount) + suffix

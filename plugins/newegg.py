@@ -131,7 +131,7 @@ def newegg(text, admin_log, reply):
 
         reply("Unknown error occurred.")
         request.raise_for_status()
-        return
+        return None
 
     # get the first result
     if r["ProductListItems"]:

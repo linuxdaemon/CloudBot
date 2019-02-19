@@ -139,14 +139,15 @@ def youtime(text, reply):
     json = request.json()
 
     if json.get('error'):
-        return
+        return None
+
     data = json['items']
     snippet = data[0]['snippet']
     content_details = data[0]['contentDetails']
     statistics = data[0]['statistics']
 
     if not content_details.get('duration'):
-        return
+        return None
 
     length = isodate.parse_duration(content_details['duration'])
     l_sec = int(length.total_seconds())

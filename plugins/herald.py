@@ -56,17 +56,19 @@ def herald(text, nick, chan, db, reply):
         reply("greeting \'{}\' for {} has been removed".format(greeting, nick))
 
         load_cache(db)
-    else:
-        res = db.execute(
-            table.update().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower()).values(quote=text)
-        )
-        if res.rowcount == 0:
-            db.execute(table.insert().values(name=nick.lower(), chan=chan.lower(), quote=text))
+        return None
 
-        db.commit()
-        reply("greeting successfully added")
+    res = db.execute(
+        table.update().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower()).values(quote=text)
+    )
+    if res.rowcount == 0:
+        db.execute(table.insert().values(name=nick.lower(), chan=chan.lower(), quote=text))
 
-        load_cache(db)
+    db.commit()
+    reply("greeting successfully added")
+
+    load_cache(db)
+    return None
 
 
 @hook.command(permissions=["botcontrol", "snoonetstaff", "deleteherald", "chanop"])

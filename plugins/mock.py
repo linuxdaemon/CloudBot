@@ -26,3 +26,4 @@ def mock(text, chan, conn, message):
     # Return the message in aLtErNaTiNg cApS
     line = "".join(c.upper() if i & 1 else c.lower() for i, c in enumerate(line))
     message(fmt.format(nick=nick, msg=line))
+    return None

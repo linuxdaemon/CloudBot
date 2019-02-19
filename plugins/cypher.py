@@ -44,11 +44,13 @@ def decode(password, encoded, notice):
         encoded_bytes = base64.urlsafe_b64decode(encoded.encode()).decode()
     except binascii.Error:
         notice("Invalid input '{}'".format(encoded))
-        return
+        return None
+
     for i, c in enumerate(encoded_bytes):
         key_c = password[i % len(password)]
         dec_c = chr((256 + ord(c) - ord(key_c)) % 256)
         dec.append(dec_c)
+
     return "".join(dec)
 
 

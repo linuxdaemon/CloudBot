@@ -206,7 +206,7 @@ def quote(text, nick, chan, db, notice, event):
     if add:
         quoted_nick, msg = add.groups()
         notice(add_quote(db, chan, quoted_nick, nick, msg))
-        return
+        return None
 
     if retrieve:
         selected, num = retrieve.groups()
@@ -221,3 +221,4 @@ def quote(text, nick, chan, db, notice, event):
         return get_quote_by_nick_chan(db, chan, nick, num)
 
     event.notice_doc()
+    return None

@@ -66,6 +66,8 @@ def is_ignored(conn, chan, mask):
             if match_mask(mask_cf, _mask_cf):
                 return True
 
+    return False
+
 
 # noinspection PyUnusedLocal
 @hook.sieve(priority=50)
