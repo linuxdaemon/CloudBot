@@ -79,7 +79,6 @@ disable=invalid-name,
         too-many-ancestors,
         arguments-differ,
         simplifiable-if-expression,
-        implicit-str-concat-in-sequence,
         abstract-method,
         protected-access
 
