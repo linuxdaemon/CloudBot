@@ -26,12 +26,13 @@ async def bf(text):
         if c == '[':
             open_brackets.append(pos)
         elif c == ']':
-            if open_brackets:
-                brackets[pos] = open_brackets[-1]
-                brackets[open_brackets[-1]] = pos
-                open_brackets.pop()
-            else:
+            if not open_brackets:
                 return "Unbalanced brackets"
+
+            brackets[pos] = open_brackets[-1]
+            brackets[open_brackets[-1]] = pos
+            open_brackets.pop()
+
     if open_brackets:
         return "Unbalanced brackets"
 
