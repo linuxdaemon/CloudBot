@@ -210,7 +210,7 @@ def quote(text, nick, chan, db, notice, event):
 
     if retrieve:
         selected, num = retrieve.groups()
-        by_chan = True if selected.startswith('#') else False
+        by_chan = selected.startswith('#')
         if by_chan:
             return get_quote_by_chan(db, selected, num)
 
