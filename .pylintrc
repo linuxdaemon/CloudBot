@@ -73,9 +73,7 @@ disable=invalid-name,
         ungrouped-imports,
         too-many-statements,
         wrong-import-position,
-        no-name-in-module,
         too-many-ancestors,
-        arguments-differ,
         protected-access
 
 # Enable the message, report, category or checker with the given id(s). You can
