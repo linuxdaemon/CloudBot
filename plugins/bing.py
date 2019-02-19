@@ -117,7 +117,8 @@ def bingimage(text, reply):
     # join all the tags together in a comma separated string ("tag1, tag2, tag3")
     tag_text = ", ".join(tags)
 
-    return ('\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is '
-            'removing the free search tier.\x02 {} ({})').format(
-        unescape(result["MediaUrl"]), tag_text
-    )
+    return (
+        '\x02Notice: The Bing API will stop working sometime soon because '
+        'Microsoft is greedy as fuck and is removing the free search tier.'
+        '\x02 {} ({})'
+    ).format(unescape(result["MediaUrl"]), tag_text)

@@ -62,10 +62,11 @@ def add_bad(text, nick, db):
         )
 
     if len(badcache[channel]) >= 10:
-        return "There are too many words listed for channel {}. Please remove a word using .rmbad before adding " \
-               "anymore. For a list of bad words use .listbad".format(
-            channel
-        )
+        return (
+            "There are too many words listed for channel {}. "
+            "Please remove a word using .rmbad before adding anymore. "
+            "For a list of bad words use .listbad"
+        ).format(channel)
 
     db.execute(table.insert().values(word=word, nick=nick, chan=channel))
     db.commit()

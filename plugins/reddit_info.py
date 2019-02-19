@@ -331,8 +331,10 @@ def subinfo(text, reply):
     active = data['data']['accounts_active']
     sub_age = datetime.now() - datetime.fromtimestamp(data['data']['created'])
     age, age_unit = time_format(sub_age.days)
-    out = ("/r/$(b){}$(clear) - {} - a community for {}{}, there are {:,} subscribers and {:,} people online "
-           "now.").format(
+    out = (
+        "/r/$(b){}$(clear) - {} - a community for {}{}, "
+        "there are {:,} subscribers and {:,} people online now."
+    ).format(
         name, title, age, age_unit, subscribers, active
     )
     if nsfw:
