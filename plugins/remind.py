@@ -70,7 +70,7 @@ async def add_reminder(async_call, db, network, added_user, added_chan, message,
 async def load_cache(async_call, db):
     new_cache = []
 
-    for network, remind_time, added_time, user, message in (await async_call(_load_cache_db, db)):
+    for network, remind_time, added_time, user, message in await async_call(_load_cache_db, db):
         new_cache.append((network, remind_time, added_time, user, message))
 
     reminder_cache.clear()

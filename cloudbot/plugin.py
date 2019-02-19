@@ -628,7 +628,7 @@ class Plugin:
             logger.info("Registering tables for %s", self.title)
 
             for table in self.tables:
-                if not (await bot.loop.run_in_executor(None, table.exists, bot.db_engine)):
+                if not await bot.loop.run_in_executor(None, table.exists, bot.db_engine):
                     await bot.loop.run_in_executor(None, table.create, bot.db_engine)
 
     def unregister_tables(self, bot):
