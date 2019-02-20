@@ -102,16 +102,20 @@ def del_quote(db, nick, msg):
     db.commit()
 
 
+class QuoteLookupError(LookupError):
+    pass
+
+
 def get_quote_num(num, count, name):
     """Returns the quote number to fetch from the DB"""
     if num:  # Make sure num is a number if it isn't false
         num = int(num)
     if count == 0:  # Error on no quotes
-        raise Exception("No quotes found for {}.".format(name))
+        raise QuoteLookupError("No quotes found for {}.".format(name))
     if num and num < 0:  # Count back if possible
         num = count + num + 1 if num + count > -1 else count + 1
     if num and num > count:  # If there are not enough quotes, raise an error
-        raise Exception("I only have {} quote{} for {}.".format(count, ('s', '')[count == 1], name))
+        raise QuoteLookupError("I only have {} quote{} for {}.".format(count, ('s', '')[count == 1], name))
     if num and num == 0:  # If the number is zero, set it to one
         num = 1
     if not num:  # If a number is not given, select a random one
@@ -131,7 +135,7 @@ def get_quote_by_nick(db, nick, num=False):
 
     try:
         num = get_quote_num(num, count, nick)
-    except Exception as error_message:
+    except QuoteLookupError as error_message:
         return error_message
 
     query = select([qtable.c.time, qtable.c.nick, qtable.c.msg]) \
@@ -156,7 +160,7 @@ def get_quote_by_nick_chan(db, chan, nick, num=False):
 
     try:
         num = get_quote_num(num, count, nick)
-    except Exception as error_message:
+    except QuoteLookupError as error_message:
         return error_message
 
     query = select([qtable.c.time, qtable.c.nick, qtable.c.msg]) \
@@ -181,7 +185,7 @@ def get_quote_by_chan(db, chan, num=False):
 
     try:
         num = get_quote_num(num, count, chan)
-    except Exception as error_message:
+    except QuoteLookupError as error_message:
         return error_message
 
     query = select([qtable.c.time, qtable.c.nick, qtable.c.msg]) \
