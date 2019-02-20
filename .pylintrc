@@ -62,13 +62,13 @@ confidence=
 # --disable=W".
 disable=invalid-name,
         missing-docstring,
+        ungrouped-imports,
+        too-few-public-methods,
         too-many-arguments,
         too-many-locals,
-        too-few-public-methods,
         too-many-return-statements,
         too-many-branches,
         too-many-instance-attributes,
-        ungrouped-imports,
         too-many-statements,
         too-many-ancestors,
 
