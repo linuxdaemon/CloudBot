@@ -15,12 +15,12 @@ install_dir = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(install_dir))
 os.chdir(str(install_dir))
 
-# import bot
-from cloudbot.bot import CloudBot
-from cloudbot.util import async_util
-
 
 def main():
+    # import bot
+    from cloudbot.bot import CloudBot
+    from cloudbot.util import async_util
+
     # Logging optimizations, doing it here because we only want to change this if we're the main file
     logging._srcfile = None
     logging.logThreads = 0

@@ -72,7 +72,6 @@ disable=invalid-name,
         no-self-use,
         ungrouped-imports,
         too-many-statements,
-        wrong-import-position,
         too-many-ancestors,
         protected-access
 

@@ -1,14 +1,13 @@
+import json
+import logging
+import logging.config
+import os
 import sys
 
 # check python version
 if sys.version_info < (3, 5, 0):
     print("CloudBot requires Python 3.5 or newer.")
     sys.exit(1)
-
-import json
-import logging.config
-import logging
-import os
 
 __version__ = "1.0.9"
 
