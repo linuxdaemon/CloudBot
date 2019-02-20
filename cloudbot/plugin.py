@@ -169,7 +169,7 @@ class PluginManager:
             # if this plugin was loaded before, reload it
             if hasattr(plugin_module, "_cloudbot_loaded"):
                 importlib.reload(plugin_module)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             logger.exception("Error loading %s:", title)
             return
 
@@ -451,7 +451,7 @@ class PluginManager:
         try:
             out = await task
             ok = True
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             logger.exception("Error in hook %s", hook.description)
             ok = False
             out = sys.exc_info()
@@ -505,7 +505,7 @@ class PluginManager:
         sieve.plugin.tasks.append(task)
         try:
             result = await task
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             logger.exception("Error running sieve %s on %s:", sieve.description, hook.description)
             error = sys.exc_info()
 

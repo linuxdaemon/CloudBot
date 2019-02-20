@@ -3,6 +3,7 @@ import enum
 import logging
 from functools import partial
 
+from irclib.errors import ParseError
 from irclib.parser import Message
 
 logger = logging.getLogger("cloudbot")
@@ -485,7 +486,7 @@ class IrcOutEvent(Event):
         if "parsed_line" in self.hook.required_args:
             try:
                 self.parsed_line = Message.parse(self.line)
-            except Exception:
+            except ParseError:
                 logger.exception(
                     "Unable to parse line requested by hook %s", self.hook
                 )
@@ -497,7 +498,7 @@ class IrcOutEvent(Event):
         if "parsed_line" in self.hook.required_args:
             try:
                 self.parsed_line = Message.parse(self.line)
-            except Exception:
+            except ParseError:
                 logger.exception(
                     "Unable to parse line requested by hook %s", self.hook
                 )

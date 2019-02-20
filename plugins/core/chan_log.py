@@ -188,7 +188,7 @@ def on_hook_end(error, launched_hook, launched_event, admin_log):
         lines = traceback.format_exception(*error)
         last_line = lines[-1]
         messages.append(last_line.strip())
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         msg = traceback.format_exc()[-1]
         messages.append(
             "Error occurred while formatting error {}".format(msg)
@@ -197,7 +197,7 @@ def on_hook_end(error, launched_hook, launched_event, admin_log):
         try:
             url = web.paste('\n'.join(lines))
             messages.append("Traceback: " + url)
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             msg = traceback.format_exc()[-1]
             messages.append(
                 "Error occurred while gathering traceback {}".format(msg)
@@ -214,7 +214,7 @@ def on_hook_end(error, launched_hook, launched_event, admin_log):
 
         url = web.paste('\n'.join(lines))
         messages.append("Event: " + url)
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         msg = traceback.format_exc()[-1]
         messages.append(
             "Error occurred while gathering error data {}".format(msg)

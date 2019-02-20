@@ -95,7 +95,7 @@ class Client:
         while self.active and not self.connected:
             try:
                 await self.connect(timeout)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 logger.exception("[%s] Error occurred while connecting.", self.name)
             else:
                 break

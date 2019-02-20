@@ -395,7 +395,7 @@ class _IrcProtocol(asyncio.Protocol):
 
             try:
                 message = Message.parse(line)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 logger.exception(
                     "[%s] Error occurred while parsing IRC line '%s' from %s",
                     self.conn.name, line, self.conn.describe_server()
