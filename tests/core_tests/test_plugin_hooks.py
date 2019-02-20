@@ -23,7 +23,7 @@ PLUGINS = []
 
 
 class MockConfig(OrderedDict):
-    def get_api_key(self, name, default=None):  # pylint: disable=locally-disabled, no-self-use, unused-argument
+    def get_api_key(self, name, default=None):  # pylint: disable=no-self-use, unused-argument
         return default  # pragma: no cover
 
 

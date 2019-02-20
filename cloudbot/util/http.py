@@ -123,7 +123,7 @@ def open_request(url, query_params=None, user_agent=None, post_data=None, refere
 # noinspection PyShadowingBuiltins
 def open(url, query_params=None, user_agent=None, post_data=None,
          referer=None, get_method=None, cookies=False, timeout=None, headers=None,
-         **kwargs):  # pylint: disable=locally-disabled, redefined-builtin  # pragma: no cover
+         **kwargs):  # pylint: disable=redefined-builtin  # pragma: no cover
     warnings.warn(
         "http.open() is deprecated, use http.open_request() instead.",
         DeprecationWarning
