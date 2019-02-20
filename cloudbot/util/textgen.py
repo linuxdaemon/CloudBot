@@ -55,7 +55,8 @@ class TextGenerator:
         self.parts = parts
         self.variables = variables
 
-    def get_part(self, required_part, part_list):
+    @staticmethod
+    def get_part(required_part, part_list):
         _parts = part_list[required_part]
         _weighted_parts = []
         # this uses way too much code, but I wrote it at like 6am

@@ -190,7 +190,8 @@ class CloudBot:
         self.loop.close()
         return restart
 
-    def get_client(self, name: str) -> Type[Client]:
+    @staticmethod
+    def get_client(name: str) -> Type[Client]:
         return CLIENTS[name]
 
     def create_connections(self):

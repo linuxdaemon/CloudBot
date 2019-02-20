@@ -407,7 +407,8 @@ class PluginManager:
             logger.info("Loaded %s", hook)
             logger.debug("Loaded %r", hook)
 
-    def _execute_hook_threaded(self, hook, event):
+    @staticmethod
+    def _execute_hook_threaded(hook, event):
         """
         :type hook: Hook
         :type event: cloudbot.event.Event
@@ -419,7 +420,8 @@ class PluginManager:
         finally:
             event.close_threaded()
 
-    async def _execute_hook_sync(self, hook, event):
+    @staticmethod
+    async def _execute_hook_sync(hook, event):
         """
         :type hook: Hook
         :type event: cloudbot.event.Event

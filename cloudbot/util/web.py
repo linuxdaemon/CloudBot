@@ -103,7 +103,7 @@ class Shortener:
     def __init__(self):
         pass
 
-    def shorten(self, url, custom=None, key=None):  # pylint: disable=unused-argument
+    def shorten(self, url, custom=None, key=None):  # pylint: disable=unused-argument,no-self-use
         return url
 
     def try_shorten(self, url, custom=None, key=None):
@@ -112,7 +112,7 @@ class Shortener:
         except ServiceError:
             return url
 
-    def expand(self, url):
+    def expand(self, url):  # pylint: disable=no-self-use
         try:
             r = requests.get(url, allow_redirects=False)
             r.raise_for_status()
