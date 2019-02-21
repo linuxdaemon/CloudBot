@@ -286,7 +286,7 @@ def pluralize_auto(count, thing):
     if thing.endswith('is'):
         return pluralize_select(count, thing, thing[:-2] + 'es')
 
-    if thing.endswith(('s', 'ss', 'sh', 'ch', 'x', 'z')):
+    if thing.endswith(('s', 'ss', 'sh', 'ch', 'x', 'z', 'o')):
         return pluralize_suffix(count, thing, 'es')
 
     if thing.endswith(('f', 'fe')):
@@ -297,9 +297,6 @@ def pluralize_auto(count, thing):
 
     if thing.endswith('y') and thing[-2:-1].lower() in "aeiou":
         return pluralize_suffix(count, thing)
-
-    if thing.endswith('o'):
-        return pluralize_suffix(count, thing, 'es')
 
     if thing.endswith('on'):
         return pluralize_select(count, thing, thing[:-2] + 'a')
