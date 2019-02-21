@@ -1,3 +1,4 @@
+from collections import ChainMap
 from datetime import datetime
 
 import sqlalchemy
@@ -6,6 +7,7 @@ from sqlalchemy.sql import select
 
 from cloudbot import hook
 from cloudbot.util import database
+from cloudbot.util.func_utils import call_with_args
 
 table = Table(
     'notes',
@@ -94,8 +96,141 @@ def format_note(data):
     return "\x02Note #{}:\x02 {} - \x02{}\x02".format(note_id, note_text, added_string)
 
 
+def add_cb(args, nick, db, conn, notice):
+    # user is adding a note
+    if not args:
+        return "No text provided!"
+
+    note_text = " ".join(args)
+
+    # add note to database
+    add_note(db, conn.name, nick, note_text)
+
+    notice("Note added!")
+    return None
+
+
+def del_cb(args, db, conn, nick, notice):
+    # user is deleting a note
+    if not args:
+        return "No note ID provided!"
+
+    # but lets get the note first
+    note_id = args[0]
+    n = read_note(db, conn.name, nick, note_id)
+
+    if not n:
+        notice("#{} is not a valid note ID.".format(note_id))
+        return None
+
+    # now we delete it
+    delete_note(db, conn.name, nick, note_id)
+
+    notice("Note #{} deleted!".format(note_id))
+    return None
+
+
+def clear_cb(db, conn, nick, notice):
+    # user is deleting all notes
+    delete_all_notes(db, conn.name, nick)
+
+    notice("All notes deleted!")
+
+
+def get_cb(args, db, conn, nick, notice):
+    # user is getting a single note
+    if not args:
+        return "No note ID provided!"
+
+    note_id = args[0]
+    n = read_note(db, conn.name, nick, note_id)
+
+    if not n:
+        notice("{} is not a valid note ID.".format(nick))
+        return None
+
+    # show the note
+    text = format_note(n)
+    notice(text)
+    return None
+
+
+def show_cb(args, db, conn, nick, notice):
+    # user is sharing a single note
+    if not args:
+        return "No note ID provided!"
+
+    note_id = args[0]
+    n = read_note(db, conn.name, nick, note_id)
+
+    if not n:
+        notice("{} is not a valid note ID.".format(nick))
+        return None
+
+    # show the note
+    text = format_note(n)
+    return text
+
+
+def list_cb(db, conn, nick, notice):
+    # user is getting all notes
+    notes = read_all_notes(db, conn.name, nick)
+
+    if not notes:
+        notice("You have no notes.")
+        return None
+
+    notice("All notes for {}:".format(nick))
+
+    for n in notes:
+        # show the note
+        text = format_note(n)
+        notice(text)
+
+    return None
+
+
+def listall_cb(db, conn, nick, notice):
+    # user is getting all notes including deleted ones
+    notes = read_all_notes(db, conn.name, nick, show_deleted=True)
+
+    if not notes:
+        notice("You have no notes.")
+        return None
+
+    notice("All notes for {}:".format(nick))
+
+    for n in notes:
+        # show the note
+        text = format_note(n)
+        notice(text)
+
+    return None
+
+
+SUBCMDS = {
+    'get': get_cb,
+
+    'add': add_cb,
+    'new': add_cb,
+
+    'del': del_cb,
+    'delete': del_cb,
+    'remove': del_cb,
+
+    'clear': clear_cb,
+
+    'show': show_cb,
+    'share': show_cb,
+
+    'list': list_cb,
+
+    'listall': listall_cb,
+}
+
+
 @hook.command("note", "notes", "todo")
-def note(text, conn, nick, db, notice):
+def note(text, db, notice, event):
     """<add|list|get|del|clear> args - manipulates your list of notes"""
     parts = text.split()
 
@@ -106,111 +241,10 @@ def note(text, conn, nick, db, notice):
         cmd = parts[0].lower()
         args = parts[1:]
 
-    if cmd in ['add', 'new']:
-        # user is adding a note
-        if not args:
-            return "No text provided!"
-
-        note_text = " ".join(args)
-
-        # add note to database
-        add_note(db, conn.name, nick, note_text)
-
-        notice("Note added!")
+    if cmd not in SUBCMDS:
+        notice("Unknown command: {}".format(cmd))
+        event.notice_doc()
         return None
 
-    if cmd in ['del', 'delete', 'remove']:
-        # user is deleting a note
-        if not args:
-            return "No note ID provided!"
-
-        # but lets get the note first
-        note_id = args[0]
-        n = read_note(db, conn.name, nick, note_id)
-
-        if not n:
-            notice("#{} is not a valid note ID.".format(note_id))
-            return None
-
-        # now we delete it
-        delete_note(db, conn.name, nick, note_id)
-
-        notice("Note #{} deleted!".format(note_id))
-        return None
-
-    if cmd == 'clear':
-        # user is deleting all notes
-        delete_all_notes(db, conn.name, nick)
-
-        notice("All notes deleted!")
-        return None
-
-    if cmd == 'get':
-        # user is getting a single note
-        if not args:
-            return "No note ID provided!"
-
-        note_id = args[0]
-        n = read_note(db, conn.name, nick, note_id)
-
-        if not n:
-            notice("{} is not a valid note ID.".format(nick))
-            return None
-
-        # show the note
-        text = format_note(n)
-        notice(text)
-        return None
-
-    if cmd in ['share', 'show']:
-        # user is sharing a single note
-        if not args:
-            return "No note ID provided!"
-
-        note_id = args[0]
-        n = read_note(db, conn.name, nick, note_id)
-
-        if not n:
-            notice("{} is not a valid note ID.".format(nick))
-            return None
-
-        # show the note
-        text = format_note(n)
-        return text
-
-    if cmd == 'list':
-        # user is getting all notes
-        notes = read_all_notes(db, conn.name, nick)
-
-        if not notes:
-            notice("You have no notes.")
-            return None
-
-        notice("All notes for {}:".format(nick))
-
-        for n in notes:
-            # show the note
-            text = format_note(n)
-            notice(text)
-
-        return None
-
-    if cmd == 'listall':
-        # user is getting all notes including deleted ones
-        notes = read_all_notes(db, conn.name, nick, show_deleted=True)
-
-        if not notes:
-            notice("You have no notes.")
-            return None
-
-        notice("All notes for {}:".format(nick))
-
-        for n in notes:
-            # show the note
-            text = format_note(n)
-            notice(text)
-
-        return None
-
-    notice("Unknown command: {}".format(cmd))
-    return None
+    handler = SUBCMDS[cmd]
+    return call_with_args(handler, ChainMap({'args': args, 'db': db}, event))
