@@ -742,8 +742,35 @@ def duckforgive(text):
     return "I couldn't find anyone banned from the hunt by that nick"
 
 
+def opt_out_add(db, conn, channel):
+    if is_opt_out(conn.name, channel):
+        return "Duck hunt has already been disabled in {}.".format(channel)
+
+    query = optout.insert().values(
+        network=conn.name,
+        chan=channel.lower()
+    )
+    db.execute(query)
+    db.commit()
+    load_optout(db)
+    return "The duckhunt has been successfully disabled in {}.".format(channel)
+
+
+def opt_out_remove(db, conn, channel):
+    if not is_opt_out(conn.name, channel):
+        return "Duck hunt is already enabled in {}.".format(channel)
+
+    delete = optout.delete(
+        and_(optout.c.chan == channel.lower(), optout.c.network == conn.name)
+    )
+    db.execute(delete)
+    db.commit()
+    load_optout(db)
+    return None
+
+
 @hook.command("hunt_opt_out", permissions=["op", "ignore"], autohelp=False)
-def hunt_opt_out(text, chan, db, conn):
+def hunt_opt_out(text, chan, db, conn, event):
     """[{add <chan>|remove <chan>|list}] - Running this command without any arguments displays the status of the
     current channel. hunt_opt_out add #channel will disable all duck hunt commands in the specified channel.
     hunt_opt_out remove #channel will re-enable the game for the specified channel.
@@ -771,27 +798,12 @@ def hunt_opt_out(text, chan, db, conn):
         return "Please specify a valid channel."
 
     if command.lower() == "add":
-        if is_opt_out(conn.name, channel):
-            return "Duck hunt has already been disabled in {}.".format(channel)
-
-        query = optout.insert().values(
-            network=conn.name,
-            chan=channel.lower()
-        )
-        db.execute(query)
-        db.commit()
-        load_optout(db)
-        return "The duckhunt has been successfully disabled in {}.".format(channel)
+        return opt_out_add(db, conn, channel)
 
     if command.lower() == "remove":
-        if not is_opt_out(conn.name, channel):
-            return "Duck hunt is already enabled in {}.".format(channel)
+        return opt_out_remove(db, conn, channel)
 
-        delete = optout.delete(optout.c.chan == channel.lower())
-        db.execute(delete)
-        db.commit()
-        load_optout(db)
-
+    event.notice_doc()
     return None
 
 
