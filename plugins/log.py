@@ -80,6 +80,19 @@ def format_event(event):
     return None
 
 
+def get_ctcp_format(ctcp_command, ctcp_message):
+    if ctcp_command in ("VERSION", "PING", "TIME", "FINGER"):
+        if ctcp_message:
+            return ctcp_known_with_message
+
+        return ctcp_known
+
+    if ctcp_message:
+        return ctcp_unknown_with_message
+
+    return ctcp_unknown
+
+
 def format_irc_event(event, args):
     """
     Format an IRC event
@@ -105,16 +118,8 @@ def format_irc_event(event, args):
         args["ctcp_command"] = ctcp_command
         args["ctcp_message"] = ctcp_message
 
-        if ctcp_command in ("VERSION", "PING", "TIME", "FINGER"):
-            if ctcp_message:
-                return ctcp_known_with_message.format(**args)
-
-            return ctcp_known.format(**args)
-
-        if ctcp_message:
-            return ctcp_unknown_with_message.format(**args)
-
-        return ctcp_unknown.format(**args)
+        ctcp_format = get_ctcp_format(ctcp_command, ctcp_message)
+        return ctcp_format.format_map(args)
 
     # No formats have been found, resort to the default
 
