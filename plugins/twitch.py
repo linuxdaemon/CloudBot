@@ -69,7 +69,7 @@ def multitwitch_url(match, reply):
     for i in usernames:
         if not check_name(i):
             return None
-        if out == "":
+        if not out:
             out = twitch_lookup(i, reply)
         else:
             out = out + " \x02|\x02 " + twitch_lookup(i, reply)

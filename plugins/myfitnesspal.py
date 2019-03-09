@@ -92,7 +92,7 @@ def get_values(soup, row_class):
         else:
             value = elem.text
 
-        if value.strip() != '':
+        if value.strip():
             values.append(locale.atoi(value))
 
     return values

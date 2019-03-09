@@ -47,7 +47,7 @@ def imdb_url(match, bot):
     headers = {'User-Agent': bot.user_agent}
 
     imdb_id = match.group(4).split('/')[-1]
-    if imdb_id == "":
+    if not imdb_id:
         imdb_id = match.group(4).split('/')[-2]
 
     params = {'id': imdb_id}

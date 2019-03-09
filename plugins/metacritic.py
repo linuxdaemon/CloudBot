@@ -58,7 +58,7 @@ def metacritic(text, reply):
         return 'No results found.'
 
     # if they specified an invalid search term, the input box will be empty
-    if doc.get_element_by_id('search_term').value == '':
+    if not doc.get_element_by_id('search_term').value:
         return 'Invalid search term.'
 
     if plat not in game_platforms:

@@ -94,7 +94,7 @@ def dice(text, notice):
                 else:
                     rolls.append("0")
                 total += fudge
-        elif side == "":
+        elif not side:
             total += count
         else:
             side = int(side)

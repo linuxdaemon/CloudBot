@@ -31,7 +31,7 @@ def domainr(text):
         data = http.get_json('http://domai.nr/api/json/search?q=' + text)
     except (URLError, HTTPError):
         return "Unable to get data for some reason. Try again later."
-    if data['query'] == "":
+    if not data['query']:
         return "An error occurred: {status} - {message}".format(**data['error'])
 
     domains = [format_domain(domain) for domain in data["results"]]
