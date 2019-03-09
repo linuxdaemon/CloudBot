@@ -181,7 +181,7 @@ def multi_replace(text, word_dic):
     then returns the changed text
     :rtype str
     """
-    rc = re.compile('|'.join(map(re.escape, word_dic)))
+    rc = re.compile('|'.join(re.escape(word) for word in word_dic))
 
     def translate(match):
         return word_dic[match.group(0)]
@@ -388,7 +388,10 @@ def gen_markdown_table(headers, rows):
     rows.insert(0, headers)
     rotated = zip(*reversed(rows))
 
-    sizes = tuple(map(lambda l: max(max(map(len, l)), 3), rotated))
+    sizes = tuple(
+        max(max(len(item) for item in column), 3)
+        for column in rotated
+    )
     rows.insert(1, tuple(('-' * size) for size in sizes))
     lines = [
         "| {} |".format(' | '.join(cell.ljust(sizes[i]) for i, cell in enumerate(row)))

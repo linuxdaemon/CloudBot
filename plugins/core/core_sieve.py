@@ -9,6 +9,10 @@ buckets = {}
 logger = logging.getLogger("cloudbot")
 
 
+def ci_list_check(value, data):
+    return value.lower() in (item.lower() for item in data)
+
+
 @hook.periodic(600)
 def task_clear():
     for uid, _bucket in buckets.copy().items():
@@ -24,12 +28,10 @@ async def sieve_suite_cb(bot, event, _hook):
     acl = conn.config.get('acls', {}).get(_hook.function_name)
     if acl:
         if 'deny-except' in acl:
-            allowed_channels = list(map(str.lower, acl['deny-except']))
-            if event.chan.lower() not in allowed_channels:
+            if not ci_list_check(event.chan, acl['deny-except']):
                 return None
         if 'allow-except' in acl:
-            denied_channels = list(map(str.lower, acl['allow-except']))
-            if event.chan.lower() in denied_channels:
+            if ci_list_check(event.chan, acl['allow-except']):
                 return None
 
     # check disabled_commands

@@ -463,5 +463,5 @@ def list_tell_ignores(conn, nick):
         return "You are not ignoring tells from any users"
 
     return "You are ignoring tell from: {}".format(
-        ', '.join(map(repr, ignores))
+        ', '.join(repr(ignore) for ignore in ignores)
     )

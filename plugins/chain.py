@@ -1,5 +1,4 @@
 import itertools
-from operator import attrgetter
 
 from sqlalchemy import Table, Column, String, Boolean, PrimaryKeyConstraint
 
@@ -221,7 +220,9 @@ async def chain(text, bot, event):
 def chainlist(notice, bot):
     """- Returns the list of commands allowed in 'chain'"""
     hooks = [get_hook_from_command(bot, name) for name, allowed in allow_cache.items() if allowed]
-    cmds = itertools.chain.from_iterable(map(attrgetter("aliases"), hooks))
+    cmds = itertools.chain.from_iterable(
+        _hook.aliases for _hook in hooks
+    )
     cmds = sorted(cmds)
     for part in chunk_str(", ".join(cmds)):
         notice(part)

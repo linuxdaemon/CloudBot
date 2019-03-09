@@ -101,7 +101,7 @@ def dice(text, notice):
             try:
                 if count > 0:
                     d = n_rolls(count, side)
-                    rolls += list(map(str, d))
+                    rolls += [str(x) for x in d]
                     total += sum(d)
                 else:
                     d = n_rolls(-count, side)

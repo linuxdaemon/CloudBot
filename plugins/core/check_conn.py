@@ -77,7 +77,8 @@ def format_conn(conn):
 def list_conns(bot):
     """- Lists all current connections and their status"""
     conns = ', '.join(
-        map(format_conn, bot.connections.values())
+        format_conn(conn)
+        for conn in bot.connections.values()
     )
     return "Current connections: {}".format(conns)
 
