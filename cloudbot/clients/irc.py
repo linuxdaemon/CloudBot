@@ -119,7 +119,7 @@ class IrcClient(Client):
                 await self.connect(self._timeout)
             except (TimeoutError, asyncio.TimeoutError):
                 logger.error("[%s] Timeout occurred while connecting to %s", self.name, self.describe_server())
-            except (socket.error, socket.gaierror, OSError, ssl.SSLError):
+            except (socket.error, socket.gaierror, ssl.SSLError):
                 logger.error(
                     "[%s] Error occurred while connecting to %s (%s)",
                     self.name, self.describe_server(),

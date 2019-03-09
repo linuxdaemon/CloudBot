@@ -1,4 +1,4 @@
-from urllib.error import URLError, HTTPError
+from urllib.error import URLError
 
 from cloudbot import hook
 from cloudbot.util import http
@@ -29,7 +29,7 @@ def domainr(text):
     """
     try:
         data = http.get_json('http://domai.nr/api/json/search?q=' + text)
-    except (URLError, HTTPError):
+    except URLError:
         return "Unable to get data for some reason. Try again later."
     if not data['query']:
         return "An error occurred: {status} - {message}".format(**data['error'])
