@@ -154,10 +154,9 @@ class PluginManager:
                 if title not in pl.get("whitelist", []):
                     logger.info('Not loading plugin module "%s": plugin not whitelisted', title)
                     return
-            else:
-                if title in pl.get("blacklist", []):
-                    logger.info('Not loading plugin module "%s": plugin blacklisted', title)
-                    return
+            elif title in pl.get("blacklist", []):
+                logger.info('Not loading plugin module "%s": plugin blacklisted', title)
+                return
 
         # make sure to unload the previously loaded plugin from this path, if it was loaded.
         if str(file_path) in self.plugins:

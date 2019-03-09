@@ -111,7 +111,8 @@ class CMCApi:
             diff = self._now - last_updated
             if diff > timedelta(days=2):
                 raise TickerNotFound(id_or_symbol)
-            elif price_key not in data:
+
+            if price_key not in data:
                 raise CurrencyConversionError(data["symbol"], out_currency)
 
             return self._cache[id_or_symbol.lower()]
