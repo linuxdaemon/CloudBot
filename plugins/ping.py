@@ -38,12 +38,10 @@ def ping(text, reply):
     else:
         count = 5
 
-    count = str(count)
-
     if os.name == "nt":
-        args = ["ping", "-n", count, host]
+        args = ["ping", "-n", str(count), host]
     else:
-        args = ["ping", "-c", count, host]
+        args = ["ping", "-c", str(count), host]
 
     reply("Attempting to ping {} {} times...".format(host, count))
     try:

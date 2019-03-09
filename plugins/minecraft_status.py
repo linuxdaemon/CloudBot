@@ -18,7 +18,7 @@ def mcstatus(reply):
 
     # lets just reformat this data to get in a nice format
     data = json.loads(request.text.replace("}", "").replace("{", "").replace("]", "}").replace("[", "{"))
-    out = []
+    parts = []
 
     # use a loop so we don't have to update it if they add more servers
     green = []
@@ -34,15 +34,15 @@ def mcstatus(reply):
 
     if green:
         green.sort()
-        out.append("\x02Online\x02: " + ", ".join(green))
+        parts.append("\x02Online\x02: " + ", ".join(green))
     if yellow:
         yellow.sort()
-        out.append("\x02Issues\x02: " + ", ".join(yellow))
+        parts.append("\x02Issues\x02: " + ", ".join(yellow))
     if red:
         red.sort()
-        out.append("\x02Offline\x02: " + ", ".join(red))
+        parts.append("\x02Offline\x02: " + ", ".join(red))
 
-    out = " ".join(out)
+    out = " ".join(parts)
 
     return "\x0f" + out.replace(".mojang.com", ".mj") \
         .replace(".minecraft.net", ".mc")

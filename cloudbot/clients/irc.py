@@ -73,8 +73,6 @@ class IrcClient(Client):
         self.port = config['connection'].get('port', 6667)
 
         local_bind = (config['connection'].get('bind_addr', False), config['connection'].get('bind_port', 0))
-        if local_bind[0] is False:
-            local_bind = False
 
         self.local_bind = local_bind
         # create SSL context
@@ -163,7 +161,7 @@ class IrcClient(Client):
         self._active = True
 
         optional_params = {}
-        if self.local_bind:
+        if self.local_bind[0]:
             optional_params["local_addr"] = self.local_bind
 
         coro = self.loop.create_connection(
