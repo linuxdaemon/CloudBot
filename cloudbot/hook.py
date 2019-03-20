@@ -1,7 +1,7 @@
 import collections
 import inspect
 import re
-from enum import Enum, unique, IntEnum
+from enum import Enum, IntEnum, unique
 
 from cloudbot.event import EventType
 
@@ -218,6 +218,36 @@ class _PermissionHook(_Hook):
         self.perms.update(perms)
 
 
+class _PostHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "post_hook")
+
+
+class _IrcOutHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "irc_out")
+
+
+class _OnStartHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "on_start")
+
+
+class _OnStopHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "on_stop")
+
+
+class _SieveHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "sieve")
+
+
+class _ConnectHook(_Hook):
+    def __init__(self, function):
+        super().__init__(function, "on_connect")
+
+
 def _add_hook(func, hook):
     if not hasattr(func, "_cloudbot_hook"):
         func._cloudbot_hook = {}
@@ -329,7 +359,7 @@ def sieve(param=None, **kwargs):
 
         hook = _get_hook(func, "sieve")
         if hook is None:
-            hook = _Hook(func, "sieve")  # there's no need to have a specific SieveHook object
+            hook = _SieveHook(func)  # there's no need to have a specific SieveHook object
             _add_hook(func, hook)
 
         hook._add_hook(kwargs)
@@ -370,7 +400,7 @@ def on_start(param=None, **kwargs):
     def _on_start_hook(func):
         hook = _get_hook(func, "on_start")
         if hook is None:
-            hook = _Hook(func, "on_start")
+            hook = _OnStartHook(func)
             _add_hook(func, hook)
 
         hook._add_hook(kwargs)
@@ -394,7 +424,7 @@ def on_stop(param=None, **kwargs):
     def _on_stop_hook(func):
         hook = _get_hook(func, "on_stop")
         if hook is None:
-            hook = _Hook(func, "on_stop")
+            hook = _OnStopHook(func)
             _add_hook(func, hook)
         hook._add_hook(kwargs)
         return func
@@ -446,7 +476,7 @@ def on_connect(param=None, **kwargs):
     def _on_connect_hook(func):
         hook = _get_hook(func, "on_connect")
         if hook is None:
-            hook = _Hook(func, "on_connect")
+            hook = _ConnectHook(func)
             _add_hook(func, hook)
         hook._add_hook(kwargs)
         return func
@@ -464,7 +494,7 @@ def irc_out(param=None, **kwargs):
     def _decorate(func):
         hook = _get_hook(func, "irc_out")
         if hook is None:
-            hook = _Hook(func, "irc_out")
+            hook = _IrcOutHook(func)
             _add_hook(func, hook)
 
         hook._add_hook(kwargs)
@@ -484,7 +514,7 @@ def post_hook(param=None, **kwargs):
     def _decorate(func):
         hook = _get_hook(func, "post_hook")
         if hook is None:
-            hook = _Hook(func, "post_hook")
+            hook = _PostHook(func)
             _add_hook(func, hook)
 
         hook._add_hook(kwargs)
