@@ -11,61 +11,24 @@ from weakref import WeakValueDictionary
 
 import sqlalchemy
 
-from cloudbot.event import Event, PostHookEvent
-from cloudbot.hooks.cap import OnCapAvaliableHook, OnCapAckHook
-from cloudbot.hooks.command import CommandHook
-from cloudbot.hooks.event import EventHook
-from cloudbot.hooks.irc_out import IrcOutHook
-from cloudbot.hooks.on_connect import OnConnectHook
-from cloudbot.hooks.on_start import OnStartHook
-from cloudbot.hooks.on_stop import OnStopHook
-from cloudbot.hooks.periodic import PeriodicHook
-from cloudbot.hooks.permission import PermHook
-from cloudbot.hooks.post_hook import PostHookHook
-from cloudbot.hooks.raw import RawHook
-from cloudbot.hooks.regex import RegexHook
-from cloudbot.hooks.sieve import SieveHook
-from cloudbot.util import database, async_util
-from cloudbot.util.func_utils import call_with_args
+from .event import Event, PostHookEvent
+from .hooks.cap import OnCapAckHook, OnCapAvaliableHook
+from .hooks.command import CommandHook
+from .hooks.event import EventHook
+from .hooks.irc_out import IrcOutHook
+from .hooks.on_connect import OnConnectHook
+from .hooks.on_start import OnStartHook
+from .hooks.on_stop import OnStopHook
+from .hooks.periodic import PeriodicHook
+from .hooks.permission import PermHook
+from .hooks.post_hook import PostHookHook
+from .hooks.raw import RawHook
+from .hooks.regex import RegexHook
+from .hooks.sieve import SieveHook
+from .util import async_util, database
+from .util.func_utils import call_with_args
 
 logger = logging.getLogger("cloudbot")
-
-
-def find_hooks(parent, module):
-    """
-    :type parent: Plugin
-    :type module: object
-    :rtype: dict
-    """
-    # set the loaded flag
-    module._cloudbot_loaded = True
-    hooks = defaultdict(list)
-    for func in module.__dict__.values():
-        if hasattr(func, "_cloudbot_hook"):
-            # if it has cloudbot hook
-            func_hooks = func._cloudbot_hook
-
-            for hook_type, func_hook in func_hooks.items():
-                hooks[hook_type].append(_hook_name_to_plugin[hook_type](parent, func_hook))
-
-            # delete the hook to free memory
-            del func._cloudbot_hook
-
-    return hooks
-
-
-def find_tables(code):
-    """
-    :type code: object
-    :rtype: list[sqlalchemy.Table]
-    """
-    tables = []
-    for obj in code.__dict__.values():
-        if isinstance(obj, sqlalchemy.Table) and obj.metadata == database.metadata:
-            # if it's a Table, and it's using our metadata, append it to the list
-            tables.append(obj)
-
-    return tables
 
 
 class PluginManager:
@@ -620,12 +583,45 @@ class Plugin:
         self.file_path = filepath
         self.file_name = filename
         self.title = title
-        self.hooks = find_hooks(self, code)
-        # we need to find tables for each plugin so that they can be unloaded from the global metadata when the
-        # plugin is reloaded
-        self.tables = find_tables(code)
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
+
+        self.hooks = self.load_hooks()
+        # we need to find tables for each plugin so that they can be unloaded from the global metadata when the
+        # plugin is reloaded
+        self.tables = self.find_tables()
+
+    def load_hooks(self):
+        """
+        :rtype: dict
+        """
+        # set the loaded flag
+        self.code._cloudbot_loaded = True
+        hooks = defaultdict(list)
+        for func in self.code.__dict__.values():
+            if hasattr(func, "_cloudbot_hook"):
+                # if it has cloudbot hook
+                func_hooks = func._cloudbot_hook
+
+                for hook_type, func_hook in func_hooks.items():
+                    hooks[hook_type].append(_hook_name_to_plugin[hook_type](self, func_hook))
+
+                # delete the hook to free memory
+                del func._cloudbot_hook
+
+        return hooks
+
+    def find_tables(self):
+        """
+        :rtype: list[sqlalchemy.Table]
+        """
+        tables = []
+        for obj in self.code.__dict__.values():
+            if isinstance(obj, sqlalchemy.Table) and obj.metadata == database.metadata:
+                # if it's a Table, and it's using our metadata, append it to the list
+                tables.append(obj)
+
+        return tables
 
     async def create_tables(self, bot):
         """
