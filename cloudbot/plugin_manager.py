@@ -10,7 +10,7 @@ from pathlib import Path
 from weakref import WeakValueDictionary
 
 from .event import Event, PostHookEvent
-from .plugin import Plugin
+from .plugin import LOADED_ATTR, Plugin
 from .util import async_util
 from .util.func_utils import call_with_args
 
@@ -149,7 +149,7 @@ class PluginManager:
         try:
             plugin_module = importlib.import_module(module_name)
             # if this plugin was loaded before, reload it
-            if hasattr(plugin_module, "_cloudbot_loaded"):
+            if hasattr(plugin_module, LOADED_ATTR):
                 importlib.reload(plugin_module)
         except Exception:
             logger.exception("Error loading %s:", title)

@@ -5,8 +5,8 @@ import pytest
 
 def test_hook_decorate():
     from cloudbot import hook
-
     from cloudbot.event import EventType
+    from cloudbot.plugin import HOOK_ATTR
 
     @hook.event(EventType.message)
     @hook.event([EventType.notice, EventType.action])
@@ -19,15 +19,15 @@ def test_hook_decorate():
     def f():
         pass  # pragma: no cover
 
-    assert f._cloudbot_hook['event'].types == {
+    assert getattr(f, HOOK_ATTR)['event'].types == {
         EventType.message, EventType.notice, EventType.action
     }
-    assert f._cloudbot_hook['command'].aliases == {'test'}
-    assert f._cloudbot_hook['irc_raw'].triggers == {'*', 'PRIVMSG'}
-    assert 'irc_out' in f._cloudbot_hook
-    assert 'on_stop' in f._cloudbot_hook
-    assert 'regex' in f._cloudbot_hook
-    assert len(f._cloudbot_hook['regex'].regexes) == 2
+    assert getattr(f, HOOK_ATTR)['command'].aliases == {'test'}
+    assert getattr(f, HOOK_ATTR)['irc_raw'].triggers == {'*', 'PRIVMSG'}
+    assert 'irc_out' in getattr(f, HOOK_ATTR)
+    assert 'on_stop' in getattr(f, HOOK_ATTR)
+    assert 'regex' in getattr(f, HOOK_ATTR)
+    assert len(getattr(f, HOOK_ATTR)['regex'].regexes) == 2
 
     with pytest.raises(ValueError, match="Invalid command name test 123"):
         hook.command('test 123')(f)
@@ -48,11 +48,12 @@ def test_hook_decorate():
     def sieve_func(bot, event, _hook):
         pass  # pragma: no cover
 
-    assert 'sieve' in sieve_func._cloudbot_hook
+    assert 'sieve' in getattr(sieve_func, HOOK_ATTR)
 
 
 def test_command_hook_doc():
     from cloudbot import hook
+    from cloudbot.plugin import HOOK_ATTR
 
     @hook.command
     def test(bot):
@@ -62,7 +63,7 @@ def test_command_hook_doc():
 
         :type bot: object"""
 
-    cmd_hook = test._cloudbot_hook['command']
+    cmd_hook = getattr(test, HOOK_ATTR)['command']
     assert cmd_hook.doc == "<arg> - foo bar baz"
 
     @hook.command
@@ -71,14 +72,14 @@ def test_command_hook_doc():
 
         :type bot: object"""
 
-    cmd_hook = test1._cloudbot_hook['command']
+    cmd_hook = getattr(test1, HOOK_ATTR)['command']
     assert cmd_hook.doc == "<arg> - foo bar baz"
 
     @hook.command
     def test2(bot):
         """<arg> - foo bar baz"""
 
-    cmd_hook = test2._cloudbot_hook['command']
+    cmd_hook = getattr(test2, HOOK_ATTR)['command']
     assert cmd_hook.doc == "<arg> - foo bar baz"
 
     @hook.command
@@ -87,7 +88,7 @@ def test_command_hook_doc():
         <arg> - foo bar baz
         """
 
-    cmd_hook = test3._cloudbot_hook['command']
+    cmd_hook = getattr(test3, HOOK_ATTR)['command']
     assert cmd_hook.doc == "<arg> - foo bar baz"
 
     @hook.command
@@ -95,5 +96,5 @@ def test_command_hook_doc():
         """<arg> - foo bar baz
         """
 
-    cmd_hook = test4._cloudbot_hook['command']
+    cmd_hook = getattr(test4, HOOK_ATTR)['command']
     assert cmd_hook.doc == "<arg> - foo bar baz"

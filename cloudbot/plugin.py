@@ -5,6 +5,9 @@ import sqlalchemy
 
 from .util import database
 
+LOADED_ATTR = '_cloudbot_loaded'
+HOOK_ATTR = '_cloudbot_hook'
+
 logger = logging.getLogger("cloudbot")
 
 
@@ -42,18 +45,18 @@ class Plugin:
         :rtype: dict
         """
         # set the loaded flag
-        self.code._cloudbot_loaded = True
+        setattr(self.code, LOADED_ATTR, True)
         hooks = defaultdict(list)
         for func in self.code.__dict__.values():
-            if hasattr(func, "_cloudbot_hook"):
+            if hasattr(func, HOOK_ATTR):
                 # if it has cloudbot hook
-                func_hooks = func._cloudbot_hook
+                func_hooks = getattr(func, HOOK_ATTR)
 
                 for hook_type, func_hook in func_hooks.items():
                     hooks[hook_type].append(func_hook.make_full_hook(self))
 
                 # delete the hook to free memory
-                del func._cloudbot_hook
+                delattr(func, HOOK_ATTR)
 
         return hooks
 

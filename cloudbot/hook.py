@@ -2,6 +2,7 @@ import collections
 import inspect
 import re
 
+from .plugin import HOOK_ATTR
 from .event import EventType
 from .hooks.cap import OnCapAckHook, OnCapAvaliableHook
 from .hooks.command import CommandHook
@@ -397,18 +398,20 @@ class _ConnectHook(_Hook):
 
 
 def _add_hook(func, hook):
-    if not hasattr(func, "_cloudbot_hook"):
-        func._cloudbot_hook = {}
-    else:
-        assert hook.type not in func._cloudbot_hook  # in this case the hook should be using the add_hook method
-    func._cloudbot_hook[hook.type] = hook
+    try:
+        hooks = getattr(func, HOOK_ATTR)
+    except AttributeError:
+        hooks = {}
+        setattr(func, HOOK_ATTR, hooks)
+
+    hooks[hook.type] = hook
 
 
 def _get_hook(func, hook_type):
-    if hasattr(func, "_cloudbot_hook") and hook_type in func._cloudbot_hook:
-        return func._cloudbot_hook[hook_type]
-
-    return None
+    try:
+        return getattr(func, HOOK_ATTR)[hook_type]
+    except (AttributeError, LookupError):
+        return None
 
 
 def command(*args, **kwargs):
