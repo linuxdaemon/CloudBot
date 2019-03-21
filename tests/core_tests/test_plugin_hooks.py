@@ -62,7 +62,11 @@ def load_plugin(plugin_path):
 
     plugin_module = importlib.import_module(module_name)
 
-    return Plugin(str(file_path), file_name, title, plugin_module)
+    plugin = Plugin(str(file_path), file_name, title, plugin_module)
+
+    plugin.load()
+
+    return plugin
 
 
 def get_plugins():

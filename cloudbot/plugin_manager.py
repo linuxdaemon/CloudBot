@@ -158,6 +158,8 @@ class PluginManager:
         # create the plugin
         plugin = Plugin(str(file_path), file_name, title, plugin_module)
 
+        plugin.load()
+
         # proceed to register hooks
 
         # create database tables

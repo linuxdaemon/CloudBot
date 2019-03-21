@@ -35,42 +35,28 @@ class Plugin:
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
 
-        self.hooks = self.load_hooks()
-        # we need to find tables for each plugin so that they can be unloaded from the global metadata when the
-        # plugin is reloaded
-        self.tables = self.find_tables()
+        self.hooks = defaultdict(list)
+        self.tables = []
 
-    def load_hooks(self):
-        """
-        :rtype: dict
-        """
-        # set the loaded flag
+    def load(self):
         setattr(self.code, LOADED_ATTR, True)
-        hooks = defaultdict(list)
-        for func in self.code.__dict__.values():
-            if hasattr(func, HOOK_ATTR):
-                # if it has cloudbot hook
-                func_hooks = getattr(func, HOOK_ATTR)
-
-                for hook_type, func_hook in func_hooks.items():
-                    hooks[hook_type].append(func_hook.make_full_hook(self))
-
-                # delete the hook to free memory
-                delattr(func, HOOK_ATTR)
-
-        return hooks
-
-    def find_tables(self):
-        """
-        :rtype: list[sqlalchemy.Table]
-        """
-        tables = []
         for obj in self.code.__dict__.values():
-            if isinstance(obj, sqlalchemy.Table) and obj.metadata == database.metadata:
-                # if it's a Table, and it's using our metadata, append it to the list
-                tables.append(obj)
+            if callable(obj) and hasattr(obj, HOOK_ATTR):
+                self.load_hook(obj)
+            elif isinstance(obj, sqlalchemy.Table) and obj.metadata is database.metadata:
+                self.load_table(obj)
 
-        return tables
+    def load_hook(self, func):
+        func_hooks = getattr(func, HOOK_ATTR)
+
+        for hook_type, func_hook in func_hooks.items():
+            self.hooks[hook_type].append(func_hook.make_full_hook(self))
+
+        # delete the hook to free memory
+        delattr(func, HOOK_ATTR)
+
+    def load_table(self, tbl):
+        self.tables.append(tbl)
 
     async def create_tables(self, bot):
         """
