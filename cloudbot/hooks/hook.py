@@ -2,7 +2,7 @@ import asyncio
 import inspect
 import logging
 
-from cloudbot.hook import Action, Priority
+from . import Priority, Action
 
 logger = logging.getLogger("cloudbot")
 

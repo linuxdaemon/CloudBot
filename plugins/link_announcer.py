@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from cloudbot import hook
-from cloudbot.hook import Priority, Action
+from cloudbot.hooks import Priority, Action
 
 ENCODED_CHAR = r"%[A-F0-9]{2}"
 PATH_SEG_CHARS = r"[A-Za-z0-9!$&'*-.:;=@_~\u00A0-\U0010FFFD]|" + ENCODED_CHAR

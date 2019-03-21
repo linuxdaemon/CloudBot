@@ -13,7 +13,7 @@ import pytest
 
 import cloudbot.bot
 from cloudbot.event import CapEvent, CommandEvent, Event, IrcOutEvent, PostHookEvent, RegexEvent
-from cloudbot.hook import Action
+from cloudbot.hooks import Action
 from cloudbot.hooks.hook import Hook
 from cloudbot.plugin import Plugin
 

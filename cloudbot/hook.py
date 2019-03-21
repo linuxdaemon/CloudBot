@@ -1,12 +1,24 @@
 import collections
 import inspect
 import re
-from enum import Enum, IntEnum, unique
 
-from cloudbot.event import EventType
+from .event import EventType
+from .hooks.cap import OnCapAckHook, OnCapAvaliableHook
+from .hooks.command import CommandHook
+from .hooks.event import EventHook
+from .hooks.irc_out import IrcOutHook
+from .hooks.on_connect import OnConnectHook
+from .hooks.on_start import OnStartHook
+from .hooks.on_stop import OnStopHook
+from .hooks.periodic import PeriodicHook
+from .hooks.permission import PermHook
+from .hooks.post_hook import PostHookHook
+from .hooks.raw import RawHook
+from .hooks.regex import RegexHook
+from .hooks.sieve import SieveHook
 
 __all__ = (
-    'Priority', 'Action', 'command', 'event',
+    'command', 'event',
     'permission', 'irc_raw', 'irc_out', 'sieve',
     'periodic', 'post_hook', 'regex', 'on_start',
     'on_stop', 'onload', 'on_unload', 'on_cap_ack',
@@ -14,24 +26,6 @@ __all__ = (
 )
 
 valid_command_re = re.compile(r"^\w+$")
-
-
-@unique
-class Priority(IntEnum):
-    # Reversed to maintain compatibility with sieve hooks numeric priority
-    LOWEST = 127
-    LOW = 63
-    NORMAL = 0
-    HIGH = -64
-    HIGHEST = -128
-
-
-@unique
-class Action(Enum):
-    """Defines the action to take after executing a hook"""
-    HALTTYPE = 0  # Once this hook executes, no other hook of that type should run
-    HALTALL = 1  # Once this hook executes, No other hook should run
-    CONTINUE = 2  # Normal execution of all hooks
 
 
 class _Hook:
@@ -71,6 +65,13 @@ class _Hook:
             _add_hook(func, hook)
 
         return hook
+
+    @staticmethod
+    def get_full_hook():
+        raise NotImplementedError
+
+    def make_full_hook(self, plugin):
+        return self.get_full_hook()(plugin, self)
 
 
 class _CommandHook(_Hook):
@@ -115,6 +116,10 @@ class _CommandHook(_Hook):
     def get_type():
         return "command"
 
+    @staticmethod
+    def get_full_hook():
+        return CommandHook
+
 
 class _RegexHook(_Hook):
     """
@@ -157,6 +162,10 @@ class _RegexHook(_Hook):
     def get_type():
         return "regex"
 
+    @staticmethod
+    def get_full_hook():
+        return RegexHook
+
 
 class _RawHook(_Hook):
     """
@@ -187,6 +196,10 @@ class _RawHook(_Hook):
             # it's a list
             self.triggers.update(trigger_param)
 
+    @staticmethod
+    def get_full_hook():
+        return RawHook
+
 
 class _PeriodicHook(_Hook):
     def __init__(self, function):
@@ -209,6 +222,10 @@ class _PeriodicHook(_Hook):
 
         if interval:
             self.interval = interval
+
+    @staticmethod
+    def get_full_hook():
+        return PeriodicHook
 
 
 class _EventHook(_Hook):
@@ -240,6 +257,10 @@ class _EventHook(_Hook):
             # it's a list
             self.types.update(trigger_param)
 
+    @staticmethod
+    def get_full_hook():
+        return EventHook
+
 
 class _CapHook(_Hook):
     def __init__(self, func):
@@ -264,11 +285,19 @@ class _CapAckHook(_CapHook):
     def get_subtype(cls):
         return "ack"
 
+    @staticmethod
+    def get_full_hook():
+        return OnCapAckHook
+
 
 class _CapAvailableHook(_CapHook):
     @classmethod
     def get_subtype(cls):
         return "available"
+
+    @staticmethod
+    def get_full_hook():
+        return OnCapAvaliableHook
 
 
 class _PermissionHook(_Hook):
@@ -284,6 +313,10 @@ class _PermissionHook(_Hook):
         self._add_hook(kwargs)
         self.perms.update(perms)
 
+    @staticmethod
+    def get_full_hook():
+        return PermHook
+
 
 class _PostHook(_Hook):
     def __init__(self, function):
@@ -292,6 +325,10 @@ class _PostHook(_Hook):
     @staticmethod
     def get_type():
         return "post_hook"
+
+    @staticmethod
+    def get_full_hook():
+        return PostHookHook
 
 
 class _IrcOutHook(_Hook):
@@ -302,6 +339,10 @@ class _IrcOutHook(_Hook):
     def get_type():
         return "irc_out"
 
+    @staticmethod
+    def get_full_hook():
+        return IrcOutHook
+
 
 class _OnStartHook(_Hook):
     def __init__(self, function):
@@ -310,6 +351,10 @@ class _OnStartHook(_Hook):
     @staticmethod
     def get_type():
         return "on_start"
+
+    @staticmethod
+    def get_full_hook():
+        return OnStartHook
 
 
 class _OnStopHook(_Hook):
@@ -320,6 +365,10 @@ class _OnStopHook(_Hook):
     def get_type():
         return "on_stop"
 
+    @staticmethod
+    def get_full_hook():
+        return OnStopHook
+
 
 class _SieveHook(_Hook):
     def __init__(self, function):
@@ -329,6 +378,10 @@ class _SieveHook(_Hook):
     def get_type():
         return "sieve"
 
+    @staticmethod
+    def get_full_hook():
+        return SieveHook
+
 
 class _ConnectHook(_Hook):
     def __init__(self, function):
@@ -337,6 +390,10 @@ class _ConnectHook(_Hook):
     @staticmethod
     def get_type():
         return "on_connect"
+
+    @staticmethod
+    def get_full_hook():
+        return OnConnectHook
 
 
 def _add_hook(func, hook):

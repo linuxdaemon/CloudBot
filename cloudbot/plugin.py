@@ -12,19 +12,6 @@ from weakref import WeakValueDictionary
 import sqlalchemy
 
 from .event import Event, PostHookEvent
-from .hooks.cap import OnCapAckHook, OnCapAvaliableHook
-from .hooks.command import CommandHook
-from .hooks.event import EventHook
-from .hooks.irc_out import IrcOutHook
-from .hooks.on_connect import OnConnectHook
-from .hooks.on_start import OnStartHook
-from .hooks.on_stop import OnStopHook
-from .hooks.periodic import PeriodicHook
-from .hooks.permission import PermHook
-from .hooks.post_hook import PostHookHook
-from .hooks.raw import RawHook
-from .hooks.regex import RegexHook
-from .hooks.sieve import SieveHook
 from .util import async_util, database
 from .util.func_utils import call_with_args
 
@@ -604,7 +591,7 @@ class Plugin:
                 func_hooks = func._cloudbot_hook
 
                 for hook_type, func_hook in func_hooks.items():
-                    hooks[hook_type].append(_hook_name_to_plugin[hook_type](self, func_hook))
+                    hooks[hook_type].append(func_hook.make_full_hook(self))
 
                 # delete the hook to free memory
                 del func._cloudbot_hook
@@ -649,21 +636,3 @@ class Plugin:
 
             for table in self.tables:
                 bot.db_metadata.remove(table)
-
-
-_hook_name_to_plugin = {
-    "command": CommandHook,
-    "regex": RegexHook,
-    "irc_raw": RawHook,
-    "sieve": SieveHook,
-    "event": EventHook,
-    "periodic": PeriodicHook,
-    "on_start": OnStartHook,
-    "on_stop": OnStopHook,
-    "on_cap_available": OnCapAvaliableHook,
-    "on_cap_ack": OnCapAckHook,
-    "on_connect": OnConnectHook,
-    "irc_out": IrcOutHook,
-    "post_hook": PostHookHook,
-    "perm_check": PermHook,
-}

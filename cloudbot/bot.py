@@ -18,7 +18,7 @@ from watchdog.observers import Observer
 from cloudbot.client import Client, CLIENTS
 from cloudbot.config import Config
 from cloudbot.event import Event, CommandEvent, RegexEvent, EventType
-from cloudbot.hook import Action
+from cloudbot.hooks import Action
 from cloudbot.plugin import PluginManager
 from cloudbot.reloader import PluginReloader, ConfigReloader
 from cloudbot.util import database, formatting, async_util
