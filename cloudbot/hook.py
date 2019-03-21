@@ -5,6 +5,14 @@ from enum import Enum, IntEnum, unique
 
 from cloudbot.event import EventType
 
+__all__ = (
+    'Priority', 'Action', 'command', 'event',
+    'permission', 'irc_raw', 'irc_out', 'sieve',
+    'periodic', 'post_hook', 'regex', 'on_start',
+    'on_stop', 'onload', 'on_unload', 'on_cap_ack',
+    'on_cap_available', 'connect', 'on_connect',
+)
+
 valid_command_re = re.compile(r"^\w+$")
 
 
