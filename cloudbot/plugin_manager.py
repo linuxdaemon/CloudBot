@@ -91,6 +91,27 @@ class PluginManager:
             *[self.unload_plugin(path) for path in self.plugins], loop=self.bot.loop
         )
 
+    def should_load(self, title, noisy=False):
+        if 'plugin_loading' not in self.bot.config:
+            return True
+
+        pl = self.bot.config.get("plugin_loading")
+
+        if pl.get("use_whitelist", False):
+            if title not in pl.get("whitelist", []):
+                if noisy:
+                    logger.info('Not loading plugin module "%s": plugin not whitelisted', title)
+
+                return False
+        else:
+            if title in pl.get("blacklist", []):
+                if noisy:
+                    logger.info('Not loading plugin module "%s": plugin blacklisted', title)
+
+                return False
+
+        return True
+
     async def load_plugin(self, path):
         """
         Loads a plugin from the given path and plugin object, then registers all hooks from that plugin.
@@ -107,17 +128,8 @@ class PluginManager:
         plugin_path = file_path.relative_to(self.bot.base_dir)
         title = '.'.join(plugin_path.parts[1:]).rsplit('.', 1)[0]
 
-        if "plugin_loading" in self.bot.config:
-            pl = self.bot.config.get("plugin_loading")
-
-            if pl.get("use_whitelist", False):
-                if title not in pl.get("whitelist", []):
-                    logger.info('Not loading plugin module "%s": plugin not whitelisted', title)
-                    return
-            else:
-                if title in pl.get("blacklist", []):
-                    logger.info('Not loading plugin module "%s": plugin blacklisted', title)
-                    return
+        if not self.should_load(title, True):
+            return
 
         # make sure to unload the previously loaded plugin from this path, if it was loaded.
         if str(file_path) in self.plugins:
