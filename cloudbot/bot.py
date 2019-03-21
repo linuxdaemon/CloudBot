@@ -8,7 +8,7 @@ import re
 import time
 from functools import partial
 from pathlib import Path
-from typing import Type
+from typing import Type, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -31,8 +31,15 @@ class BotInstanceHolder:
         self._instance = None
 
     def get(self):
-        # type: () -> CloudBot
+        # type: () -> Optional[CloudBot]
         return self._instance
+
+    def get_or_raise(self) -> 'CloudBot':
+        val = self.get()
+        if val:
+            return val
+
+        raise ValueError("No bot instance available")
 
     def set(self, value):
         # type: (CloudBot) -> None
@@ -41,10 +48,7 @@ class BotInstanceHolder:
     @property
     def config(self):
         # type: () -> Config
-        if not self.get():
-            raise ValueError("No bot instance available")
-
-        return self.get().config
+        return self.get_or_raise().config
 
 
 # Store a global instance of the bot to allow easier access to global data

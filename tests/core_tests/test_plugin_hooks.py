@@ -71,7 +71,7 @@ def load_plugin(plugin_path):
     plugin = Plugin(
         str(file_path), file_name,
         title, plugin_module,
-        cloudbot.bot.bot.get().plugin_manager,
+        cloudbot.bot.bot.get_or_raise().plugin_manager,
     )
 
     plugin.load()
