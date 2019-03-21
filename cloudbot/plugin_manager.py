@@ -156,14 +156,14 @@ class PluginManager:
             return
 
         # create the plugin
-        plugin = Plugin(str(file_path), file_name, title, plugin_module)
+        plugin = Plugin(str(file_path), file_name, title, plugin_module, self)
 
         plugin.load()
 
         # proceed to register hooks
 
         # create database tables
-        await plugin.create_tables(self.bot)
+        await plugin.create_tables()
 
         # run on_start hooks
         for on_start_hook in plugin.hooks["on_start"]:
@@ -172,7 +172,7 @@ class PluginManager:
                 logger.warning("Not registering hooks from plugin %s: on_start hook errored", plugin.title)
 
                 # unregister databases
-                plugin.unregister_tables(self.bot)
+                plugin.unregister_tables()
                 return
 
         self.plugins[plugin.file_path] = plugin
@@ -360,7 +360,7 @@ class PluginManager:
             await self.launch(on_stop_hook, event)
 
         # unregister databases
-        plugin.unregister_tables(self.bot)
+        plugin.unregister_tables()
 
         task_count = len(plugin.tasks)
         if task_count > 0:

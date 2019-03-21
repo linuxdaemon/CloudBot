@@ -16,6 +16,7 @@ from cloudbot.event import CapEvent, CommandEvent, Event, IrcOutEvent, PostHookE
 from cloudbot.hooks import Action
 from cloudbot.hooks.hook import Hook
 from cloudbot.plugin import Plugin
+from cloudbot.plugin_manager import PluginManager
 
 Hook.original_init = Hook.__init__
 
@@ -28,12 +29,17 @@ class MockConfig(OrderedDict):
         return default  # pragma: no cover
 
 
+class MockPluginManager(PluginManager):
+    pass
+
+
 class MockBot:
     loop = None
     user_agent = None
 
     def __init__(self):
         self.config = MockConfig()
+        self.plugin_manager = MockPluginManager(self)
 
 
 def patch_hook_init(self, _type, plugin, func_hook):
@@ -62,7 +68,11 @@ def load_plugin(plugin_path):
 
     plugin_module = importlib.import_module(module_name)
 
-    plugin = Plugin(str(file_path), file_name, title, plugin_module)
+    plugin = Plugin(
+        str(file_path), file_name,
+        title, plugin_module,
+        cloudbot.bot.bot.get().plugin_manager,
+    )
 
     plugin.load()
 

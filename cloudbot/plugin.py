@@ -1,8 +1,10 @@
 import logging
+import weakref
 from collections import defaultdict
 
 import sqlalchemy
 
+from . import bot
 from .util import database
 
 LOADED_ATTR = '_cloudbot_loaded'
@@ -22,21 +24,27 @@ class Plugin:
     :type tables: list[sqlalchemy.Table]
     """
 
-    def __init__(self, filepath, filename, title, code):
+    def __init__(self, filepath, filename, title, code, manager):
         """
         :type filepath: str
         :type filename: str
         :type code: object
+        :type manager: cloudbot.plugin_manager.PluginManager
         """
         self.tasks = []
         self.file_path = filepath
         self.file_name = filename
         self.title = title
+        self.manager = weakref.proxy(manager)
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
 
         self.hooks = defaultdict(list)
         self.tables = []
+
+    @property
+    def bot(self) -> 'bot.CloudBot':
+        return self.manager.bot
 
     def load(self):
         setattr(self.code, LOADED_ATTR, True)
@@ -58,11 +66,9 @@ class Plugin:
     def load_table(self, tbl):
         self.tables.append(tbl)
 
-    async def create_tables(self, bot):
+    async def create_tables(self):
         """
         Creates all sqlalchemy Tables that are registered in this plugin
-
-        :type bot: cloudbot.bot.CloudBot
         """
         if self.tables:
             # if there are any tables
@@ -70,17 +76,16 @@ class Plugin:
             logger.info("Registering tables for %s", self.title)
 
             for table in self.tables:
-                if not (await bot.loop.run_in_executor(None, table.exists, bot.db_engine)):
-                    await bot.loop.run_in_executor(None, table.create, bot.db_engine)
+                if not (await self.bot.loop.run_in_executor(None, table.exists, self.bot.db_engine)):
+                    await self.bot.loop.run_in_executor(None, table.create, self.bot.db_engine)
 
-    def unregister_tables(self, bot):
+    def unregister_tables(self):
         """
         Unregisters all sqlalchemy Tables registered to the global metadata by this plugin
-        :type bot: cloudbot.bot.CloudBot
         """
         if self.tables:
             # if there are any tables
             logger.info("Unregistering tables for %s", self.title)
 
             for table in self.tables:
-                bot.db_metadata.remove(table)
+                self.bot.db_metadata.remove(table)
