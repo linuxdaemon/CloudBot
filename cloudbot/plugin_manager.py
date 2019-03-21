@@ -68,8 +68,17 @@ class PluginManager:
         Finds a loaded plugin and returns its Plugin object
         :param title: the title of the plugin to find
         :return: The Plugin object if it exists, otherwise None
+        :rtype: Plugin | None
         """
         return self._plugin_name_map.get(title)
+
+    def get_plugin_by_path(self, file_path):
+        """
+        :type file_path: Path | str
+        :rtype: Plugin | None
+        """
+        path = Path(file_path).resolve()
+        return self.plugins.get(str(path))
 
     async def load_all(self, plugin_dir):
         """
@@ -132,8 +141,9 @@ class PluginManager:
             return
 
         # make sure to unload the previously loaded plugin from this path, if it was loaded.
-        if str(file_path) in self.plugins:
-            await self.unload_plugin(file_path)
+        old_plugin = self.get_plugin_by_path(file_path)
+        if old_plugin:
+            await self.unload_plugin(old_plugin.file_path)
 
         module_name = "plugins.{}".format(title)
         try:
@@ -270,15 +280,12 @@ class PluginManager:
         :type path: str | Path
         :rtype: bool
         """
-        path = Path(path)
-        file_path = path.resolve()
+        # get the loaded plugin
+        plugin = self.get_plugin_by_path(path)
 
         # make sure this plugin is actually loaded
-        if str(file_path) not in self.plugins:
+        if not plugin:
             return False
-
-        # get the loaded plugin
-        plugin = self.plugins[str(file_path)]
 
         for on_cap_available_hook in plugin.hooks["on_cap_available"]:
             available_hooks = self.cap_hooks["on_available"]
