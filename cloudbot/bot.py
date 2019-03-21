@@ -19,7 +19,7 @@ from cloudbot.client import Client, CLIENTS
 from cloudbot.config import Config
 from cloudbot.event import Event, CommandEvent, RegexEvent, EventType
 from cloudbot.hooks import Action
-from cloudbot.plugin import PluginManager
+from cloudbot.plugin_manager import PluginManager
 from cloudbot.reloader import PluginReloader, ConfigReloader
 from cloudbot.util import database, formatting, async_util
 
