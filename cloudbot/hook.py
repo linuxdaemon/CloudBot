@@ -33,13 +33,11 @@ class _Hook:
     :type kwargs: dict[str, unknown]
     """
 
-    def __init__(self, function, _type):
+    def __init__(self, function):
         """
         :type function: function
-        :type _type: str
         """
         self.function = function
-        self.type = _type
         self.kwargs = {}
 
     def _add_hook(self, kwargs):
@@ -48,6 +46,23 @@ class _Hook:
         """
         # update kwargs, overwriting duplicates
         self.kwargs.update(kwargs)
+
+    @staticmethod
+    def get_type():
+        raise NotImplementedError
+
+    @property
+    def type(self):
+        return self.get_type()
+
+    @classmethod
+    def get(cls, func):
+        hook = _get_hook(func, cls.get_type())
+        if hook is None:
+            hook = cls(func)
+            _add_hook(func, hook)
+
+        return hook
 
 
 class _CommandHook(_Hook):
@@ -60,7 +75,7 @@ class _CommandHook(_Hook):
         """
         :type function: function
         """
-        _Hook.__init__(self, function, "command")
+        _Hook.__init__(self, function)
         self.aliases = set()
         self.main_alias = None
 
@@ -88,6 +103,10 @@ class _CommandHook(_Hook):
                 raise ValueError("Invalid command name {}".format(alias))
         self.aliases.update(alias_param)
 
+    @staticmethod
+    def get_type():
+        return "command"
+
 
 class _RegexHook(_Hook):
     """
@@ -98,7 +117,7 @@ class _RegexHook(_Hook):
         """
         :type function: function
         """
-        _Hook.__init__(self, function, "regex")
+        _Hook.__init__(self, function)
         self.regexes = []
 
     def add_hook(self, regex_param, kwargs):
@@ -126,6 +145,10 @@ class _RegexHook(_Hook):
                     assert hasattr(re_to_match, "search")
                 self.regexes.append(re_to_match)
 
+    @staticmethod
+    def get_type():
+        return "regex"
+
 
 class _RawHook(_Hook):
     """
@@ -136,8 +159,12 @@ class _RawHook(_Hook):
         """
         :type function: function
         """
-        _Hook.__init__(self, function, "irc_raw")
+        _Hook.__init__(self, function)
         self.triggers = set()
+
+    @staticmethod
+    def get_type():
+        return "irc_raw"
 
     def add_hook(self, trigger_param, kwargs):
         """
@@ -158,8 +185,12 @@ class _PeriodicHook(_Hook):
         """
         :type function: function
         """
-        _Hook.__init__(self, function, "periodic")
+        _Hook.__init__(self, function)
         self.interval = 60.0
+
+    @staticmethod
+    def get_type():
+        return "periodic"
 
     def add_hook(self, interval, kwargs):
         """
@@ -181,8 +212,12 @@ class _EventHook(_Hook):
         """
         :type function: function
         """
-        _Hook.__init__(self, function, "event")
+        _Hook.__init__(self, function)
         self.types = set()
+
+    @staticmethod
+    def get_type():
+        return "event"
 
     def add_hook(self, trigger_param, kwargs):
         """
@@ -199,19 +234,43 @@ class _EventHook(_Hook):
 
 
 class _CapHook(_Hook):
-    def __init__(self, func, _type):
-        super().__init__(func, "on_cap_{}".format(_type))
+    def __init__(self, func):
+        super().__init__(func)
         self.caps = set()
+
+    @classmethod
+    def get_type(cls):
+        return "on_cap_{}".format(cls.get_subtype())
+
+    @classmethod
+    def get_subtype(cls):
+        raise NotImplementedError
 
     def add_hook(self, caps, kwargs):
         self._add_hook(kwargs)
         self.caps.update(caps)
 
 
+class _CapAckHook(_CapHook):
+    @classmethod
+    def get_subtype(cls):
+        return "ack"
+
+
+class _CapAvailableHook(_CapHook):
+    @classmethod
+    def get_subtype(cls):
+        return "available"
+
+
 class _PermissionHook(_Hook):
     def __init__(self, func):
-        super().__init__(func, "perm_check")
+        super().__init__(func)
         self.perms = set()
+
+    @staticmethod
+    def get_type():
+        return "perm_check"
 
     def add_hook(self, perms, kwargs):
         self._add_hook(kwargs)
@@ -220,32 +279,56 @@ class _PermissionHook(_Hook):
 
 class _PostHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "post_hook")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "post_hook"
 
 
 class _IrcOutHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "irc_out")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "irc_out"
 
 
 class _OnStartHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "on_start")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "on_start"
 
 
 class _OnStopHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "on_stop")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "on_stop"
 
 
 class _SieveHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "sieve")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "sieve"
 
 
 class _ConnectHook(_Hook):
     def __init__(self, function):
-        super().__init__(function, "on_connect")
+        super().__init__(function)
+
+    @staticmethod
+    def get_type():
+        return "on_connect"
 
 
 def _add_hook(func, hook):
@@ -269,11 +352,7 @@ def command(*args, **kwargs):
     """
 
     def _command_hook(func, alias_param=None):
-        hook = _get_hook(func, "command")
-        if hook is None:
-            hook = _CommandHook(func)
-            _add_hook(func, hook)
-
+        hook = _CommandHook.get(func)
         hook.add_hook(alias_param, kwargs)
         return func
 
@@ -290,11 +369,7 @@ def irc_raw(triggers_param, **kwargs):
     """
 
     def _raw_hook(func):
-        hook = _get_hook(func, "irc_raw")
-        if hook is None:
-            hook = _RawHook(func)
-            _add_hook(func, hook)
-
+        hook = _RawHook.get(func)
         hook.add_hook(triggers_param, kwargs)
         return func
 
@@ -311,11 +386,7 @@ def event(types_param, **kwargs):
     """
 
     def _event_hook(func):
-        hook = _get_hook(func, "event")
-        if hook is None:
-            hook = _EventHook(func)
-            _add_hook(func, hook)
-
+        hook = _EventHook.get(func)
         hook.add_hook(types_param, kwargs)
         return func
 
@@ -333,11 +404,7 @@ def regex(regex_param, **kwargs):
     """
 
     def _regex_hook(func):
-        hook = _get_hook(func, "regex")
-        if hook is None:
-            hook = _RegexHook(func)
-            _add_hook(func, hook)
-
+        hook = _RegexHook.get(func)
         hook.add_hook(regex_param, kwargs)
         return func
 
@@ -357,11 +424,7 @@ def sieve(param=None, **kwargs):
         assert len(inspect.signature(func).parameters) == 3, \
             "Sieve plugin has incorrect argument count. Needs params: bot, input, plugin"
 
-        hook = _get_hook(func, "sieve")
-        if hook is None:
-            hook = _SieveHook(func)  # there's no need to have a specific SieveHook object
-            _add_hook(func, hook)
-
+        hook = _SieveHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -377,11 +440,7 @@ def periodic(interval, **kwargs):
     """
 
     def _periodic_hook(func):
-        hook = _get_hook(func, "periodic")
-        if hook is None:
-            hook = _PeriodicHook(func)
-            _add_hook(func, hook)
-
+        hook = _PeriodicHook.get(func)
         hook.add_hook(interval, kwargs)
         return func
 
@@ -398,11 +457,7 @@ def on_start(param=None, **kwargs):
     """
 
     def _on_start_hook(func):
-        hook = _get_hook(func, "on_start")
-        if hook is None:
-            hook = _OnStartHook(func)
-            _add_hook(func, hook)
-
+        hook = _OnStartHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -422,10 +477,7 @@ def on_stop(param=None, **kwargs):
     """
 
     def _on_stop_hook(func):
-        hook = _get_hook(func, "on_stop")
-        if hook is None:
-            hook = _OnStopHook(func)
-            _add_hook(func, hook)
+        hook = _OnStopHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -445,10 +497,7 @@ def on_cap_available(*caps, **kwargs):
     """
 
     def _on_cap_available_hook(func):
-        hook = _get_hook(func, "on_cap_available")
-        if hook is None:
-            hook = _CapHook(func, "available")
-            _add_hook(func, hook)
+        hook = _CapAvailableHook.get(func)
         hook.add_hook(caps, kwargs)
         return func
 
@@ -462,10 +511,7 @@ def on_cap_ack(*caps, **kwargs):
     """
 
     def _on_cap_ack_hook(func):
-        hook = _get_hook(func, "on_cap_ack")
-        if hook is None:
-            hook = _CapHook(func, "ack")
-            _add_hook(func, hook)
+        hook = _CapAckHook.get(func)
         hook.add_hook(caps, kwargs)
         return func
 
@@ -474,10 +520,7 @@ def on_cap_ack(*caps, **kwargs):
 
 def on_connect(param=None, **kwargs):
     def _on_connect_hook(func):
-        hook = _get_hook(func, "on_connect")
-        if hook is None:
-            hook = _ConnectHook(func)
-            _add_hook(func, hook)
+        hook = _ConnectHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -492,11 +535,7 @@ connect = on_connect
 
 def irc_out(param=None, **kwargs):
     def _decorate(func):
-        hook = _get_hook(func, "irc_out")
-        if hook is None:
-            hook = _IrcOutHook(func)
-            _add_hook(func, hook)
-
+        hook = _IrcOutHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -512,11 +551,7 @@ def post_hook(param=None, **kwargs):
     """
 
     def _decorate(func):
-        hook = _get_hook(func, "post_hook")
-        if hook is None:
-            hook = _PostHook(func)
-            _add_hook(func, hook)
-
+        hook = _PostHook.get(func)
         hook._add_hook(kwargs)
         return func
 
@@ -528,11 +563,7 @@ def post_hook(param=None, **kwargs):
 
 def permission(*perms, **kwargs):
     def _perm_hook(func):
-        hook = _get_hook(func, "perm_check")
-        if hook is None:
-            hook = _PermissionHook(func)
-            _add_hook(func, hook)
-
+        hook = _PermissionHook.get(func)
         hook.add_hook(perms, kwargs)
         return func
 
