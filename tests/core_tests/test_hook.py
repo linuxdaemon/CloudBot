@@ -2,12 +2,12 @@ import re
 
 import pytest
 
+from cloudbot import hook
+from cloudbot.event import EventType
+from cloudbot.plugin import HOOK_ATTR
+
 
 def test_hook_decorate():
-    from cloudbot import hook
-    from cloudbot.event import EventType
-    from cloudbot.plugin import HOOK_ATTR
-
     @hook.event(EventType.message)
     @hook.event([EventType.notice, EventType.action])
     @hook.command('test')
@@ -52,9 +52,6 @@ def test_hook_decorate():
 
 
 def test_command_hook_doc():
-    from cloudbot import hook
-    from cloudbot.plugin import HOOK_ATTR
-
     @hook.command
     def test(bot):
         """<arg> - foo
