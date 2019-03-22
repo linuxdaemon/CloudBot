@@ -8,20 +8,20 @@ import re
 import time
 from functools import partial
 from pathlib import Path
-from typing import Type, Optional
+from typing import Optional, Type
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 from watchdog.observers import Observer
 
-from cloudbot.client import Client, CLIENTS
+from cloudbot.client import CLIENTS, Client
 from cloudbot.config import Config
-from cloudbot.event import Event, CommandEvent, RegexEvent, EventType
+from cloudbot.event import CommandEvent, Event, EventType, RegexEvent
 from cloudbot.hooks import Action
 from cloudbot.plugin_manager import PluginManager
-from cloudbot.reloader import PluginReloader, ConfigReloader
-from cloudbot.util import database, formatting, async_util
+from cloudbot.reloader import ConfigReloader, PluginReloader
+from cloudbot.util import async_util, database, formatting
 
 logger = logging.getLogger("cloudbot")
 
@@ -30,8 +30,7 @@ class BotInstanceHolder:
     def __init__(self):
         self._instance = None
 
-    def get(self):
-        # type: () -> Optional[CloudBot]
+    def get(self) -> Optional['CloudBot']:
         return self._instance
 
     def get_or_raise(self) -> 'CloudBot':
@@ -41,13 +40,11 @@ class BotInstanceHolder:
 
         raise ValueError("No bot instance available")
 
-    def set(self, value):
-        # type: (CloudBot) -> None
+    def set(self, value: 'CloudBot') -> None:
         self._instance = value
 
     @property
-    def config(self):
-        # type: () -> Config
+    def config(self) -> Config:
         return self.get_or_raise().config
 
 
