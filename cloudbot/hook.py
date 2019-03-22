@@ -320,9 +320,6 @@ class _PermissionHook(_Hook):
 
 
 class _PostHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "post_hook"
@@ -333,9 +330,6 @@ class _PostHook(_Hook):
 
 
 class _IrcOutHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "irc_out"
@@ -346,9 +340,6 @@ class _IrcOutHook(_Hook):
 
 
 class _OnStartHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "on_start"
@@ -359,9 +350,6 @@ class _OnStartHook(_Hook):
 
 
 class _OnStopHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "on_stop"
@@ -372,9 +360,6 @@ class _OnStopHook(_Hook):
 
 
 class _SieveHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "sieve"
@@ -385,9 +370,6 @@ class _SieveHook(_Hook):
 
 
 class _ConnectHook(_Hook):
-    def __init__(self, function):
-        super().__init__(function)
-
     @staticmethod
     def get_type():
         return "on_connect"
