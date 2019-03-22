@@ -4,7 +4,6 @@ from collections import defaultdict
 
 import sqlalchemy
 
-from . import bot
 from .util import database
 
 LOADED_ATTR = '_cloudbot_loaded'
@@ -43,7 +42,10 @@ class Plugin:
         self.tables = []
 
     @property
-    def bot(self) -> 'bot.CloudBot':
+    def bot(self):
+        """
+        :rtype: cloudbot.bot.CloudBot
+        """
         return self.manager.bot
 
     def load(self):
