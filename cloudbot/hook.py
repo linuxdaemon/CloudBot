@@ -2,21 +2,12 @@ import collections
 import inspect
 import re
 
-from .plugin import HOOK_ATTR
 from .event import EventType
-from .hooks.cap import OnCapAckHook, OnCapAvaliableHook
-from .hooks.command import CommandHook
-from .hooks.event import EventHook
-from .hooks.irc_out import IrcOutHook
-from .hooks.on_connect import OnConnectHook
-from .hooks.on_start import OnStartHook
-from .hooks.on_stop import OnStopHook
-from .hooks.periodic import PeriodicHook
-from .hooks.permission import PermHook
-from .hooks.post_hook import PostHookHook
-from .hooks.raw import RawHook
-from .hooks.regex import RegexHook
-from .hooks.sieve import SieveHook
+from .hooks import (
+    CommandHook, EventHook, IrcOutHook, OnCapAckHook, OnCapAvaliableHook, OnConnectHook, OnStartHook,
+    OnStopHook, PeriodicHook, PermHook, PostHookHook, RawHook, RegexHook, SieveHook,
+)
+from .plugin import HOOK_ATTR
 
 __all__ = (
     'command', 'event',

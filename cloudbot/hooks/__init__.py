@@ -1,19 +1,15 @@
-from enum import unique, IntEnum, Enum
-
-
-@unique
-class Priority(IntEnum):
-    # Reversed to maintain compatibility with sieve hooks numeric priority
-    LOWEST = 127
-    LOW = 63
-    NORMAL = 0
-    HIGH = -64
-    HIGHEST = -128
-
-
-@unique
-class Action(Enum):
-    """Defines the action to take after executing a hook"""
-    HALTTYPE = 0  # Once this hook executes, no other hook of that type should run
-    HALTALL = 1  # Once this hook executes, No other hook should run
-    CONTINUE = 2  # Normal execution of all hooks
+from .action import Action
+from .cap import OnCapAckHook, OnCapAvaliableHook
+from .command import CommandHook
+from .event import EventHook
+from .irc_out import IrcOutHook
+from .on_connect import OnConnectHook
+from .on_start import OnStartHook
+from .on_stop import OnStopHook
+from .periodic import PeriodicHook
+from .permission import PermHook
+from .post_hook import PostHookHook
+from .priority import Priority
+from .raw import RawHook
+from .regex import RegexHook
+from .sieve import SieveHook
