@@ -21,7 +21,7 @@ optout_table = Table(
     Column('chan', String),
     Column('hook', String),
     Column('allow', Boolean, default=False),
-    PrimaryKeyConstraint('network', 'chan', 'hook')
+    PrimaryKeyConstraint('network', 'chan', 'hook'),
 )
 
 optout_cache = DefaultKeyFoldDict(list)
@@ -50,7 +50,9 @@ class OptOut:
         return "{} {} {}".format(self.channel, self.hook, self.allow)
 
     def __repr__(self):
-        return "{}({}, {}, {})".format(self.__class__.__name__, self.channel, self.hook, self.allow)
+        return "{}({}, {}, {})".format(
+            self.__class__.__name__, self.channel, self.hook, self.allow
+        )
 
     def match(self, channel, hook_name):
         return self.match_chan(channel) and match_mask(hook_name.casefold(), self.hook)
@@ -77,7 +79,8 @@ def get_conn_optouts(conn_name):
 def get_channel_optouts(conn_name, chan=None):
     with cache_lock:
         return [
-            opt for opt in get_conn_optouts(conn_name)
+            opt
+            for opt in get_conn_optouts(conn_name)
             if not chan or opt.match_chan(chan)
         ]
 
@@ -92,10 +95,18 @@ def set_optout(db, conn, chan, pattern, allowed):
     conn_cf = conn.casefold()
     chan_cf = chan.casefold()
     pattern_cf = pattern.casefold()
-    clause = and_(optout_table.c.network == conn_cf, optout_table.c.chan == chan_cf, optout_table.c.hook == pattern_cf)
+    clause = and_(
+        optout_table.c.network == conn_cf,
+        optout_table.c.chan == chan_cf,
+        optout_table.c.hook == pattern_cf,
+    )
     res = db.execute(optout_table.update().values(allow=allowed).where(clause))
     if not res.rowcount:
-        db.execute(optout_table.insert().values(network=conn_cf, chan=chan_cf, hook=pattern_cf, allow=allowed))
+        db.execute(
+            optout_table.insert().values(
+                network=conn_cf, chan=chan_cf, hook=pattern_cf, allow=allowed
+            )
+        )
 
     db.commit()
     load_cache(db)
@@ -105,7 +116,11 @@ def del_optout(db, conn, chan, pattern):
     conn_cf = conn.casefold()
     chan_cf = chan.casefold()
     pattern_cf = pattern.casefold()
-    clause = and_(optout_table.c.network == conn_cf, optout_table.c.chan == chan_cf, optout_table.c.hook == pattern_cf)
+    clause = and_(
+        optout_table.c.network == conn_cf,
+        optout_table.c.chan == chan_cf,
+        optout_table.c.hook == pattern_cf,
+    )
     res = db.execute(optout_table.delete().where(clause))
 
     db.commit()
@@ -191,7 +206,9 @@ async def optout(text, event, chan, db, conn):
     if args[0].startswith("#") and len(args) > 1:
         chan = args.pop(0)
 
-    has_perm = await check_channel_permissions(event, chan, "op", "chanop", "snoonetstaff", "botcontrol")
+    has_perm = await check_channel_permissions(
+        event, chan, "op", "chanop", "snoonetstaff", "botcontrol"
+    )
 
     if not has_perm:
         event.notice("Sorry, you may not configure optout settings for that channel.")
@@ -210,9 +227,7 @@ async def optout(text, event, chan, db, conn):
     await event.async_call(set_optout, db, conn.name, chan, pattern, allowed)
 
     return "{action} hooks matching {pattern} in {channel}.".format(
-        action="Enabled" if allowed else "Disabled",
-        pattern=pattern,
-        channel=chan
+        action="Enabled" if allowed else "Disabled", pattern=pattern, channel=chan
     )
 
 
@@ -224,7 +239,9 @@ async def deloptout(text, event, chan, db, conn):
     if len(args) > 1:
         chan = args.pop(0)
 
-    has_perm = await check_channel_permissions(event, chan, "op", "chanop", "snoonetstaff", "botcontrol")
+    has_perm = await check_channel_permissions(
+        event, chan, "op", "chanop", "snoonetstaff", "botcontrol"
+    )
 
     if not has_perm:
         event.notice("Sorry, you may not configure optout settings for that channel.")
@@ -247,7 +264,9 @@ async def check_global_perms(event):
         chan = text.split()[0]
 
     can_global = await event.check_permissions("snoonetstaff", "botcontrol")
-    allowed = can_global or (await check_channel_permissions(event, chan, "op", "chanop"))
+    allowed = can_global or (
+        await check_channel_permissions(event, chan, "op", "chanop")
+    )
 
     if not allowed:
         event.notice("Sorry, you are not allowed to use this command.")

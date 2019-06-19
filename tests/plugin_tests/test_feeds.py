@@ -12,9 +12,7 @@ def mock_feedparse():
 def test_feeds(mock_feedparse, patch_try_shorten):
     from plugins import feeds
 
-    mock_feedparse.return_value = FeedParserDict(
-        entries=[],
-    )
+    mock_feedparse.return_value = FeedParserDict(entries=[])
     assert feeds.rss('xkcd') == "Feed not found."
 
     mock_feedparse.assert_called_with('http://xkcd.com/rss.xml')

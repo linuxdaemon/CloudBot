@@ -3,17 +3,9 @@ import re
 
 def test_textgenerator():
     from cloudbot.util.textgen import TextGenerator
+
     generator = TextGenerator(
-        [
-            '{thing} is {stuff}'
-        ],
-        {
-            'thing': ['a', 'b'],
-            'stuff': [
-                'c',
-                ('d', 2),
-            ]
-        }
+        ['{thing} is {stuff}'], {'thing': ['a', 'b'], 'stuff': ['c', ('d', 2)]}
     )
 
     for s in generator.generate_strings(4):
@@ -24,20 +16,12 @@ def test_textgenerator():
 
 def test_textgen_default_tmpl():
     from cloudbot.util.textgen import TextGenerator
+
     generator = TextGenerator(
-        [
-            '{thing} is {stuff} {a}',
-            '{thing} are {stuff} {a}',
-        ],
-        {
-            'thing': ['a', 'b'],
-            'stuff': [
-                'c',
-                ('d', 2),
-            ]
-        },
+        ['{thing} is {stuff} {a}', '{thing} are {stuff} {a}'],
+        {'thing': ['a', 'b'], 'stuff': ['c', ('d', 2)]},
         default_templates=[1],
-        variables={'a': 'foo'}
+        variables={'a': 'foo'},
     )
 
     for s in generator.generate_strings(4):

@@ -23,18 +23,15 @@ def load_data(xkcd_id):
 @pytest.mark.parametrize('xkcd_id', list(get_files()))
 def test_info(xkcd_id):
     from plugins import xkcd
+
     with RequestsMock() as reqs:
         data = load_data(xkcd_id)
         reqs.add(
-            reqs.GET,
-            'http://www.xkcd.com/{}/info.0.json'.format(xkcd_id),
-            json=data,
+            reqs.GET, 'http://www.xkcd.com/{}/info.0.json'.format(xkcd_id), json=data
         )
 
         date = datetime.date(
-            year=int(data['year']),
-            month=int(data['month']),
-            day=int(data['day']),
+            year=int(data['year']), month=int(data['month']), day=int(data['day'])
         )
 
         no_url = 'xkcd: \x02{}\x02 ({:%d %B %Y})'.format(data['title'], date)

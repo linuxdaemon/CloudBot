@@ -12,7 +12,9 @@ gnomecards = {}
 @hook.on_start()
 def shuffle_deck(bot):
     gnomecards.clear()
-    with codecs.open(os.path.join(bot.data_dir, "gnomecards.json"), encoding="utf-8") as f:
+    with codecs.open(
+        os.path.join(bot.data_dir, "gnomecards.json"), encoding="utf-8"
+    ) as f:
         gnomecards.update(json.load(f))
 
 

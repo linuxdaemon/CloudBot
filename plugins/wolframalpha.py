@@ -19,10 +19,7 @@ def wolframalpha(text, bot, reply):
     if not api_key:
         return "error: missing api key"
 
-    params = {
-        'input': text,
-        'appid': api_key
-    }
+    params = {'input': text, 'appid': api_key}
     request = requests.get(api_url, params=params)
 
     try:

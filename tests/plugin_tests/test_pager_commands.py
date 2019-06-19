@@ -10,11 +10,14 @@ class MockConn:
         self.name = name
 
 
-@pytest.mark.parametrize('plugin_name,hook_name,pages_name,page_type', [
-    ['grab', 'moregrab', 'search_pages', 'grabsearch'],
-    ['reddit_info', 'moremod', 'search_pages', 'modlist'],
-    ['sportscores', 'morescore', 'search_pages', 'score'],
-])
+@pytest.mark.parametrize(
+    'plugin_name,hook_name,pages_name,page_type',
+    [
+        ['grab', 'moregrab', 'search_pages', 'grabsearch'],
+        ['reddit_info', 'moremod', 'search_pages', 'modlist'],
+        ['sportscores', 'morescore', 'search_pages', 'score'],
+    ],
+)
 def test_page_commands(plugin_name, hook_name, pages_name, page_type):
     plugin = importlib.import_module('plugins.' + plugin_name)
 
@@ -25,8 +28,10 @@ def test_page_commands(plugin_name, hook_name, pages_name, page_type):
     conn = MockConn('testconn')
 
     no_grabs = "There are no {} pages to show.".format(page_type)
-    done = "All pages have been shown. " \
-           "You can specify a page number or do a new search."
+    done = (
+        "All pages have been shown. "
+        "You can specify a page number or do a new search."
+    )
     out_of_range = "Please specify a valid page number between 1 and 2."
     no_number = "Please specify an integer value."
 
@@ -82,8 +87,10 @@ def test_profile_pager():
         return notice.lines
 
     no_grabs = "There are no category pages to show."
-    done = "All pages have been shown. " \
-           "You can specify a page number or do a new search."
+    done = (
+        "All pages have been shown. "
+        "You can specify a page number or do a new search."
+    )
     out_of_range = "Please specify a valid page number between 1 and 2."
     no_number = "Please specify an integer value."
 

@@ -6,7 +6,7 @@ from cloudbot.util import http
 formats = {
     "taken": "\x034{domain}\x0f{path}",
     "available": "\x033{domain}\x0f{path}",
-    "other": "\x031{domain}\x0f{path}"
+    "other": "\x031{domain}\x0f{path}",
 }
 
 

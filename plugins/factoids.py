@@ -24,7 +24,7 @@ table = Table(
     Column("data", String),
     Column("nick", String),
     Column("chan", String),
-    PrimaryKeyConstraint('word', 'chan')
+    PrimaryKeyConstraint('word', 'chan'),
 )
 
 
@@ -54,8 +54,12 @@ def add_factoid(db, word, chan, data, nick):
     """
     if word in factoid_cache[chan]:
         # if we have a set value, update
-        db.execute(table.update().values(data=data, nick=nick, chan=chan).where(table.c.chan == chan).where(
-            table.c.word == word))
+        db.execute(
+            table.update()
+            .values(data=data, nick=nick, chan=chan)
+            .where(table.c.chan == chan)
+            .where(table.c.word == word)
+        )
         db.commit()
     else:
         # otherwise, insert
@@ -107,7 +111,11 @@ def remember(text, nick, db, chan, notice, event):
             data = old_data + ' ' + new_data
         notice("Appending \x02{}\x02 to \x02{}\x02".format(new_data, old_data))
     else:
-        notice('Remembering \x02{0}\x02 for \x02{1}\x02. Type {2}{1} to see it.'.format(data, word, FACTOID_CHAR))
+        notice(
+            'Remembering \x02{0}\x02 for \x02{1}\x02. Type {2}{1} to see it.'.format(
+                data, word, FACTOID_CHAR
+            )
+        )
         if old_data:
             notice('Previous data was \x02{}\x02'.format(old_data))
 
@@ -132,9 +140,11 @@ def remove_fact(chan, names, db, notice):
             missing.append(name)
 
     if missing:
-        notice("Unknown factoids: {}".format(
-            get_text_list([repr(s) for s in missing], 'and')
-        ))
+        notice(
+            "Unknown factoids: {}".format(
+                get_text_list([repr(s) for s in missing], 'and')
+            )
+        )
 
     if found:
         try:

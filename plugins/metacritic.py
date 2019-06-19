@@ -13,8 +13,19 @@ def metacritic(text, reply):
 
     args = text.strip()
 
-    game_platforms = ('x360', 'ps3', 'pc', 'gba', 'ds', '3ds', 'wii',
-                      'vita', 'wiiu', 'xone', 'ps4')
+    game_platforms = (
+        'x360',
+        'ps3',
+        'pc',
+        'gba',
+        'ds',
+        '3ds',
+        'wii',
+        'vita',
+        'wiiu',
+        'xone',
+        'ps4',
+    )
 
     all_platforms = game_platforms + ('all', 'movie', 'tv', 'album')
 
@@ -38,8 +49,8 @@ def metacritic(text, reply):
     # metacritic thinks it's so damn smart blocking my scraper
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, '
-                      'like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-        'Referer': 'http://www.metacritic.com/'
+        'like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+        'Referer': 'http://www.metacritic.com/',
     }
 
     try:
@@ -96,8 +107,9 @@ def metacritic(text, reply):
     link = 'http://metacritic.com' + product_title.find('a').attrib['href']
 
     try:
-        release = result.find_class('release_date')[0]. \
-            find_class('data')[0].text_content()
+        release = (
+            result.find_class('release_date')[0].find_class('data')[0].text_content()
+        )
 
         # strip extra spaces out of the release date
         release = re.sub(r'\s{2,}', ' ', release)
@@ -109,6 +121,10 @@ def metacritic(text, reply):
     except IndexError:
         score = None
 
-    return '[{}] {} - \x02{}/100\x02, {} - {}'.format(plat.upper(), name, score or 'no score',
-                                                      'release: \x02%s\x02' % release if release else 'unreleased',
-                                                      link)
+    return '[{}] {} - \x02{}/100\x02, {} - {}'.format(
+        plat.upper(),
+        name,
+        score or 'no score',
+        'release: \x02%s\x02' % release if release else 'unreleased',
+        link,
+    )

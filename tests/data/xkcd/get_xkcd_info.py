@@ -8,7 +8,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 
 def get_data(num):
-    file = (SCRIPT_DIR / '{}.json'.format(num))
+    file = SCRIPT_DIR / '{}.json'.format(num)
     if file.exists():
         with file.open() as f:
             return json.load(f)

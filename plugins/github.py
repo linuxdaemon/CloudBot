@@ -3,9 +3,7 @@ import requests
 from cloudbot import hook
 from cloudbot.util import web, formatting
 
-shortcuts = {
-    'cloudbot': 'CloudBotIRC/CloudBot'
-}
+shortcuts = {'cloudbot': 'CloudBotIRC/CloudBot'}
 
 
 @hook.command("ghissue", "issue")
@@ -16,7 +14,9 @@ def issue_cmd(text):
     issue = args[1] if len(args) > 1 else None
 
     if issue:
-        r = requests.get('https://api.github.com/repos/{}/issues/{}'.format(repo, issue))
+        r = requests.get(
+            'https://api.github.com/repos/{}/issues/{}'.format(repo, issue)
+        )
         r.raise_for_status()
         j = r.json()
 

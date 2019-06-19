@@ -11,7 +11,7 @@ table = Table(
     'horoscope',
     database.metadata,
     Column('nick', String, primary_key=True),
-    Column('sign', String)
+    Column('sign', String),
 )
 
 BASE_URL = URL("http://www.horoscope.com/us/horoscopes/general/")
@@ -34,7 +34,9 @@ SIGN_MAP = {
 
 
 def get_sign(db, nick):
-    row = db.execute(select([table.c.sign]).where(table.c.nick == nick.lower())).fetchone()
+    row = db.execute(
+        select([table.c.sign]).where(table.c.nick == nick.lower())
+    ).fetchone()
     if not row:
         return None
 
@@ -42,7 +44,9 @@ def get_sign(db, nick):
 
 
 def set_sign(db, nick, sign):
-    res = db.execute(table.update().values(sign=sign.lower()).where(table.c.nick == nick.lower()))
+    res = db.execute(
+        table.update().values(sign=sign.lower()).where(table.c.nick == nick.lower())
+    )
     if res.rowcount == 0:
         db.execute(table.insert().values(nick=nick.lower(), sign=sign.lower()))
 
@@ -105,14 +109,10 @@ def horoscope(text, db, bot, nick, event):
     if not sign:
         return
 
-    params = {
-        "sign": SIGN_MAP[sign]
-    }
+    params = {"sign": SIGN_MAP[sign]}
 
     try:
-        request = requests.get(
-            str(DAILY_URL), params=params, headers=headers
-        )
+        request = requests.get(str(DAILY_URL), params=params, headers=headers)
         request.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         event.reply("Could not get horoscope: {}. URL Error".format(e))

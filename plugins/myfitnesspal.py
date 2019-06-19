@@ -47,11 +47,10 @@ def mfp(text, reply):
                 'total': totals[idx],
                 'remain': remaining[idx],
                 'units': headers['units'][idx],
-                'pct': math.floor((totals[idx] / remaining[idx]) * 100)
+                'pct': math.floor((totals[idx] / remaining[idx]) * 100),
             }
 
-            output += ("{caption}: {total}/{remain}{units} ({pct}%) "
-                       .format(**kwargs))
+            output += "{caption}: {total}/{remain}{units} ({pct}%) ".format(**kwargs)
 
         output += " ({})".format(scrape_url.format(text))
 

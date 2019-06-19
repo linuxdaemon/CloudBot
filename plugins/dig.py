@@ -35,5 +35,9 @@ def dig(text, nick, notice):
             rdata = results['answer'][r]['rdata'][0]
         else:
             rdata = results['answer'][r]['rdata']
-        notice("name: \x02{}\x02 type: \x02{}\x02 ttl: \x02{}\x02 rdata: \x02{}\x02".format(
-            domain, rtype, ttl, rdata), nick)
+        notice(
+            "name: \x02{}\x02 type: \x02{}\x02 ttl: \x02{}\x02 rdata: \x02{}\x02".format(
+                domain, rtype, ttl, rdata
+            ),
+            nick,
+        )

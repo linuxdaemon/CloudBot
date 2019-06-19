@@ -92,8 +92,7 @@ class ServiceError(Exception):
 class ServiceHTTPError(ServiceError):
     def __init__(self, message: str, response: Response):
         super().__init__(
-            response.request,
-            '[HTTP {}] {}'.format(response.status_code, message)
+            response.request, '[HTTP {}] {}'.format(response.status_code, message)
         )
         self.message = message
         self.response = response
@@ -202,7 +201,12 @@ class Googl(Shortener):
         k = {'key': key}
         p = {'longUrl': url}
         try:
-            r = requests.post('https://www.googleapis.com/urlshortener/v1/url', params=k, data=json.dumps(p), headers=h)
+            r = requests.post(
+                'https://www.googleapis.com/urlshortener/v1/url',
+                params=k,
+                data=json.dumps(p),
+                headers=h,
+            )
             r.raise_for_status()
         except HTTPError as e:
             r = e.response

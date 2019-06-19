@@ -13,7 +13,7 @@ table = Table(
     Column('word', String),
     Column('nick', String),
     Column('chan', String),
-    PrimaryKeyConstraint('word', 'chan')
+    PrimaryKeyConstraint('word', 'chan'),
 )
 
 badcache = defaultdict(list)
@@ -57,14 +57,12 @@ def add_bad(text, nick, db):
     word = re.escape(word)
     wordlist = list_bad(channel)
     if word in wordlist:
-        return "{} is already added to the bad word list for {}".format(
-            word, channel
-        )
+        return "{} is already added to the bad word list for {}".format(word, channel)
 
     if len(badcache[channel]) >= 10:
-        return "There are too many words listed for channel {}. Please remove a word using .rmbad before adding " \
-               "anymore. For a list of bad words use .listbad".format(
-            channel
+        return (
+            "There are too many words listed for channel {}. Please remove a word using .rmbad before adding "
+            "anymore. For a list of bad words use .listbad".format(channel)
         )
 
     db.execute(table.insert().values(word=word, nick=nick, chan=channel))
@@ -82,13 +80,13 @@ def del_bad(text, db):
     if not channel.startswith('#'):
         return "Please specify a valid channel name after the bad word."
 
-    db.execute(table.delete().where(table.c.word == word).where(table.c.chan == channel))
+    db.execute(
+        table.delete().where(table.c.word == word).where(table.c.chan == channel)
+    )
     db.commit()
     newlist = list_bad(channel)
     load_bad(db)
-    return "Removing {} new bad word list for {} is: {}".format(
-        word, channel, newlist
-    )
+    return "Removing {} new bad word list for {} is: {}".format(word, channel, newlist)
 
 
 @hook.command("listbad", permissions=["badwords"])

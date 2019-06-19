@@ -22,11 +22,7 @@ from cloudbot import hook
 from cloudbot.util import colors, web
 from cloudbot.util.func_utils import call_with_args
 
-CURRENCY_SYMBOLS = {
-    'USD': '$',
-    'GBP': '£',
-    'EUR': '€',
-}
+CURRENCY_SYMBOLS = {'USD': '$', 'GBP': '£', 'EUR': '€'}
 
 
 class APIError(Exception):
@@ -74,7 +70,9 @@ class CMCApi:
         self._session.close()
 
     def _request(self, endpoint, params=None):
-        self._request_times[:] = [t for t in self._request_times if (self._now - t) < timedelta(minutes=1)]
+        self._request_times[:] = [
+            t for t in self._request_times if (self._now - t) < timedelta(minutes=1)
+        ]
         if len(self._request_times) > 10:
             raise APIRateLimitError
 
@@ -104,7 +102,9 @@ class CMCApi:
         diff = self._now - last_updated
         price_key = "price_" + out_currency.lower()
         if diff > timedelta(minutes=5) or price_key not in old_data:
-            responses = self._request("ticker/" + _id.lower(), params={'limit': 0, 'convert': out_currency})
+            responses = self._request(
+                "ticker/" + _id.lower(), params={'limit': 0, 'convert': out_currency}
+            )
             self._handle_obj(*responses)
             data = self._cache[id_or_symbol.lower()]
             last_updated = datetime.fromtimestamp(float(data.get('last_updated', "0")))
@@ -148,11 +148,7 @@ class Alias:
         self.cmds = cmds
 
 
-ALIASES = (
-    Alias('bitcoin', 'btc'),
-    Alias('litecoin', 'ltc'),
-    Alias('dogecoin', 'doge'),
-)
+ALIASES = (Alias('bitcoin', 'btc'), Alias('litecoin', 'ltc'), Alias('dogecoin', 'doge'))
 
 
 def alias_wrapper(alias):
@@ -217,19 +213,26 @@ def crypto_command(text):
 
     converted_value = data['price_' + currency.lower()]
 
-    return colors.parse("{} ({}) // $(orange){}{:,.2f}$(clear) {} - {:,.7f} BTC // {} change".format(
-        data['symbol'], data['id'], currency_sign, float(converted_value), currency.upper(),
-        float(data['price_btc']), change_str
-    ))
+    return colors.parse(
+        "{} ({}) // $(orange){}{:,.2f}$(clear) {} - {:,.7f} BTC // {} change".format(
+            data['symbol'],
+            data['id'],
+            currency_sign,
+            float(converted_value),
+            currency.upper(),
+            float(data['price_btc']),
+            change_str,
+        )
+    )
 
 
 @hook.command("currencies", "currencylist", autohelp=False)
 def currency_list():
     """- List all available currencies from the API"""
-    currencies = sorted(set((obj["symbol"], obj["id"]) for obj in api.currencies), key=itemgetter(0))
-    lst = [
-        '{: <10} {}'.format(symbol, name) for symbol, name in currencies
-    ]
+    currencies = sorted(
+        set((obj["symbol"], obj["id"]) for obj in api.currencies), key=itemgetter(0)
+    )
+    lst = ['{: <10} {}'.format(symbol, name) for symbol, name in currencies]
     lst.insert(0, 'Symbol     Name')
 
     return "Available currencies: " + web.paste('\n'.join(lst))

@@ -13,7 +13,7 @@ commands = Table(
     database.metadata,
     Column('hook', String),
     Column('allowed', Boolean, default=True),
-    PrimaryKeyConstraint('hook', 'allowed')
+    PrimaryKeyConstraint('hook', 'allowed'),
 )
 
 allow_cache = {}
@@ -87,7 +87,9 @@ def chainallow(text, db, notice_doc, bot):
             values['allowed'] = allow
 
         updated = True
-        res = db.execute(commands.update().values(**values).where(commands.c.hook == hook_name))
+        res = db.execute(
+            commands.update().values(**values).where(commands.c.hook == hook_name)
+        )
         if res.rowcount == 0:
             updated = False
             db.execute(commands.insert().values(**values))
@@ -95,7 +97,9 @@ def chainallow(text, db, notice_doc, bot):
         db.commit()
         load_cache(db)
         if updated:
-            return "Updated state of '{}' in chainallow to allowed={}".format(hook_name, allow_cache.get(hook_name))
+            return "Updated state of '{}' in chainallow to allowed={}".format(
+                hook_name, allow_cache.get(hook_name)
+            )
 
         if allow_cache.get(hook_name):
             return "Added '{}' as an allowed command".format(hook_name)
@@ -129,7 +133,13 @@ def is_hook_allowed(_hook):
 
 
 def wrap_event(_hook, event, cmd, args):
-    cmd_event = CommandEvent(base_event=event, text=args.strip(), triggered_command=cmd, hook=_hook, cmd_prefix='')
+    cmd_event = CommandEvent(
+        base_event=event,
+        text=args.strip(),
+        triggered_command=cmd,
+        hook=_hook,
+        cmd_prefix='',
+    )
     return cmd_event
 
 
@@ -144,13 +154,19 @@ async def chain(text, bot, event):
             return "Unable to find command '{}'".format(name)
 
         if not is_hook_allowed(_hook):
-            event.notice("'{}' may not be used in command piping".format(format_hook_name(_hook)))
+            event.notice(
+                "'{}' may not be used in command piping".format(format_hook_name(_hook))
+            )
             return
 
         if _hook.permissions:
             allowed = await event.check_permissions(_hook.permissions)
             if not allowed:
-                event.notice("Sorry, you are not allowed to use '{}'.".format(format_hook_name(_hook)))
+                event.notice(
+                    "Sorry, you are not allowed to use '{}'.".format(
+                        format_hook_name(_hook)
+                    )
+                )
                 return
 
     buffer = ""
@@ -220,7 +236,11 @@ async def chain(text, bot, event):
 @hook.command(autohelp=False)
 def chainlist(notice, bot):
     """- Returns the list of commands allowed in 'chain'"""
-    hooks = [get_hook_from_command(bot, name) for name, allowed in allow_cache.items() if allowed]
+    hooks = [
+        get_hook_from_command(bot, name)
+        for name, allowed in allow_cache.items()
+        if allowed
+    ]
     cmds = itertools.chain.from_iterable(map(attrgetter("aliases"), hooks))
     cmds = sorted(cmds)
     for part in chunk_str(", ".join(cmds)):

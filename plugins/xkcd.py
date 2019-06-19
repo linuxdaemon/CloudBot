@@ -20,9 +20,7 @@ def xkcd_info(xkcd_id, url=False):
     data = request.json()
 
     date = datetime.date(
-        year=int(data['year']),
-        month=int(data['month']),
-        day=int(data['day']),
+        year=int(data['year']), month=int(data['month']), day=int(data['day'])
     )
     date_str = date.strftime('%d %B %Y')
 

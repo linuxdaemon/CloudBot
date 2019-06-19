@@ -57,9 +57,19 @@ def ping(text, reply):
     if os.name == "nt":
         m = re.search(win_ping_regex, pingcmd)
         r = int(m.group(2)) - int(m.group(1))
-        return "min: %sms, max: %sms, average: %sms, range: %sms, count: %s" \
-               % (m.group(1), m.group(2), m.group(3), r, count)
+        return "min: %sms, max: %sms, average: %sms, range: %sms, count: %s" % (
+            m.group(1),
+            m.group(2),
+            m.group(3),
+            r,
+            count,
+        )
 
     m = re.search(unix_ping_regex, pingcmd)
-    return "min: %sms, max: %sms, average: %sms, range: %sms, count: %s" \
-           % (m.group(1), m.group(3), m.group(2), m.group(4), count)
+    return "min: %sms, max: %sms, average: %sms, range: %sms, count: %s" % (
+        m.group(1),
+        m.group(3),
+        m.group(2),
+        m.group(4),
+        count,
+    )

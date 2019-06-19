@@ -2,7 +2,16 @@ from collections import defaultdict
 from datetime import datetime
 from fnmatch import fnmatch
 
-from sqlalchemy import Table, Column, String, Boolean, DateTime, PrimaryKeyConstraint, and_, not_
+from sqlalchemy import (
+    Table,
+    Column,
+    String,
+    Boolean,
+    DateTime,
+    PrimaryKeyConstraint,
+    and_,
+    not_,
+)
 from sqlalchemy.sql import select
 
 from cloudbot import hook
@@ -19,7 +28,7 @@ table = Table(
     Column('message', String),
     Column('is_read', Boolean),
     Column('time_sent', DateTime),
-    Column('time_read', DateTime)
+    Column('time_read', DateTime),
 )
 
 disable_table = Table(
@@ -135,7 +144,11 @@ def add_disable(db, conn, setter, target, now=None):
     if now is None:
         now = datetime.now()
 
-    db.execute(disable_table.insert().values(conn=conn.name.lower(), setter=setter, set_at=now, target=target.lower()))
+    db.execute(
+        disable_table.insert().values(
+            conn=conn.name.lower(), setter=setter, set_at=now, target=target.lower()
+        )
+    )
     db.commit()
     load_disabled(db)
 
@@ -147,10 +160,12 @@ def del_disable(db, conn, target):
     :type target: str
     """
     db.execute(
-        disable_table.delete().where(and_(
-            disable_table.c.conn == conn.name.lower(),
-            disable_table.c.target == target.lower()
-        ))
+        disable_table.delete().where(
+            and_(
+                disable_table.c.conn == conn.name.lower(),
+                disable_table.c.target == target.lower(),
+            )
+        )
     )
     db.commit()
     load_disabled(db)
@@ -161,7 +176,9 @@ def list_disabled(db, conn):
     :type db: sqlalchemy.orm.Session
     :type conn: cloudbot.client.Client
     """
-    for row in db.execute(disable_table.select().where(disable_table.c.conn == conn.name.lower())):
+    for row in db.execute(
+        disable_table.select().where(disable_table.c.conn == conn.name.lower())
+    ):
         yield (row['conn'], row['target'], row['setter'], row['set_at'].ctime())
 
 
@@ -176,10 +193,11 @@ def add_ignore(db, conn, nick, mask, now=None):
     if now is None:
         now = datetime.now()
 
-    db.execute(ignore_table.insert().values(
-        conn=conn.name.lower(), set_at=now,
-        nick=nick.lower(), mask=mask.lower()
-    ))
+    db.execute(
+        ignore_table.insert().values(
+            conn=conn.name.lower(), set_at=now, nick=nick.lower(), mask=mask.lower()
+        )
+    )
     db.commit()
     load_ignores(db)
 
@@ -192,11 +210,13 @@ def del_ignore(db, conn, nick, mask):
     :type mask: str
     """
     db.execute(
-        ignore_table.delete().where(and_(
-            ignore_table.c.conn == conn.name.lower(),
-            ignore_table.c.nick == nick.lower(),
-            ignore_table.c.mask == mask.lower(),
-        ))
+        ignore_table.delete().where(
+            and_(
+                ignore_table.c.conn == conn.name.lower(),
+                ignore_table.c.nick == nick.lower(),
+                ignore_table.c.mask == mask.lower(),
+            )
+        )
     )
     db.commit()
     load_ignores(db)
@@ -217,41 +237,49 @@ def get_unread(db, server, target):
     :type server: str
     :type target: str
     """
-    query = select([table.c.sender, table.c.message, table.c.time_sent]) \
-        .where(table.c.connection == server.lower()) \
-        .where(table.c.target == target.lower()) \
-        .where(not_(table.c.is_read)) \
+    query = (
+        select([table.c.sender, table.c.message, table.c.time_sent])
+        .where(table.c.connection == server.lower())
+        .where(table.c.target == target.lower())
+        .where(not_(table.c.is_read))
         .order_by(table.c.time_sent)
+    )
     return db.execute(query).fetchall()
 
 
 def count_unread(db, server, target):
-    query = select([table]) \
-        .where(table.c.connection == server.lower()) \
-        .where(table.c.target == target.lower()) \
-        .where(not_(table.c.is_read)) \
-        .alias("count") \
+    query = (
+        select([table])
+        .where(table.c.connection == server.lower())
+        .where(table.c.target == target.lower())
+        .where(not_(table.c.is_read))
+        .alias("count")
         .count()
+    )
     return db.execute(query).fetchone()[0]
 
 
 def read_all_tells(db, server, target):
-    query = table.update() \
-        .where(table.c.connection == server.lower()) \
-        .where(table.c.target == target.lower()) \
-        .where(not_(table.c.is_read)) \
+    query = (
+        table.update()
+        .where(table.c.connection == server.lower())
+        .where(table.c.target == target.lower())
+        .where(not_(table.c.is_read))
         .values(is_read=True)
+    )
     db.execute(query)
     db.commit()
     load_cache(db)
 
 
 def read_tell(db, server, target, message):
-    query = table.update() \
-        .where(table.c.connection == server.lower()) \
-        .where(table.c.target == target.lower()) \
-        .where(table.c.message == message) \
+    query = (
+        table.update()
+        .where(table.c.connection == server.lower())
+        .where(table.c.target == target.lower())
+        .where(table.c.message == message)
         .values(is_read=True)
+    )
     db.execute(query)
     db.commit()
     load_cache(db)
@@ -264,7 +292,7 @@ def add_tell(db, server, sender, target, message):
         target=target.lower(),
         message=message,
         is_read=False,
-        time_sent=datetime.today()
+        time_sent=datetime.today(),
     )
     db.execute(query)
     db.commit()
@@ -301,9 +329,13 @@ def tellinput(event, conn, db, nick, notice):
         else:
             reltime_formatted = reltime
 
-        reply = "{} sent you a message {} ago: {}".format(user_from, reltime_formatted, message)
+        reply = "{} sent you a message {} ago: {}".format(
+            user_from, reltime_formatted, message
+        )
         if len(tells) > 1:
-            reply += " (+{} more, {}showtells to view)".format(len(tells) - 1, conn.config["command_prefix"][0])
+            reply += " (+{} more, {}showtells to view)".format(
+                len(tells) - 1, conn.config["command_prefix"][0]
+            )
 
         read_tell(db, conn.name, nick, message)
         notice(reply)
@@ -366,7 +398,11 @@ def tell_cmd(text, nick, db, conn, mask, event):
         return
 
     add_tell(db, conn.name, sender, target.lower(), message)
-    event.notice("Your message has been saved, and {} will be notified once they are active.".format(target))
+    event.notice(
+        "Your message has been saved, and {} will be notified once they are active.".format(
+            target
+        )
+    )
 
 
 def check_permissions(event, *perms):
@@ -458,6 +494,4 @@ def list_tell_ignores(conn, nick):
     if not ignores:
         return "You are not ignoring tells from any users"
 
-    return "You are ignoring tell from: {}".format(
-        ', '.join(map(repr, ignores))
-    )
+    return "You are ignoring tell from: {}".format(', '.join(map(repr, ignores)))

@@ -41,8 +41,9 @@ def snopes(text):
     if status is not None:
         status = status.group(0).strip()
     else:  # new-style statuses
-        status = "Status: {}".format(re.search(r"FALSE|TRUE|MIXTURE|UNDETERMINED",
-                                               snopes_text).group(0).title())
+        status = "Status: {}".format(
+            re.search(r"FALSE|TRUE|MIXTURE|UNDETERMINED", snopes_text).group(0).title()
+        )
 
     status = " ".join(status.split())  # compress whitespace
     claim = formatting.truncate(" ".join(claim.split()), 150)

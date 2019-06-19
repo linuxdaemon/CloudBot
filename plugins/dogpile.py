@@ -11,7 +11,7 @@ search_url = "https://www.dogpile.com/search"
 CERT_PATH = 'dogpile.crt'
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 '
-                  '(KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19'
+    '(KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19'
 }
 
 session = requests.Session()
@@ -31,8 +31,10 @@ def check_certs(bot):
 def query(endpoint, text):
     params = {'q': " ".join(text.split())}
     with requests.get(
-            search_url + "/" + endpoint, params=params, headers=HEADERS,
-            verify=session.verify
+        search_url + "/" + endpoint,
+        params=params,
+        headers=HEADERS,
+        verify=session.verify,
     ) as r:
         r.raise_for_status()
         return BeautifulSoup(r.content)

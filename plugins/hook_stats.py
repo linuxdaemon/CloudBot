@@ -31,7 +31,9 @@ def get_stats(bot):
         bot.memory["hook_stats"] = stats = {
             'global': defaultdict(default_hook_counter),
             'network': defaultdict(lambda: defaultdict(default_hook_counter)),
-            'channel': defaultdict(lambda: defaultdict(lambda: defaultdict(default_hook_counter))),
+            'channel': defaultdict(
+                lambda: defaultdict(lambda: defaultdict(default_hook_counter))
+            ),
         }
 
     return stats
@@ -74,13 +76,17 @@ def do_channel_stats(data, network, channel):
 
 def do_hook_stats(data, hook_name):
     table = [
-        (net, chan, hooks[hook_name]) for net, chans in data['channel'].items() for chan, hooks in chans.items()
+        (net, chan, hooks[hook_name])
+        for net, chans in data['channel'].items()
+        for chan, hooks in chans.items()
     ]
-    return ("Network", "Channel", "Uses - Success", "Uses - Errored"), \
-           [
-               (net, chan, str(count['success']), str(count['failure']))
-               for net, chan, count in sorted(table, key=hook_sorter(2), reverse=True)
-           ]
+    return (
+        ("Network", "Channel", "Uses - Success", "Uses - Errored"),
+        [
+            (net, chan, str(count['success']), str(count['failure']))
+            for net, chan, count in sorted(table, key=hook_sorter(2), reverse=True)
+        ],
+    )
 
 
 stats_funcs = {

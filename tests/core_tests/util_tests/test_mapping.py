@@ -63,11 +63,7 @@ class TestKeyFoldDict:
     def test_update_sequence():
         data = KeyFoldDict()
 
-        data.update([
-            ('a', 1),
-            ('B', 2),
-            ('SEa', 3)
-        ])
+        data.update([('a', 1), ('B', 2), ('SEa', 3)])
 
         assert data['a'] == 1
         assert data['A'] == 1

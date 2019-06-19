@@ -22,8 +22,6 @@ def test_format_exception_chain():
         except ValueError:
             raise err2
     except ValueError as e:
-        assert list(format_error_chain(e)) == list(chain(
-            _get_data(err2),
-            _get_data(err1),
-            _get_data(err),
-        ))
+        assert list(format_error_chain(e)) == list(
+            chain(_get_data(err2), _get_data(err1), _get_data(err))
+        )

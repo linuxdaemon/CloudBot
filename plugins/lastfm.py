@@ -17,7 +17,7 @@ table = Table(
     database.metadata,
     Column('nick', String),
     Column('acc', String),
-    PrimaryKeyConstraint('nick')
+    PrimaryKeyConstraint('nick'),
 )
 
 
@@ -35,9 +35,7 @@ def filter_tags(tags, artist, limit=4):
     """
 
     # We never want to see these specific tags
-    blacklist = [
-        "seen live",
-    ]
+    blacklist = ["seen live"]
 
     # Force all tags to lowercase first
     # This allows easy comparisons with artist and blacklist
@@ -106,7 +104,9 @@ def api_request(method, **params):
 
 def get_tags(method, artist, **params):
     tag_list = []
-    tags, _ = api_request(method + ".getTopTags", artist=artist, autocorrect=1, **params)
+    tags, _ = api_request(
+        method + ".getTopTags", artist=artist, autocorrect=1, **params
+    )
 
     # if artist doesn't exist return no tags
     if tags.get("error") == 6:
@@ -146,7 +146,9 @@ def getsimilarartists(artist):
 
 
 def getusertrackplaycount(artist, track, user):
-    track_info, err = api_request("track.getInfo", artist=artist, track=track, username=user)
+    track_info, err = api_request(
+        "track.getInfo", artist=artist, track=track, username=user
+    )
     if err and not track_info:
         return err
 
@@ -188,7 +190,10 @@ def check_key_and_user(nick, text, lookup=False):
         username = get_account(nick)
 
     if not username:
-        return None, "No last.fm username specified and no last.fm username is set in the database."
+        return (
+            None,
+            "No last.fm username specified and no last.fm username is set in the database.",
+        )
 
     return username, None
 
@@ -248,7 +253,11 @@ def lastfm(event, db, text, nick):
     if isinstance(tracks, list):
         track = tracks[0]
 
-        if "@attr" in track and "nowplaying" in track["@attr"] and track["@attr"]["nowplaying"] == "true":
+        if (
+            "@attr" in track
+            and "nowplaying" in track["@attr"]
+            and track["@attr"]["nowplaying"] == "true"
+        ):
             # if the user is listening to something, the first track (a dict) of the
             # tracks list will contain an item with the "@attr" key.
             # this item will will contain another item with the "nowplaying" key
@@ -295,7 +304,9 @@ def lastfm(event, db, text, nick):
 
     if text and not dontsave:
         if get_account(nick):
-            db.execute(table.update().values(acc=user).where(table.c.nick == nick.lower()))
+            db.execute(
+                table.update().values(acc=user).where(table.c.nick == nick.lower())
+            )
             db.commit()
         else:
             db.execute(table.insert().values(nick=nick.lower(), acc=user))
@@ -348,8 +359,9 @@ def displaybandinfo(text):
     similar = getsimilarartists(text)
     tags = getartisttags(text)
 
-    out = "{} has {:,} plays and {:,} listeners.".format(text, int(a['stats']['playcount']),
-                                                         int(a['stats']['listeners']))
+    out = "{} has {:,} plays and {:,} listeners.".format(
+        text, int(a['stats']['playcount']), int(a['stats']['listeners'])
+    )
     out += " Similar artists include {}. Tags: ({}).".format(similar, tags)
 
     return out
@@ -382,14 +394,18 @@ def lastfmcompare(text, nick):
     if user1_check:
         user1 = user1_check
 
-    data, err = api_request('tasteometer.compare', type1="user", value1=user1, type2="user", value2=user2)
+    data, err = api_request(
+        'tasteometer.compare', type1="user", value1=user1, type2="user", value2=user2
+    )
     if err:
         return err
 
     score = float(data["comparison"]["result"]["score"])
     score = float("{:.3f}".format(score * 100))
     if score == 0:
-        return "{} and {} have no common listening history.".format(format_user(user2), format_user(user1))
+        return "{} and {} have no common listening history.".format(
+            format_user(user2), format_user(user1)
+        )
     levels = (
         ("Super", 95),
         ("Very High", 80),
@@ -436,7 +452,9 @@ def toptrack(text, nick):
         track_name = song["name"]
         artist_name = song["artist"]["name"]
         play_count = song["playcount"]
-        out += "{} by {} listened to {:,} times. ".format(track_name, artist_name, int(play_count))
+        out += "{} by {} listened to {:,} times. ".format(
+            track_name, artist_name, int(play_count)
+        )
     return out
 
 

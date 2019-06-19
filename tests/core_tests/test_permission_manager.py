@@ -7,6 +7,7 @@ class MockConn:
 def test_manager_load():
     import cloudbot.permissions
     from cloudbot.permissions import PermissionManager
+
     manager = PermissionManager(MockConn('testconn', {}))
 
     assert not manager.group_perms
@@ -31,18 +32,12 @@ def test_manager_load():
     other_user = 'user1!b@hosaacom'
 
     cloudbot.permissions.backdoor = None
-    manager = PermissionManager(MockConn('testconn', {
-        'permissions': {
-            'admins': {
-                'users': [
-                    user_mask
-                ],
-                'perms': [
-                    'testperm'
-                ]
-            }
-        }
-    }))
+    manager = PermissionManager(
+        MockConn(
+            'testconn',
+            {'permissions': {'admins': {'users': [user_mask], 'perms': ['testperm']}}},
+        )
+    )
     assert manager.group_exists('admins')
     assert manager.get_groups() == {'admins'}
     assert manager.get_user_groups(user) == ['admins']
@@ -67,18 +62,13 @@ def test_manager_load():
 
 def test_mix_case_group():
     from cloudbot.permissions import PermissionManager
-    manager = PermissionManager(MockConn('testconn', {
-        'permissions': {
-            'Admins': {
-                'users': [
-                    '*!*@host'
-                ],
-                'perms': [
-                    'testperm'
-                ]
-            }
-        }
-    }))
+
+    manager = PermissionManager(
+        MockConn(
+            'testconn',
+            {'permissions': {'Admins': {'users': ['*!*@host'], 'perms': ['testperm']}}},
+        )
+    )
 
     assert manager.group_exists('admins')
     manager.remove_group_user('admins', 'user!name@host')
@@ -88,6 +78,7 @@ def test_mix_case_group():
 
 def test_add_user_to_group():
     from cloudbot.permissions import PermissionManager
+
     manager = PermissionManager(MockConn('testconn', {}))
     manager.add_user_to_group('*!*@host', 'admins')
     manager.add_user_to_group('*!*@mask', 'admins')

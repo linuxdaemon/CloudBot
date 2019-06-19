@@ -69,15 +69,21 @@ def get_cmd_regex(event):
         ^
         # Prefix or nick
         (?:
-            (?P<prefix>[""" + command_prefix + r"""])""" + ('?' if is_pm else '') + r"""
+            (?P<prefix>["""
+        + command_prefix
+        + r"""])"""
+        + ('?' if is_pm else '')
+        + r"""
             |
-            """ + conn_nick + r"""[,;:]+\s+
+            """
+        + conn_nick
+        + r"""[,;:]+\s+
         )
         (?P<command>\w+)  # Command
         (?:$|\s+)
         (?P<text>.*)     # Text
         """,
-        re.IGNORECASE | re.VERBOSE
+        re.IGNORECASE | re.VERBOSE,
     )
     return cmd_re
 
@@ -138,8 +144,11 @@ class CloudBot:
         self.config_reloading_enabled = reloading_conf.get("config_reloading", True)
 
         # this doesn't REALLY need to be here but it's nice
-        self.user_agent = self.config.get('user_agent', 'CloudBot/3.0 - CloudBot Refresh '
-                                                        '<https://github.com/CloudBotIRC/CloudBot/>')
+        self.user_agent = self.config.get(
+            'user_agent',
+            'CloudBot/3.0 - CloudBot Refresh '
+            '<https://github.com/CloudBotIRC/CloudBot/>',
+        )
 
         # setup db
         db_path = self.config.get('database', 'sqlite:///cloudbot.db')
@@ -276,7 +285,9 @@ class CloudBot:
             conn.active = True
 
         # Connect to servers
-        await asyncio.gather(*[conn.try_connect() for conn in self.connections.values()], loop=self.loop)
+        await asyncio.gather(
+            *[conn.try_connect() for conn in self.connections.values()], loop=self.loop
+        )
         logger.debug("Connections created.")
 
         # Run a manual garbage collection cycle, to clean up any unused objects created during initialization
@@ -327,7 +338,9 @@ class CloudBot:
         for raw_hook in self.plugin_manager.catch_all_triggers:
             # run catch-all coroutine hooks before all others - TODO: Make this a plugin argument
             run_before = not raw_hook.threaded
-            if not add_hook(raw_hook, Event(hook=raw_hook, base_event=event), _run_before=run_before):
+            if not add_hook(
+                raw_hook, Event(hook=raw_hook, base_event=event), _run_before=run_before
+            ):
                 # The hook has an action of Action.HALT* so stop adding new tasks
                 break
 
@@ -356,7 +369,11 @@ class CloudBot:
                 command = cmd_match.group('command').lower()
                 text = cmd_match.group('text').strip()
                 cmd_event = partial(
-                    CommandEvent, text=text, triggered_command=command, base_event=event, cmd_prefix=prefix
+                    CommandEvent,
+                    text=text,
+                    triggered_command=command,
+                    base_event=event,
+                    cmd_prefix=prefix,
                 )
                 if command in self.plugin_manager.commands:
                     command_hook = self.plugin_manager.commands[command]
@@ -376,7 +393,9 @@ class CloudBot:
                             command_event = cmd_event(hook=command_hook)
                             add_hook(command_hook, command_event)
                         else:
-                            commands = sorted(command for command, plugin in potential_matches)
+                            commands = sorted(
+                                command for command, plugin in potential_matches
+                            )
                             txt_list = formatting.get_text_list(commands)
                             event.notice("Possible matches: {}".format(txt_list))
 
@@ -393,7 +412,9 @@ class CloudBot:
                 regex_match = regex.search(event.content)
                 if regex_match:
                     regex_matched = True
-                    regex_event = RegexEvent(hook=regex_hook, match=regex_match, base_event=event)
+                    regex_event = RegexEvent(
+                        hook=regex_hook, match=regex_match, base_event=event
+                    )
                     if not add_hook(regex_hook, regex_event):
                         # The hook has an action of Action.HALT* so stop adding new tasks
                         break

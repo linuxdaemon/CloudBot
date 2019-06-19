@@ -49,11 +49,12 @@ def brew(text, reply):
                 'style': style,
                 'abv': abv,
                 'brewer': brewery['name'],
-                'url': url
+                'url': url,
             }
 
-            output = "{name} by {brewer} ({style}, {abv}% ABV) - {url}" \
-                .format(**content)
+            output = "{name} by {brewer} ({style}, {abv}% ABV) - {url}".format(
+                **content
+            )
 
     except Exception:
         reply("Error parsing results.")

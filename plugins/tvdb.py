@@ -31,7 +31,9 @@ def get_episodes_for_series(series_name, api_key):
     series_id = series_id[0]
 
     try:
-        _request = requests.get(base_url + '%s/series/%s/all/en.xml' % (api_key, series_id))
+        _request = requests.get(
+            base_url + '%s/series/%s/all/en.xml' % (api_key, series_id)
+        )
         _request.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
         res["error"] = "error contacting thetvdb.com"
@@ -63,8 +65,10 @@ def get_episode_info(episode):
     except (ValueError, TypeError):
         return None
 
-    episode_num = "S%02dE%02d" % (int(episode.findtext("SeasonNumber")),
-                                  int(episode.findtext("EpisodeNumber")))
+    episode_num = "S%02dE%02d" % (
+        int(episode.findtext("SeasonNumber")),
+        int(episode.findtext("EpisodeNumber")),
+    )
 
     episode_name = episode.findtext("EpisodeName")
     # in the event of an unannounced episode title, users either leave the
@@ -133,9 +137,7 @@ def tv_next(text):
     if len(next_eps) == 1:
         return "The next episode of {} airs {}".format(series_name, next_eps[0])
 
-    return "The next episodes of {}: {}".format(
-        series_name, ', '.join(next_eps)
-    )
+    return "The next episodes of {}: {}".format(series_name, ', '.join(next_eps))
 
 
 @hook.command()

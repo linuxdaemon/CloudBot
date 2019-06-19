@@ -29,7 +29,11 @@ def mcuser(text, bot, reply):
         # we are looking up a UUID, get a name.
         try:
             name = get_name(cleaned)
-        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError, KeyError) as e:
+        except (
+            requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError,
+            KeyError,
+        ) as e:
             reply("Could not get username from UUID: {}".format(e))
             raise
     else:
@@ -37,7 +41,9 @@ def mcuser(text, bot, reply):
 
     # get user data from fishbans
     try:
-        request = requests.get(HIST_API.format(requests.utils.quote(name)), headers=headers)
+        request = requests.get(
+            HIST_API.format(requests.utils.quote(name)), headers=headers
+        )
         request.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         reply("Could not get profile status: {}".format(e))
@@ -52,12 +58,16 @@ def mcuser(text, bot, reply):
     # check for errors from fishbans and handle them
     if not results['success']:
         if results['error'] == "User is not premium.":
-            return "The account \x02{}\x02 is not premium or does not exist.".format(text)
+            return "The account \x02{}\x02 is not premium or does not exist.".format(
+                text
+            )
 
         return results['error']
 
     username = results['data']['username']
     uid = uuid.UUID(results['data']['uuid'])
 
-    return 'The account \x02{}\x02 ({}) exists. It is a \x02paid\x02' \
-           ' account.'.format(username, uid)
+    return (
+        'The account \x02{}\x02 ({}) exists. It is a \x02paid\x02'
+        ' account.'.format(username, uid)
+    )

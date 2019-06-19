@@ -12,9 +12,9 @@ def load_joke_file(path):
     :rtype: List[str]
     """
     with path.open(encoding='utf-8') as f:
-        return [line.strip() for line in f
-                if line.strip()
-                and not line.startswith('//')]
+        return [
+            line.strip() for line in f if line.strip() and not line.startswith('//')
+        ]
 
 
 @hook.on_start()
@@ -117,7 +117,9 @@ def awesome(text, is_nick_valid):
     if not is_nick_valid(target):
         return "Sorry I can't tell {} how awesome they are.".format(target)
     link = 'http://{}.is-awesome.cool/'.format(target)
-    return "{}: I am blown away by your recent awesome action(s). Please read \x02{}\x02".format(target, link)
+    return "{}: I am blown away by your recent awesome action(s). Please read \x02{}\x02".format(
+        target, link
+    )
 
 
 @hook.command(autohelp=False)

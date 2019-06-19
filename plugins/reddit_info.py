@@ -21,7 +21,9 @@ subreddit_url = "http://reddit.com/r/{}/"
 short_url = "https://redd.it/{}"
 post_url = "https://reddit.com/comments/{}.json"
 # This agent should be unique for your cloudbot instance
-agent = {"User-Agent": "gonzobot a cloudbot (IRCbot) implementation for snoonet.org by /u/bloodygonzo"}
+agent = {
+    "User-Agent": "gonzobot a cloudbot (IRCbot) implementation for snoonet.org by /u/bloodygonzo"
+}
 
 post_re = re.compile(
     r"""
@@ -32,7 +34,7 @@ post_re = re.compile(
     )
     /([a-z0-9]+)
     """,
-    re.IGNORECASE | re.VERBOSE
+    re.IGNORECASE | re.VERBOSE,
 )
 
 
@@ -98,7 +100,9 @@ def statuscheck(status, item):
     elif status == 403:
         out = "Sorry {} is set to private and I cannot access it.".format(item)
     elif status == 429:
-        out = "Reddit appears to be rate-limiting me. Please try again in a few minutes."
+        out = (
+            "Reddit appears to be rate-limiting me. Please try again in a few minutes."
+        )
     elif status == 503:
         out = "Reddit is having problems, it would be best to check back later."
     else:
@@ -169,7 +173,9 @@ def reddit(text, bot, reply):
             item = data[id_num]
         except IndexError:
             length = len(data)
-            return "Invalid post number. Number must be between 1 and {}.".format(length)
+            return "Invalid post number. Number must be between 1 and {}.".format(
+                length
+            )
     else:
         item = random.choice(data)
 
@@ -223,7 +229,9 @@ def karma(text, reply):
     out = "$(b){}$(b) ".format(user)
 
     parts = [
-        "$(b){:,}$(b) link karma and $(b){:,}$(b) comment karma".format(data['link_karma'], data['comment_karma'])
+        "$(b){:,}$(b) link karma and $(b){:,}$(b) comment karma".format(
+            data['link_karma'], data['comment_karma']
+        )
     ]
 
     if data['is_gold']:
@@ -235,7 +243,11 @@ def karma(text, reply):
     if data['has_verified_email']:
         parts.append("email has been verified")
 
-    parts.append("cake day is {}".format(datetime.fromtimestamp(data['created_utc']).strftime('%B %d')))
+    parts.append(
+        "cake day is {}".format(
+            datetime.fromtimestamp(data['created_utc']).strftime('%B %d')
+        )
+    )
 
     account_age = datetime.now() - datetime.fromtimestamp(data['created'])
     age = account_age.days
@@ -254,7 +266,9 @@ def cake_day(text, reply):
     user = get_user(text)
     data = get_user_data('about.json', user, reply)
     out = colors.parse("$(b){}'s$(b) ".format(user))
-    out += "cake day is {}, ".format(datetime.fromtimestamp(data['data']['created_utc']).strftime('%B %d'))
+    out += "cake day is {}, ".format(
+        datetime.fromtimestamp(data['data']['created_utc']).strftime('%B %d')
+    )
     account_age = datetime.now() - datetime.fromtimestamp(data['data']['created'])
     age = account_age.days
     age_unit = "day"
@@ -328,10 +342,10 @@ def subinfo(text, reply):
     active = data['data']['accounts_active']
     sub_age = datetime.now() - datetime.fromtimestamp(data['data']['created'])
     age, age_unit = time_format(sub_age.days)
-    out = ("/r/$(b){}$(clear) - {} - a community for {}{}, there are {:,} subscribers and {:,} people online "
-           "now.").format(
-        name, title, age, age_unit, subscribers, active
-    )
+    out = (
+        "/r/$(b){}$(clear) - {} - a community for {}{}, there are {:,} subscribers and {:,} people online "
+        "now."
+    ).format(name, title, age, age_unit, subscribers, active)
     if nsfw:
         out += " $(red)NSFW$(clear)"
     return colors.parse(out)

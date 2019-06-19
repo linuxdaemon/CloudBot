@@ -29,7 +29,9 @@ def test_hook_decorate():
         pass  # pragma: no cover
 
     assert f._cloudbot_hook['event'].types == {
-        EventType.message, EventType.notice, EventType.action
+        EventType.message,
+        EventType.notice,
+        EventType.action,
     }
     assert f._cloudbot_hook['command'].aliases == {'test'}
     assert f._cloudbot_hook['irc_raw'].triggers == {'*', 'PRIVMSG'}

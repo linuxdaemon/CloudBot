@@ -13,7 +13,7 @@ table = Table(
     database.metadata,
     Column('conn', String),
     Column('chan', String),
-    PrimaryKeyConstraint('conn', 'chan')
+    PrimaryKeyConstraint('conn', 'chan'),
 )
 
 chan_cache = defaultdict(set)
@@ -21,7 +21,9 @@ db_lock = RLock()
 
 
 def get_channels(db, conn):
-    return db.execute(table.select().where(table.c.conn == conn.name.casefold())).fetchall()
+    return db.execute(
+        table.select().where(table.c.conn == conn.name.casefold())
+    ).fetchall()
 
 
 @hook.on_start
@@ -53,7 +55,11 @@ def add_chan(db, conn, chan, nick):
     if nick.casefold() == conn.nick.casefold() and chan not in chans:
         with db_lock:
             try:
-                db.execute(table.insert().values(conn=conn.name.casefold(), chan=chan.casefold()))
+                db.execute(
+                    table.insert().values(
+                        conn=conn.name.casefold(), chan=chan.casefold()
+                    )
+                )
             except IntegrityError:
                 db.rollback()
             else:
@@ -67,7 +73,13 @@ def on_part(db, conn, chan, nick):
     if nick.casefold() == conn.nick.casefold():
         with db_lock:
             db.execute(
-                table.delete().where(and_(table.c.conn == conn.name.casefold(), table.c.chan == chan.casefold())))
+                table.delete().where(
+                    and_(
+                        table.c.conn == conn.name.casefold(),
+                        table.c.chan == chan.casefold(),
+                    )
+                )
+            )
             db.commit()
 
         load_cache(db)

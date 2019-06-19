@@ -58,7 +58,9 @@ def gse_gis(text):
     if not cx:
         return "This command requires a custom Google Search Engine ID."
 
-    parsed = requests.get(API_CS, params={"cx": cx, "q": text, "searchType": "image", "key": dev_key}).json()
+    parsed = requests.get(
+        API_CS, params={"cx": cx, "q": text, "searchType": "image", "key": dev_key}
+    ).json()
 
     try:
         result = parsed['items'][0]

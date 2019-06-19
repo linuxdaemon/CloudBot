@@ -10,9 +10,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 def get_data(query_type):  # pragma: no cover
     params = {'q': 'test search'}
     with requests.get(
-            str(BASE_URL / query_type),
-            params=params,
-            verify=False,  # nosec
+        str(BASE_URL / query_type), params=params, verify=False  # nosec
     ) as response:
         response.raise_for_status()
         return response.content

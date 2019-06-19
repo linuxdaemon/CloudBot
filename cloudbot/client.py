@@ -22,7 +22,9 @@ def client(_type):
 
 class ClientConnectError(Exception):
     def __init__(self, client_name, server):
-        super().__init__("Unable to connect to client {} with server {}".format(client_name, server))
+        super().__init__(
+            "Unable to connect to client {} with server {}".format(client_name, server)
+        )
         self.client_name = client_name
         self.server = server
 

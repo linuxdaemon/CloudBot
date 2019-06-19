@@ -14,9 +14,7 @@ random_url = base_url + "/random"
 def urban(text, reply):
     """<phrase> [id] - Looks up <phrase> on urbandictionary.com."""
 
-    headers = {
-        "Referer": "http://m.urbandictionary.com"
-    }
+    headers = {"Referer": "http://m.urbandictionary.com"}
 
     if text:
         # clean and split the input
@@ -37,7 +35,10 @@ def urban(text, reply):
             params = {"term": text}
             request = requests.get(define_url, params=params, headers=headers)
             request.raise_for_status()
-        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
+        except (
+            requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError,
+        ) as e:
             reply("Could not get definition: {}".format(e))
             raise
 
@@ -47,7 +48,10 @@ def urban(text, reply):
         try:
             request = requests.get(random_url, headers=headers)
             request.raise_for_status()
-        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
+        except (
+            requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError,
+        ) as e:
             reply("Could not get definition: {}".format(e))
             raise
 
@@ -64,7 +68,9 @@ def urban(text, reply):
         try:
             definition = definitions[id_num - 1]
 
-            def_text = " ".join(definition['definition'].split())  # remove excess spaces
+            def_text = " ".join(
+                definition['definition'].split()
+            )  # remove excess spaces
             def_text = formatting.truncate(def_text, 200)
         except IndexError:
             return 'Not found.'

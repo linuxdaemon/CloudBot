@@ -1,9 +1,6 @@
 from collections import defaultdict
 
-__all__ = (
-    'KeyFoldDict',
-    'KeyFoldMixin',
-)
+__all__ = ('KeyFoldDict', 'KeyFoldMixin')
 
 
 # noinspection PyUnresolvedReferences

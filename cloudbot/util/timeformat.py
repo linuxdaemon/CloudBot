@@ -146,7 +146,7 @@ def format_time(seconds, count=3, accuracy=6, simple=False):
             ('d', 60 * 60 * 24),
             ('h', 60 * 60),
             ('m', 60),
-            ('s', 1)
+            ('s', 1),
         ]
     else:
         periods = [
@@ -157,7 +157,7 @@ def format_time(seconds, count=3, accuracy=6, simple=False):
             (('day', 'days'), 60 * 60 * 24),
             (('hour', 'hours'), 60 * 60),
             (('minute', 'minutes'), 60),
-            (('second', 'seconds'), 1)
+            (('second', 'seconds'), 1),
         ]
 
     periods = periods[-accuracy:]

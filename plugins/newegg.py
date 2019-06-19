@@ -25,10 +25,14 @@ ITEM_URL = "https://www.newegg.com/Product/Product.aspx?Item={}"
 API_PRODUCT = "https://www.ows.newegg.com/Products.egg/{}"
 API_SEARCH = "https://www.ows.newegg.com/Search.egg/Advanced"
 
-NEWEGG_RE = re.compile(r"(?:(?:www.newegg.com|newegg.com)/Product/Product\.aspx\?Item=)([-_a-zA-Z0-9]+)", re.I)
+NEWEGG_RE = re.compile(
+    r"(?:(?:www.newegg.com|newegg.com)/Product/Product\.aspx\?Item=)([-_a-zA-Z0-9]+)",
+    re.I,
+)
 
 
 # OTHER FUNCTIONS
+
 
 def format_item(item, show_url=True):
     """ takes a newegg API item object and returns a description """
@@ -36,8 +40,9 @@ def format_item(item, show_url=True):
 
     # format the rating nicely if it exists
     if not item["ReviewSummary"]["TotalReviews"] == "[]":
-        rating = "Rated {}/5 ({} ratings)".format(item["ReviewSummary"]["Rating"],
-                                                  item["ReviewSummary"]["TotalReviews"])
+        rating = "Rated {}/5 ({} ratings)".format(
+            item["ReviewSummary"]["Rating"], item["ReviewSummary"]["TotalReviews"]
+        )
     else:
         rating = "No Ratings"
 
@@ -68,13 +73,15 @@ def format_item(item, show_url=True):
     if show_url:
         # create the item URL and shorten it
         url = web.try_shorten(ITEM_URL.format(item["NeweggItemNumber"]))
-        return "\x02{}\x02 ({}) - {} - {} - {}".format(title, price, rating,
-                                                       tag_text, url)
+        return "\x02{}\x02 ({}) - {} - {} - {}".format(
+            title, price, rating, tag_text, url
+        )
 
     return "\x02{}\x02 ({}) - {} - {}".format(title, price, rating, tag_text)
 
 
 # HOOK FUNCTIONS
+
 
 @hook.regex(NEWEGG_RE)
 def newegg_url(match):
@@ -83,8 +90,8 @@ def newegg_url(match):
     # newegg thinks it's so damn smart blocking my scraper
     headers = {
         'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) '
-                      'Version/5.1 Mobile/9A334 Safari/7534.48.3',
-        'Referer': 'http://www.newegg.com/'
+        'Version/5.1 Mobile/9A334 Safari/7534.48.3',
+        'Referer': 'http://www.newegg.com/',
     }
 
     request = requests.get(API_PRODUCT.format(item_id), headers=headers)
@@ -98,16 +105,13 @@ def newegg(text, admin_log, reply):
     """<item name> - searches newegg.com for <item name>"""
 
     # form the search request
-    request = {
-        "Keyword": text,
-        "Sort": "FEATURED"
-    }
+    request = {"Keyword": text, "Sort": "FEATURED"}
 
     # newegg thinks it's so damn smart blocking my scraper
     headers = {
         'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) '
-                      'Version/5.1 Mobile/9A334 Safari/7534.48.3',
-        'Referer': 'http://www.newegg.com/'
+        'Version/5.1 Mobile/9A334 Safari/7534.48.3',
+        'Referer': 'http://www.newegg.com/',
     }
 
     # submit the search request
@@ -115,7 +119,7 @@ def newegg(text, admin_log, reply):
         request = requests.post(
             'http://www.ows.newegg.com/Search.egg/Advanced',
             data=json.dumps(request).encode('utf-8'),
-            headers=headers
+            headers=headers,
         )
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         return "Unable to find product: {}".format(e)
@@ -124,10 +128,14 @@ def newegg(text, admin_log, reply):
 
     if not request.ok:
         if r.get("Message"):
-            msg = "{ExceptionMessage}\n{ExceptionType}\n{StackTrace}".format(**r).replace("\r", "")
+            msg = "{ExceptionMessage}\n{ExceptionType}\n{StackTrace}".format(
+                **r
+            ).replace("\r", "")
             url = web.paste(msg)
             admin_log("Newegg API Error: {ExceptionType}: {url}".format(url=url, **r))
-            return "Newegg Error: {Message} (\x02{code}\x02)".format(code=request.status_code, **r)
+            return "Newegg Error: {Message} (\x02{code}\x02)".format(
+                code=request.status_code, **r
+            )
 
         reply("Unknown error occurred.")
         request.raise_for_status()

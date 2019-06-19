@@ -121,9 +121,7 @@ def format_requests_exc(exc: RequestException) -> Iterable[str]:
     yield from _format("Response Info", exc.response)
 
 
-SPECIAL_CASES = {
-    RequestException: format_requests_exc,
-}
+SPECIAL_CASES = {RequestException: format_requests_exc}
 
 
 def format_error_data(exc: Exception) -> Iterable[str]:
@@ -190,18 +188,14 @@ def on_hook_end(error, launched_hook, launched_event, admin_log):
         messages.append(last_line.strip())
     except Exception:
         msg = traceback.format_exc()[-1]
-        messages.append(
-            "Error occurred while formatting error {}".format(msg)
-        )
+        messages.append("Error occurred while formatting error {}".format(msg))
     else:
         try:
             url = web.paste('\n'.join(lines))
             messages.append("Traceback: " + url)
         except Exception:
             msg = traceback.format_exc()[-1]
-            messages.append(
-                "Error occurred while gathering traceback {}".format(msg)
-            )
+            messages.append("Error occurred while gathering traceback {}".format(msg))
 
     try:
         lines = ["Event Data:"]
@@ -216,9 +210,7 @@ def on_hook_end(error, launched_hook, launched_event, admin_log):
         messages.append("Event: " + url)
     except Exception:
         msg = traceback.format_exc()[-1]
-        messages.append(
-            "Error occurred while gathering error data {}".format(msg)
-        )
+        messages.append("Error occurred while gathering error data {}".format(msg))
 
     for message in messages:
         admin_log(message, should_broadcast)

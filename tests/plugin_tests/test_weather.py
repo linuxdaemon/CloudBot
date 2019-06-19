@@ -22,83 +22,80 @@ class MockBot:
         self.config = MockConfig(self, config)
 
 
-@pytest.mark.parametrize('bearing,direction', {
-    (360, 'N'),
-    (0, 'N'),
-    (1, 'N'),
-    (15, 'NNE'),
-    (30, 'NNE'),
-    (45, 'NE'),
-    (60, 'ENE'),
-    (75, 'ENE'),
-    (90, 'E'),
-    (105, 'ESE'),
-    (120, 'ESE'),
-    (135, 'SE'),
-    (150, 'SSE'),
-    (165, 'SSE'),
-    (180, 'S'),
-    (348.75, 'N'),
-    (348.74, 'NNW'),
-})
+@pytest.mark.parametrize(
+    'bearing,direction',
+    {
+        (360, 'N'),
+        (0, 'N'),
+        (1, 'N'),
+        (15, 'NNE'),
+        (30, 'NNE'),
+        (45, 'NE'),
+        (60, 'ENE'),
+        (75, 'ENE'),
+        (90, 'E'),
+        (105, 'ESE'),
+        (120, 'ESE'),
+        (135, 'SE'),
+        (150, 'SSE'),
+        (165, 'SSE'),
+        (180, 'S'),
+        (348.75, 'N'),
+        (348.74, 'NNW'),
+    },
+)
 def test_wind_direction(bearing, direction):
     from plugins.weather import bearing_to_card
+
     assert bearing_to_card(bearing) == direction
 
 
 def test_wind_dir_error():
     with pytest.raises(ValueError):
         from plugins.weather import bearing_to_card
+
         bearing_to_card(400)
 
 
-@pytest.mark.parametrize('temp_f,temp_c', [
-    (32, 0),
-    (212, 100),
-    (-40, -40),
-])
+@pytest.mark.parametrize('temp_f,temp_c', [(32, 0), (212, 100), (-40, -40)])
 def test_temp_convert(temp_f, temp_c):
     from plugins.weather import convert_f2c
+
     assert convert_f2c(temp_f) == temp_c
 
 
-@pytest.mark.parametrize('mph,kph', [
-    (0, 0),
-    (43, 69.2),
-])
+@pytest.mark.parametrize('mph,kph', [(0, 0), (43, 69.2)])
 def test_mph_to_kph(mph, kph):
     from plugins.weather import mph_to_kph
+
     assert math.isclose(mph_to_kph(mph), kph, rel_tol=1e-3)
 
 
 def test_find_location():
     from plugins.weather import create_maps_api
+
     bot = MockBot({})
     create_maps_api(bot)
     from plugins import weather
+
     assert weather.data.maps_api is None
-    bot = MockBot({'api_keys': {
-        'google_dev_key': 'AIzatestapikey',
-        'darksky': 'abc12345' * 4,
-    }})
+    bot = MockBot(
+        {'api_keys': {'google_dev_key': 'AIzatestapikey', 'darksky': 'abc12345' * 4}}
+    )
     with RequestsMock() as reqs:
         return_value = {
             'status': 'OK',
             'results': [
                 {
-                    'geometry': {
-                        'location': {
-                            'lat': 30.123,
-                            'lng': 123.456,
-                        }
-                    },
-                    'formatted_address': '123 Test St, Example City, CA'
+                    'geometry': {'location': {'lat': 30.123, 'lng': 123.456}},
+                    'formatted_address': '123 Test St, Example City, CA',
                 }
-            ]
+            ],
         }
         reqs.add(
-            reqs.GET, 'https://maps.googleapis.com/maps/api/geocode/json',
-            json=return_value
+            reqs.GET,
+            'https://maps.googleapis.com/maps/api/geocode/json',
+            json=return_value,
         )
         create_maps_api(bot)
 
@@ -111,25 +108,29 @@ def test_find_location():
         }
 
         cmd_event = CommandEvent(
-            text='', cmd_prefix='.',
+            text='',
+            cmd_prefix='.',
             triggered_command='we',
-            hook=MagicMock(), bot=bot,
-            conn=MagicMock(), channel='#foo',
-            nick='foobar'
+            hook=MagicMock(),
+            bot=bot,
+            conn=MagicMock(),
+            channel='#foo',
+            nick='foobar',
         )
 
         call_with_args(weather.weather, cmd_event)
         weather.location_cache.append(('foobar', 'test location'))
 
         reqs.add(
-            reqs.GET, re.compile(r'^https://api\.darksky\.net/forecast/.*'),
+            reqs.GET,
+            re.compile(r'^https://api\.darksky\.net/forecast/.*'),
             json={
                 'currently': {
                     'summary': 'foobar',
                     'windSpeed': 12.2,
                     'windBearing': 128,
                     'temperature': 68,
-                    'humidity': .45,
+                    'humidity': 0.45,
                 },
                 'daily': {
                     'data': [
@@ -139,7 +140,7 @@ def test_find_location():
                             'temperatureLow': 57,
                             'windSpeed': 15,
                             'windBearing': 140,
-                            'humidity': .45,
+                            'humidity': 0.45,
                         },
                         {
                             'summary': 'foobar',
@@ -147,7 +148,7 @@ def test_find_location():
                             'temperatureLow': 57,
                             'windSpeed': 15,
                             'windBearing': 140,
-                            'humidity': .45,
+                            'humidity': 0.45,
                         },
                         {
                             'summary': 'foobar',
@@ -155,7 +156,7 @@ def test_find_location():
                             'temperatureLow': 57,
                             'windSpeed': 15,
                             'windBearing': 140,
-                            'humidity': .45,
+                            'humidity': 0.45,
                         },
                         {
                             'summary': 'foobar',
@@ -163,7 +164,7 @@ def test_find_location():
                             'temperatureLow': 57,
                             'windSpeed': 15,
                             'windBearing': 140,
-                            'humidity': .45,
+                            'humidity': 0.45,
                         },
                         {
                             'summary': 'foobar',
@@ -171,7 +172,7 @@ def test_find_location():
                             'temperatureLow': 57,
                             'windSpeed': 15,
                             'windBearing': 140,
-                            'humidity': .45,
+                            'humidity': 0.45,
                         },
                     ]
                 },
@@ -181,7 +182,7 @@ def test_find_location():
                 'Expires': '',
                 'X-Forecast-API-Calls': '',
                 'X-Response-Time': '',
-            }
+            },
         )
         with mock.patch('cloudbot.util.web.try_shorten', new=lambda x: x):
             call_with_args(weather.weather, cmd_event)
@@ -189,8 +190,9 @@ def test_find_location():
 
         reqs.reset()
         reqs.add(
-            reqs.GET, 'https://maps.googleapis.com/maps/api/geocode/json',
-            json={'status': 'foobar'}
+            reqs.GET,
+            'https://maps.googleapis.com/maps/api/geocode/json',
+            json={'status': 'foobar'},
         )
 
         with pytest.raises(ApiError):

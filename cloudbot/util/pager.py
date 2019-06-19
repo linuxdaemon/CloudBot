@@ -106,8 +106,7 @@ class CommandPager(Pager):
 
 
 def paginated_list(
-        data, delim=" \u2022 ", suffix='...', max_len=256,
-        page_size=2, pager_cls=Pager
+    data, delim=" \u2022 ", suffix='...', max_len=256, page_size=2, pager_cls=Pager
 ):
     """
     >>> list(paginated_list(['abc', 'def']))

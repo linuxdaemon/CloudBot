@@ -26,6 +26,7 @@ pronunciations = {}
 # Translate functions by J.F. Sebastian
 # <https://stackoverflow.com/questions/22773826/pig-latin-translator>
 
+
 def translate(word):
     word = word.lower()  # NOTE: ignore Unicode casefold
     i = 0

@@ -73,7 +73,11 @@ def poll(text, conn, nick, chan, message, reply):
             return "You have no active poll to close."
 
         p = polls.get(uid)
-        reply("Your poll has been closed. Final results for \x02\"{}\"\x02:".format(p.question))
+        reply(
+            "Your poll has been closed. Final results for \x02\"{}\"\x02:".format(
+                p.question
+            )
+        )
         message(p.format_results())
         del polls[uid]
         return
@@ -95,8 +99,14 @@ def poll(text, conn, nick, chan, message, reply):
     # store poll in list
     polls[uid] = _poll
 
-    option_str = get_text_list([option.title for option in _poll.options.values()], "and")
-    message('Created poll \x02\"{}\"\x02 with the following options: {}'.format(_poll.question, option_str))
+    option_str = get_text_list(
+        [option.title for option in _poll.options.values()], "and"
+    )
+    message(
+        'Created poll \x02\"{}\"\x02 with the following options: {}'.format(
+            _poll.question, option_str
+        )
+    )
     message("Use .vote {} <option> to vote on this poll!".format(nick.lower()))
 
 

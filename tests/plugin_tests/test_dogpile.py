@@ -24,27 +24,26 @@ def test_data():
 def add_page(mock_requests, endpoint, test_data):
     data = test_data[endpoint]
     mock_requests.add(
-        mock_requests.GET,
-        'https://www.dogpile.com/search/' + endpoint,
-        body=data,
+        mock_requests.GET, 'https://www.dogpile.com/search/' + endpoint, body=data
     )
 
 
 def test_web_search(test_data, mock_requests):
     add_page(mock_requests, 'web', test_data)
     from plugins.dogpile import dogpile
-    assert dogpile('test search') == 'https://search.google.com/test/mobile-friendly -- ' \
-                                     '\x02Test how easily a visitor can use your page on a mobile device. ' \
-                                     'Just enter a page URL to see how your page scores. ' \
-                                     '... Google apps. Main menu Mobile-Friendly Test ... ' \
-                                     'Search Console alerts you about critical site errors such as ' \
-                                     'detection of hacked content, and helps you manage how your content ' \
-                                     'appears in search results.\x02'
+
+    assert (
+        dogpile('test search') == 'https://search.google.com/test/mobile-friendly -- '
+        '\x02Test how easily a visitor can use your page on a mobile device. '
+        'Just enter a page URL to see how your page scores. '
+        '... Google apps. Main menu Mobile-Friendly Test ... '
+        'Search Console alerts you about critical site errors such as '
+        'detection of hacked content, and helps you manage how your content '
+        'appears in search results.\x02'
+    )
 
     mock_requests.replace(
-        mock_requests.GET,
-        'https://www.dogpile.com/search/web',
-        body='',
+        mock_requests.GET, 'https://www.dogpile.com/search/web', body=''
     )
 
     assert dogpile('test search') == 'No results found.'
@@ -53,6 +52,7 @@ def test_web_search(test_data, mock_requests):
 def test_image_search(test_data, mock_requests):
     add_page(mock_requests, 'images', test_data)
     from plugins.dogpile import dogpileimage
+
     assert dogpileimage('test search') in [
         'http://www.opentestsearch.com/files/2012/04/Searchdaimon_admin_4.png',
         'https://avaldes.com/wp-content/uploads/2014/03/test_search_xml.png?2d262d&2d262d',
@@ -88,13 +88,11 @@ def test_image_search(test_data, mock_requests):
         'https://i.pinimg.com/736x/24/2d/02/242d029a84185ba7709bc019b36b0fd6--genealogy-dna-test-genealogy-search.jpg',
         'http://slideplayer.com/9460680/29/images/6/Use+the+filters+to+find+questions+for+your+test.jpg',
         'https://marketplace-cdn.atlassian.com/files/images/8de36cd1-c798-4592-8a94-4cb2922188a9.jpeg',
-        'https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2016/05/Google_search_test.jpg'
+        'https://cdn0.tnwcdn.com/wp-content/blogs.dir/1/files/2016/05/Google_search_test.jpg',
     ]
 
     mock_requests.replace(
-        mock_requests.GET,
-        'https://www.dogpile.com/search/images',
-        body='',
+        mock_requests.GET, 'https://www.dogpile.com/search/images', body=''
     )
 
     assert dogpileimage('test search') == 'No results found.'

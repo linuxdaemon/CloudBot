@@ -1,6 +1,7 @@
 import requests
 
 from cloudbot import hook
+
 # Define some constants
 from cloudbot.bot import bot
 

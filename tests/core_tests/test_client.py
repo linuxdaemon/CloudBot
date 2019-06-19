@@ -37,9 +37,7 @@ class FailingTestClient(TestClient):  # pylint: disable=abstract-method
 
 
 def test_client_no_config():
-    client = TestClient(
-        Bot(), 'foo', 'foobot', channels=['#foo']
-    )
+    client = TestClient(Bot(), 'foo', 'foobot', channels=['#foo'])
     assert client.config.get('a') is None
 
 
@@ -63,8 +61,12 @@ def test_client():
 def test_client_connect_exc():
     with patch('random.randrange', return_value=1):
         client = FailingTestClient(
-            Bot(), 'foo', 'foobot', channels=['#foo'], config={'name': 'foo'},
-            fail_count=1
+            Bot(),
+            'foo',
+            'foobot',
+            channels=['#foo'],
+            config={'name': 'foo'},
+            fail_count=1,
         )
         client.loop.run_until_complete(client.try_connect())
 

@@ -17,10 +17,7 @@ def load_key():
         return
 
     url = api_url + "getLangs"
-    params = {
-        'key': api_key,
-        'ui': 'en'
-    }
+    params = {'key': api_key, 'ui': 'en'}
     r = requests.get(url, params=params)
     r.raise_for_status()
     data = r.json()
@@ -39,7 +36,7 @@ def check_code(code):
         404: 'The daily limit of translated text has been reached',
         413: 'The text exceeds the maximum',
         422: 'The text could not be translated',
-        501: 'The specified translation direction is not supported'
+        501: 'The specified translation direction is not supported',
     }
     try:
         out = codes[code]
@@ -57,20 +54,21 @@ def list_langs():
         return "This command requires a Yandex Translate API key"
 
     url = api_url + "getLangs"
-    params = {
-        'key': api_key,
-        'ui': 'en'
-    }
+    params = {'key': api_key, 'ui': 'en'}
     r = requests.get(url, params=params)
     r.raise_for_status()
     data = r.json()
     langs = data['langs']
     out = "Language Codes:"
-    out += ",".join("\n{}-{}".format(key, value) for (key, value) in sorted(langs.items()))
+    out += ",".join(
+        "\n{}-{}".format(key, value) for (key, value) in sorted(langs.items())
+    )
     out += "\n\nTranslation directions:"
     out += ",".join("\n{}".format(code) for code in data['dirs'])
     paste = web.paste(out, ext="txt")
-    return "Here is information on what I can translate as well as valid language codes. {}".format(paste)
+    return "Here is information on what I can translate as well as valid language codes. {}".format(
+        paste
+    )
 
 
 @hook.command("tran", "translate")
@@ -93,15 +91,12 @@ def trans(text, reply, event):
     if lang.title() in lang_dict.keys():
         lang = lang_dict[lang.title()]
     elif lang not in lang_dict.values() and lang not in lang_dir:
-        return "Please specify a valid language, language code, to translate to. Use .langlist for more information " \
-               "on language codes and valid translation directions."
+        return (
+            "Please specify a valid language, language code, to translate to. Use .langlist for more information "
+            "on language codes and valid translation directions."
+        )
     url = api_url + "translate"
-    params = {
-        'key': api_key,
-        'lang': lang,
-        'text': text,
-        'options': 1
-    }
+    params = {'key': api_key, 'lang': lang, 'text': text, 'options': 1}
 
     try:
         r = requests.get(url, params=params)

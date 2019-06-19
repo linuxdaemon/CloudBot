@@ -47,7 +47,9 @@ class Config(OrderedDict):
             logger.critical("No config file found, bot shutting down!")
             print("No config file found! Bot shutting down in five seconds.")
             print("Copy 'config.default.json' to 'config.json' for defaults.")
-            print("For help, see http://git.io/cloudbotirc. Thank you for using CloudBot!")
+            print(
+                "For help, see http://git.io/cloudbotirc. Thank you for using CloudBot!"
+            )
             time.sleep(5)
             sys.exit()
 

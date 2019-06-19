@@ -17,7 +17,9 @@ logger = logging.getLogger("cloudbot")
 
 irc_nick_re = re.compile(r'[A-Za-z0-9^{\}\[\]\-`_|\\]+')
 
-irc_bad_chars = ''.join([chr(x) for x in list(range(0, 1)) + list(range(4, 32)) + list(range(127, 160))])
+irc_bad_chars = ''.join(
+    [chr(x) for x in list(range(0, 1)) + list(range(4, 32)) + list(range(127, 160))]
+)
 irc_clean_re = re.compile('[{}]'.format(re.escape(irc_bad_chars)))
 
 
@@ -30,7 +32,7 @@ irc_command_to_event_type = {
     "JOIN": EventType.join,
     "PART": EventType.part,
     "KICK": EventType.kick,
-    "NOTICE": EventType.notice
+    "NOTICE": EventType.notice,
 }
 
 
@@ -72,7 +74,10 @@ class IrcClient(Client):
         self.server = config['connection']['server']
         self.port = config['connection'].get('port', 6667)
 
-        local_bind = (config['connection'].get('bind_addr', False), config['connection'].get('bind_port', 0))
+        local_bind = (
+            config['connection'].get('bind_addr', False),
+            config['connection'].get('bind_port', 0),
+        )
         if local_bind[0] is False:
             local_bind = False
 
@@ -118,12 +123,17 @@ class IrcClient(Client):
             try:
                 await self.connect(self._timeout)
             except (TimeoutError, asyncio.TimeoutError):
-                logger.error("[%s] Timeout occurred while connecting to %s", self.name, self.describe_server())
+                logger.error(
+                    "[%s] Timeout occurred while connecting to %s",
+                    self.name,
+                    self.describe_server(),
+                )
             except (socket.error, socket.gaierror, OSError, ssl.SSLError):
                 logger.error(
                     "[%s] Error occurred while connecting to %s (%s)",
-                    self.name, self.describe_server(),
-                    traceback.format_exc().splitlines()[-1]
+                    self.name,
+                    self.describe_server(),
+                    traceback.format_exc().splitlines()[-1],
                 )
             except Exception as e:
                 raise ClientConnectError(self.name, self.describe_server()) from e
@@ -133,9 +143,7 @@ class IrcClient(Client):
             sleep_time = random.randrange(self._timeout)
             canceller = asyncio.shield(self.cancelled_future)
             try:
-                await asyncio.wait_for(
-                    canceller, timeout=sleep_time
-                )
+                await asyncio.wait_for(canceller, timeout=sleep_time)
             except asyncio.CancelledError:
                 pass
 
@@ -144,7 +152,9 @@ class IrcClient(Client):
         Connects to the IRC server, or reconnects if already connected.
         """
         if self._connecting:
-            raise ValueError("Attempted to connect while another connect attempt is happening")
+            raise ValueError(
+                "Attempted to connect while another connect attempt is happening"
+            )
 
         self._connecting = True
         try:
@@ -167,7 +177,11 @@ class IrcClient(Client):
             optional_params["local_addr"] = self.local_bind
 
         coro = self.loop.create_connection(
-            partial(_IrcProtocol, self), host=self.server, port=self.port, ssl=self.ssl_context, **optional_params
+            partial(_IrcProtocol, self),
+            host=self.server,
+            port=self.port,
+            ssl=self.ssl_context,
+            **optional_params,
         )
 
         if timeout is not None:
@@ -176,7 +190,9 @@ class IrcClient(Client):
         self._transport, self._protocol = await coro
 
         tasks = [
-            self.bot.plugin_manager.launch(hook, Event(bot=self.bot, conn=self, hook=hook))
+            self.bot.plugin_manager.launch(
+                hook, Event(bot=self.bot, conn=self, hook=hook)
+            )
             for hook in self.bot.plugin_manager.connect_hooks
             if not hook.clients or self.type in hook.clients
         ]
@@ -358,9 +374,13 @@ class _IrcProtocol(asyncio.Protocol):
                 bot=self.bot, hook=out_sieve, conn=self.conn, irc_raw=line
             )
 
-            ok, new_line = await self.bot.plugin_manager.internal_launch(out_sieve, event)
+            ok, new_line = await self.bot.plugin_manager.internal_launch(
+                out_sieve, event
+            )
             if not ok:
-                logger.warning("Error occurred in outgoing sieve, falling back to old behavior")
+                logger.warning(
+                    "Error occurred in outgoing sieve, falling back to old behavior"
+                )
                 logger.debug("Line was: %s", line)
                 filtered = False
                 break
@@ -398,7 +418,9 @@ class _IrcProtocol(asyncio.Protocol):
             except Exception:
                 logger.exception(
                     "[%s] Error occurred while parsing IRC line '%s' from %s",
-                    self.conn.name, line, self.conn.describe_server()
+                    self.conn.name,
+                    line,
+                    self.conn.describe_server(),
                 )
                 continue
 
@@ -421,9 +443,7 @@ class _IrcProtocol(asyncio.Protocol):
                 content = None
 
             # Event type
-            event_type = irc_command_to_event_type.get(
-                command, EventType.other
-            )
+            event_type = irc_command_to_event_type.get(command, EventType.other)
 
             # Target (for KICK, INVITE)
             if event_type is EventType.kick:
@@ -444,7 +464,7 @@ class _IrcProtocol(asyncio.Protocol):
                     logger.debug(
                         "[%s] Invalid CTCP message received, "
                         "treating it as a mornal message",
-                        self.conn.name
+                        self.conn.name,
                     )
                     ctcp_text = None
                 else:
@@ -467,7 +487,9 @@ class _IrcProtocol(asyncio.Protocol):
                     channel = command_params[0]
                 elif command == "INVITE":
                     channel = command_params[1]
-                elif len(command_params) > 2 or not (command_params.has_trail and len(command_params) == 1):
+                elif len(command_params) > 2 or not (
+                    command_params.has_trail and len(command_params) == 1
+                ):
                     channel = command_params[0]
 
             prefix = message.prefix
@@ -495,9 +517,22 @@ class _IrcProtocol(asyncio.Protocol):
             # Set up parsed message
             # TODO: Do we really want to send the raw `prefix` and `command_params` here?
             event = Event(
-                bot=self.bot, conn=self.conn, event_type=event_type, content_raw=content_raw, content=content,
-                target=target, channel=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=line,
-                irc_prefix=mask, irc_command=command, irc_paramlist=command_params, irc_ctcp_text=ctcp_text
+                bot=self.bot,
+                conn=self.conn,
+                event_type=event_type,
+                content_raw=content_raw,
+                content=content,
+                target=target,
+                channel=channel,
+                nick=nick,
+                user=user,
+                host=host,
+                mask=mask,
+                irc_raw=line,
+                irc_prefix=mask,
+                irc_command=command,
+                irc_paramlist=command_params,
+                irc_ctcp_text=ctcp_text,
             )
 
             # handle the message, async

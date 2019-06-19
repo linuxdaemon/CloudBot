@@ -12,8 +12,7 @@ def suggest(text, reply):
     params = {'output': 'json', 'client': 'hp', 'q': text}
 
     try:
-        request = requests.get('http://google.com/complete/search',
-                               params=params)
+        request = requests.get('http://google.com/complete/search', params=params)
         request.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         reply("Could not get suggestions: {}".format(e))

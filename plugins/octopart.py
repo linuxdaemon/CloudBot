@@ -28,12 +28,7 @@ def octopart(text, reply):
     if not api_key:
         return "Octopart API key required."
 
-    params = {
-        'apikey': api_key,
-        'q': text,
-        'start': 0,
-        'limit': 1
-    }
+    params = {'apikey': api_key, 'q': text, 'start': 0, 'limit': 1}
 
     try:
         request = requests.get(API_URL, params=params)
@@ -54,4 +49,8 @@ def octopart(text, reply):
         part = result['item']
 
         # print matched part
-        reply("{} - {} - {}".format(part['brand']['name'], part['mpn'], part['octopart_url']))
+        reply(
+            "{} - {} - {}".format(
+                part['brand']['name'], part['mpn'], part['octopart_url']
+            )
+        )

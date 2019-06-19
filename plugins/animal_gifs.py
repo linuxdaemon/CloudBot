@@ -8,17 +8,16 @@ from cloudbot import hook
 from cloudbot.util.http import get_soup
 
 BASE_URL = "http://bestanimations.com/Animals/Mammals/Dogs/"
-DOG_PAGES = (
-    "Dogs.html",
-    "Dogs2.html",  # Pugs
-    "Dogs3.html",  # Puppies
-)
+DOG_PAGES = ("Dogs.html", "Dogs2.html", "Dogs3.html")  # Pugs  # Puppies
 
 
 def get_gifs(url):
     soup = get_soup(url)
     container = soup.find('div', class_="row")
-    gifs = [urljoin(url, elem["data-src"]) for elem in container.find_all('img', {'data-src': True})]
+    gifs = [
+        urljoin(url, elem["data-src"])
+        for elem in container.find_all('img', {'data-src': True})
+    ]
     return gifs
 
 

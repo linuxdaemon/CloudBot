@@ -28,8 +28,16 @@ def issafe(text):
         return "Check your URL (it should be a complete URI)."
 
     dev_key = bot.config.get_api_key("google_dev_key")
-    parsed = requests.get(API_SB, params={"url": text, "client": "cloudbot", "key": dev_key, "pver": "3.1",
-                                          "appver": str(cloudbot.__version__)})
+    parsed = requests.get(
+        API_SB,
+        params={
+            "url": text,
+            "client": "cloudbot",
+            "key": dev_key,
+            "pver": "3.1",
+            "appver": str(cloudbot.__version__),
+        },
+    )
     parsed.raise_for_status()
 
     if parsed.status_code == 204:

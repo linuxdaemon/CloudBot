@@ -61,8 +61,10 @@ def get_name(thread_id):
 
 def get_thread_dump():
     code = []
-    threads = [(get_name(thread_id), traceback.extract_stack(stack))
-               for thread_id, stack in sys._current_frames().items()]
+    threads = [
+        (get_name(thread_id), traceback.extract_stack(stack))
+        for thread_id, stack in sys._current_frames().items()
+    ]
     for thread_name, stack in threads:
         code.append("# {}".format(thread_name))
         for filename, line_num, name, line in stack:
@@ -124,6 +126,5 @@ if os.name == "posix":
     # noinspection PyUnusedLocal
     def debug(sig, frame):
         print(get_thread_dump())
-
 
     signal.signal(signal.SIGUSR1, debug)  # Register handler

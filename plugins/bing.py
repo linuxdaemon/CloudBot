@@ -49,7 +49,7 @@ def do_lookup(bot, text, reply, key):
         "Sources": bingify(key.lower()),
         "Query": bingify(text),
         "Adult": bingify(rating),
-        "$format": "json"
+        "$format": "json",
     }
 
     request = requests.get(API_URL, params=params, auth=(api_key, api_key))
@@ -86,8 +86,8 @@ def bing(text, bot, reply):
 
     return colors.parse(
         '\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is removing '
-        'the free search tier.\x02  {} -- $(b){}$(b): "{}"'.format(
-            url, title, desc))
+        'the free search tier.\x02  {} -- $(b){}$(b): "{}"'.format(url, title, desc)
+    )
 
 
 @hook.command("bingimage", "bis")
@@ -117,7 +117,7 @@ def bingimage(text, reply):
     # join all the tags together in a comma separated string ("tag1, tag2, tag3")
     tag_text = ", ".join(tags)
 
-    return ('\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is '
-            'removing the free search tier.\x02 {} ({})').format(
-        unescape(result["MediaUrl"]), tag_text
-    )
+    return (
+        '\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is '
+        'removing the free search tier.\x02 {} ({})'
+    ).format(unescape(result["MediaUrl"]), tag_text)

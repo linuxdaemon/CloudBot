@@ -10,6 +10,7 @@ def test_forget():
     mock_notice = MagicMock()
     with patch('plugins.factoids.remove_fact') as func:
         from plugins.factoids import forget
+
         forget('foo bar', '#example', mock_session, mock_notice)
 
         func.assert_called_with('#example', ['foo', 'bar'], mock_session, mock_notice)
@@ -23,6 +24,7 @@ def patch_paste():
 
 def test_remove_fact_no_paste():
     from plugins.factoids import factoid_cache
+
     factoid_cache.clear()
     with RequestsMock() as reqs:
         reqs.add(reqs.POST, 'https://hastebin.com/documents', status=404)
@@ -30,6 +32,7 @@ def test_remove_fact_no_paste():
         mock_notice = MagicMock()
 
         from plugins.factoids import remove_fact
+
         remove_fact('#example', ['foo'], mock_session, mock_notice)
         mock_notice.assert_called_once_with("Unknown factoids: 'foo'")
 
@@ -40,21 +43,25 @@ def test_remove_fact_no_paste():
         factoid_cache['#example']['foo'] = 'bar'
 
         remove_fact('#example', ['foo', 'bar'], mock_session, mock_notice)
-        mock_notice.assert_has_calls([
-            call("Unknown factoids: 'bar'"),
-            call('Unable to paste removed data, not removing facts'),
-        ])
+        mock_notice.assert_has_calls(
+            [
+                call("Unknown factoids: 'bar'"),
+                call('Unable to paste removed data, not removing facts'),
+            ]
+        )
 
         mock_session.execute.assert_not_called()
 
 
 def test_remove_fact(patch_paste):
     from plugins.factoids import factoid_cache
+
     factoid_cache.clear()
     mock_session = MagicMock()
     mock_notice = MagicMock()
 
     from plugins.factoids import remove_fact
+
     remove_fact('#example', ['foo'], mock_session, mock_notice)
     mock_notice.assert_called_with("Unknown factoids: 'foo'")
 
@@ -67,16 +74,23 @@ def test_remove_fact(patch_paste):
     mock_notice.assert_called_with('Removed Data: PASTEURL')
     patch_paste.assert_called_with(
         b'| Command | Output |\n| ------- | ------ |\n| ?foo    | bar    |',
-        'md', 'hastebin', raise_on_no_paste=True
+        'md',
+        'hastebin',
+        raise_on_no_paste=True,
     )
 
     query = mock_session.execute.mock_calls[0][1][0]
 
     compiled = query.compile()
 
-    assert str(compiled) == dedent("""
+    assert (
+        str(compiled)
+        == dedent(
+            """
     DELETE FROM factoids WHERE factoids.chan = :chan_1 AND factoids.word IN (:word_1)
-    """).strip()
+    """
+        ).strip()
+    )
 
     assert compiled.params == {'chan_1': '#example', 'word_1': 'foo'}
 
@@ -85,14 +99,20 @@ def test_clear_facts():
     mock_session = MagicMock()
 
     from plugins.factoids import forget_all
+
     assert forget_all('#example', mock_session) == "Facts cleared."
 
     query = mock_session.execute.mock_calls[0][1][0]
 
     compiled = query.compile()
 
-    assert str(compiled) == dedent("""
+    assert (
+        str(compiled)
+        == dedent(
+            """
     DELETE FROM factoids WHERE factoids.chan = :chan_1
-    """).strip()
+    """
+        ).strip()
+    )
 
     assert compiled.params == {'chan_1': '#example'}

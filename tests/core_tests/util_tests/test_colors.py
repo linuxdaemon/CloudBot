@@ -1,8 +1,18 @@
 import mock
 import pytest
 
-from cloudbot.util.colors import parse, strip, get_available_colours, get_available_formats, get_color, get_format, \
-    _convert, strip_irc, strip_all, IRC_COLOUR_DICT
+from cloudbot.util.colors import (
+    parse,
+    strip,
+    get_available_colours,
+    get_available_formats,
+    get_color,
+    get_format,
+    _convert,
+    strip_irc,
+    strip_all,
+    IRC_COLOUR_DICT,
+)
 
 test_input = "The quick $(brown, red)brown$(clear) fox$(fake) jumps over the $(bold)lazy dog$(clear)."
 
@@ -54,8 +64,8 @@ def test_get_random_color():
     assert get_color("random", return_formatted=False) in list(IRC_COLOUR_DICT.values())
 
     with mock.patch(
-            'cloudbot.util.colors.randint',
-            return_value=4  # chosen by fair dice roll, guranteed to be random.
+        'cloudbot.util.colors.randint',
+        return_value=4,  # chosen by fair dice roll, guranteed to be random.
     ):
         assert get_color('random') == '\x0304'
 

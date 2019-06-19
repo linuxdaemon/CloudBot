@@ -13,12 +13,7 @@ def goog_trans(text, source, target):
     if len(text) > max_length:
         return "This command only supports input of less then 100 characters."
 
-    params = {
-        'q': text,
-        'key': api_key,
-        'target': target,
-        'format': 'text'
-    }
+    params = {'q': text, 'key': api_key, 'target': target, 'format': 'text'}
 
     if source:
         params['source'] = source
@@ -33,7 +28,9 @@ def goog_trans(text, source, target):
         return "Google API error."
 
     if not source:
-        return '(%(detectedSourceLanguage)s) %(translatedText)s' % (parsed['data']['translations'][0])
+        return '(%(detectedSourceLanguage)s) %(translatedText)s' % (
+            parsed['data']['translations'][0]
+        )
 
     return '%(translatedText)s' % parsed['data']['translations'][0]
 
@@ -140,5 +137,5 @@ lang_pairs = [
     ("ur", "Urdu"),
     ("vi", "Vietnamese"),
     ("cy", "Welsh"),
-    ("yi", "Yiddish")
+    ("yi", "Yiddish"),
 ]

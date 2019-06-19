@@ -107,11 +107,12 @@ REPLACEMENTS = {
     'W': 'Ŵ',
     'X': 'Χ',
     'Y': 'Ỳ',
-    'Z': 'Ż'
+    'Z': 'Ż',
 }
 
 
 # Classes
+
 
 class HTMLTextExtractor(HTMLParser):
     """
@@ -130,6 +131,7 @@ class HTMLTextExtractor(HTMLParser):
 
 
 # Functions
+
 
 def strip_html(to_strip):
     """
@@ -151,7 +153,7 @@ def munge(text, count=0):
     for n, c in enumerate(text):
         rep = REPLACEMENTS.get(c)
         if rep:
-            text = text[:n] + rep + text[n + 1:]
+            text = text[:n] + rep + text[n + 1 :]
             reps += 1
             if reps == count:
                 break
@@ -228,7 +230,7 @@ def chunk_str(content, length=420):
     def chunk(c, l):
         while c:
             out = (c + ' ')[:l].rsplit(' ', 1)[0]
-            c = c[len(out):].strip()
+            c = c[len(out) :].strip()
             yield out
 
     return list(chunk(content, length))
@@ -241,7 +243,7 @@ def pluralize(num=0, text=''):  # pragma: no cover
     """
     warnings.warn(
         "formatting.pluralize() is deprecated, please use one of the other formatting.pluralize_*() functions",
-        DeprecationWarning
+        DeprecationWarning,
     )
     return pluralize_suffix(num, text)
 
@@ -253,7 +255,7 @@ def pluralise(num=0, text=''):  # pragma: no cover
     """
     warnings.warn(
         "formatting.pluralise() is deprecated, please use one of the other formatting.pluralise_*() functions",
-        DeprecationWarning
+        DeprecationWarning,
     )
     return pluralise_suffix(num, text)
 
@@ -332,8 +334,11 @@ def dict_format(args, formats):
 
 # DJANGO LICENCE
 
-split_re = re.compile(r"""((?:[^\s'"]*(?:(?:"(?:[^"\\]|\\.)*" | '(?:["""
-                      r"""^'\\]|\\.)*')[^\s'"]*)+) | \S+)""", re.VERBOSE)
+split_re = re.compile(
+    r"""((?:[^\s'"]*(?:(?:"(?:[^"\\]|\\.)*" | '(?:["""
+    r"""^'\\]|\\.)*')[^\s'"]*)+) | \S+)""",
+    re.VERBOSE,
+)
 
 
 def smart_split(text):
@@ -377,7 +382,9 @@ def get_text_list(list_, last_word='or'):
     return '%s %s %s' % (
         # Translators: This string is used as a separator between list elements
         ', '.join([i for i in list_][:-1]),
-        last_word, list_[-1])
+        last_word,
+        list_[-1],
+    )
 
 
 def gen_markdown_table(headers, rows):

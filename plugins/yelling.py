@@ -5,7 +5,9 @@ from cloudbot.event import EventType
 
 OPT_IN = ["#yelling"]
 YELL_RE = re.compile('[^a-zA-Z]')
-URL_RE = re.compile(r'[a-z]+://\S+', re.IGNORECASE)  # Ignore possible URLs as they are case-sensitive
+URL_RE = re.compile(
+    r'[a-z]+://\S+', re.IGNORECASE
+)  # Ignore possible URLs as they are case-sensitive
 
 
 @hook.event([EventType.message, EventType.action], clients=["irc"])
@@ -33,5 +35,5 @@ def yell_check(conn, chan, content, bot, nick):
         return
 
     caps_count = sum(1 for c in text if c.isupper())
-    if (caps_count / len(text)) < .75:
+    if (caps_count / len(text)) < 0.75:
         conn.cmd("KICK", chan, nick, "USE MOAR CAPS YOU TROGLODYTE!")

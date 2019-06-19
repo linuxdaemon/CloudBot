@@ -20,10 +20,7 @@ def striphtml(data):
 @hook.command("dragon", "ds")
 def dragonsearch(text, reply):
     """<query> - Searches the dragonvale wiki for the specified text."""
-    params = {
-        "query": text.strip(),
-        "limit": 1
-    }
+    params = {"query": text.strip(), "limit": 1}
 
     r = requests.get(search_url, params=params)
 
@@ -37,8 +34,11 @@ def dragonsearch(text, reply):
         return "The API returned error code {}.".format(r.status_code)
 
     data = r.json()["items"][0]
-    out = "\x02{}\x02 -- {}: {}".format(data["title"], striphtml(data["snippet"]).split("&hellip;")[0].strip(),
-                                        data["url"])
+    out = "\x02{}\x02 -- {}: {}".format(
+        data["title"],
+        striphtml(data["snippet"]).split("&hellip;")[0].strip(),
+        data["url"],
+    )
     return out
 
 
@@ -59,11 +59,7 @@ def egg_calculator(text):
         time = time_parse(timer.strip())
         if not time:
             return "invalid time format"
-    params = {
-        'time': time,
-        'time2': time2,
-        'avail': 1
-    }
+    params = {'time': time, 'time2': time2, 'avail': 1}
     r = requests.get(egg_calc_url, params=params, timeout=5)
     soup = BeautifulSoup(r.text)
     dragons = []

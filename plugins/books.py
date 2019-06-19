@@ -16,7 +16,9 @@ def books(text, reply):
     if not dev_key:
         return "This command requires a Google Developers Console API key."
 
-    request = requests.get(book_search_api, params={"q": text, "key": dev_key, "country": "US"})
+    request = requests.get(
+        book_search_api, params={"q": text, "key": dev_key, "country": "US"}
+    )
 
     try:
         request.raise_for_status()
@@ -57,10 +59,12 @@ def books(text, reply):
 
     try:
         page_count = book['pageCount']
-        pages = ' - \x02{:,}\x02 page{}'.format(page_count, "s"[page_count == 1:])
+        pages = ' - \x02{:,}\x02 page{}'.format(page_count, "s"[page_count == 1 :])
     except KeyError:
         pages = ''
 
     link = web.shorten(book['infoLink'], service="goo.gl", key=dev_key)
 
-    return "\x02{}\x02 by \x02{}\x02 ({}){} - {} - {}".format(title, author, year, pages, description, link)
+    return "\x02{}\x02 by \x02{}\x02 ({}){} - {} - {}".format(
+        title, author, year, pages, description, link
+    )

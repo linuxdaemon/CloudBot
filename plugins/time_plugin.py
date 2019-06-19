@@ -59,13 +59,19 @@ def time_command(text, reply):
             utcoffset.append('0')
         if len(utcoffset) == 2:
             try:
-                offset = datetime.timedelta(hours=int(utcoffset[0]), minutes=int(utcoffset[1]))
+                offset = datetime.timedelta(
+                    hours=int(utcoffset[0]), minutes=int(utcoffset[1])
+                )
             except Exception:
-                reply("Sorry I could not parse the UTC format you entered. Example UTC7 or UTC-4")
+                reply(
+                    "Sorry I could not parse the UTC format you entered. Example UTC7 or UTC-4"
+                )
                 raise
             curtime = datetime.datetime.utcnow()
             tztime = curtime + offset
-            formatted_time = datetime.datetime.strftime(tztime, '%I:%M %p, %A, %B %d, %Y')
+            formatted_time = datetime.datetime.strftime(
+                tztime, '%I:%M %p, %A, %B %d, %Y'
+            )
             return "\x02{}\x02 ({})".format(formatted_time, timezone)
 
     # Use the Geocoding API to get co-ordinates from the input
@@ -114,12 +120,14 @@ def beats(text):
     """- Gets the current time in .beats (Swatch Internet Time)."""
 
     if text.lower() == "wut":
-        return "Instead of hours and minutes, the mean solar day is divided " \
-               "up into 1000 parts called \".beats\". Each .beat lasts 1 minute and" \
-               " 26.4 seconds. Times are notated as a 3-digit number out of 1000 af" \
-               "ter midnight. So, @248 would indicate a time 248 .beats after midni" \
-               "ght representing 248/1000 of a day, just over 5 hours and 57 minute" \
-               "s. There are no timezones."
+        return (
+            "Instead of hours and minutes, the mean solar day is divided "
+            "up into 1000 parts called \".beats\". Each .beat lasts 1 minute and"
+            " 26.4 seconds. Times are notated as a 3-digit number out of 1000 af"
+            "ter midnight. So, @248 would indicate a time 248 .beats after midni"
+            "ght representing 248/1000 of a day, just over 5 hours and 57 minute"
+            "s. There are no timezones."
+        )
 
     if text.lower() == "guide":
         return "1 day = 1000 .beats, 1 hour = 41.666 .beats, 1 min = 0.6944 .beats, 1 second = 0.01157 .beats"

@@ -68,17 +68,13 @@ def format_conn(conn):
     else:
         out = "$(red){name}$(clear)"
 
-    return colors.parse(out.format(
-        name=conn.name, activity=round(lag * 1000, 3)
-    ))
+    return colors.parse(out.format(name=conn.name, activity=round(lag * 1000, 3)))
 
 
 @hook.command("connlist", "listconns", autohelp=False, permissions=["botcontrol"])
 def list_conns(bot):
     """- Lists all current connections and their status"""
-    conns = ', '.join(
-        map(format_conn, bot.connections.values())
-    )
+    conns = ', '.join(map(format_conn, bot.connections.values()))
     return "Current connections: {}".format(conns)
 
 

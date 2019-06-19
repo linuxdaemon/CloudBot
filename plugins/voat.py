@@ -47,11 +47,15 @@ def format_output(item, show_url=False):
         item["warning"] = ""
 
     if show_url:
-        return "\x02{Title} : {Subverse}\x02 - {comments}, {points}" \
-               " - \x02{Name}\x02 {timesince} ago - {link}{warning}".format(**item)
+        return (
+            "\x02{Title} : {Subverse}\x02 - {comments}, {points}"
+            " - \x02{Name}\x02 {timesince} ago - {link}{warning}".format(**item)
+        )
 
-    return "\x02{Title} : {Subverse}\x02 - {comments}, {points}" \
-           " - \x02{Name}\x02, {timesince} ago{warning}".format(**item)
+    return (
+        "\x02{Title} : {Subverse}\x02 - {comments}, {points}"
+        " - \x02{Name}\x02, {timesince} ago{warning}".format(**item)
+    )
 
 
 @hook.regex(voat_re)
@@ -93,7 +97,9 @@ async def voat(text, bot, loop, reply):
 
     try:
         # Again, identify with Voat using an User Agent
-        inquiry = await loop.run_in_executor(None, functools.partial(requests.get, url, headers=headers))
+        inquiry = await loop.run_in_executor(
+            None, functools.partial(requests.get, url, headers=headers)
+        )
         inquiry.raise_for_status()
         data = inquiry.json()
     except Exception as e:
@@ -106,7 +112,9 @@ async def voat(text, bot, loop, reply):
             item = data[id_num]
         except IndexError:
             length = len(data)
-            return "Invalid post number. Number must be between 1 and {}.".format(length)
+            return "Invalid post number. Number must be between 1 and {}.".format(
+                length
+            )
     else:
         item = random.choice(data)
 

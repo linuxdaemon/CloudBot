@@ -10,27 +10,20 @@ class MockConn:
     def __init__(self, bot=None):
         self.name = 'foo'
         self.memory = {
-            'server_info': {
-                'statuses': {},
-            },
-            'server_caps': {
-                'userhost-in-names': True,
-                'multi-prefix': True,
-            }
+            'server_info': {'statuses': {}},
+            'server_caps': {'userhost-in-names': True, 'multi-prefix': True},
         }
         self.nick = 'BotFoo'
         self.bot = bot
 
     def get_statuses(self, chars):
-        return [
-            self.memory['server_info']['statuses'][c]
-            for c in chars
-        ]
+        return [self.memory['server_info']['statuses'][c] for c in chars]
 
 
 def test_replace_user_data():
     from plugins.chan_track import UsersDict, replace_user_data, Channel
     from plugins.core.server_info import handle_prefixes
+
     conn = MockConn()
     serv_info = conn.memory['server_info']
     handle_prefixes('(YohvV)!@%+-', serv_info)
@@ -48,12 +41,8 @@ def test_replace_user_data():
 
     assert chan.users['foo'].user.mask == Prefix('foo', 'bar', 'baz')
     assert chan.users['foo1'].user.mask == Prefix('foo1', 'bar', 'baz')
-    assert chan.users['exampleuser'].user.mask == Prefix(
-        'ExampleUser', 'bar', 'baz'
-    )
-    assert chan.users['exampleuser2'].user.mask == Prefix(
-        'ExampleUser2', 'bar', 'baz'
-    )
+    assert chan.users['exampleuser'].user.mask == Prefix('ExampleUser', 'bar', 'baz')
+    assert chan.users['exampleuser2'].user.mask == Prefix('ExampleUser2', 'bar', 'baz')
 
     assert chan.users['foo'].status == conn.get_statuses('@+')
     assert chan.users['exampleuser'].status == conn.get_statuses('@')
@@ -64,8 +53,15 @@ def test_replace_user_data():
 def test_channel_members():
     from plugins.core.server_info import handle_prefixes, handle_chan_modes
     from plugins.chan_track import (
-        get_users, get_chans, replace_user_data,
-        on_nick, on_join, on_mode, on_part, on_kick, on_quit,
+        get_users,
+        get_chans,
+        replace_user_data,
+        on_nick,
+        on_join,
+        on_mode,
+        on_part,
+        on_kick,
+        on_quit,
     )
 
     conn = MockConn()
@@ -147,13 +143,7 @@ def test_names_handling():
         '366': on_names,
     }
 
-    chan_pos = {
-        'JOIN': 0,
-        'PART': 0,
-        'KICK': 0,
-        '353': 2,
-        '366': 1,
-    }
+    chan_pos = {'JOIN': 0, 'PART': 0, 'KICK': 0, '353': 2, '366': 1}
 
     bot = MagicMock()
     bot.loop = asyncio.get_event_loop()

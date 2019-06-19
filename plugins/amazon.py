@@ -10,8 +10,11 @@ from cloudbot.util import web, formatting, colors
 SEARCH_URL = "http://www.amazon.{}/s/"
 REGION = "com"
 
-AMAZON_RE = re.compile(r'''.*ama?zo?n\.(com|co\.uk|com\.au|de|fr|ca|cn|es|it)/.*/(?:exec/obidos/ASIN/|o/|gp/product/|
-(?:(?:[^"\'/]*)/)?dp/|)(B[A-Z0-9]{9})''', re.I)
+AMAZON_RE = re.compile(
+    r'''.*ama?zo?n\.(com|co\.uk|com\.au|de|fr|ca|cn|es|it)/.*/(?:exec/obidos/ASIN/|o/|gp/product/|
+(?:(?:[^"\'/]*)/)?dp/|)(B[A-Z0-9]{9})''',
+    re.I,
+)
 
 # Feel free to set this to None or change it to your own ID.
 # Or leave it in to support CloudBot, it's up to you!
@@ -31,18 +34,19 @@ def amazon(text, reply, _parsed=False):
     """<query> - Searches Amazon for query"""
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, '
-                      'like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-        'Referer': 'http://www.amazon.com/'
+        'like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+        'Referer': 'http://www.amazon.com/',
     }
-    params = {
-        'url': 'search-alias',
-        'field-keywords': text.strip()
-    }
+    params = {'url': 'search-alias', 'field-keywords': text.strip()}
     if _parsed:
         # input is from a link parser, we need a specific URL
-        request = requests.get(SEARCH_URL.format(_parsed), params=params, headers=headers)
+        request = requests.get(
+            SEARCH_URL.format(_parsed), params=params, headers=headers
+        )
     else:
-        request = requests.get(SEARCH_URL.format(REGION), params=params, headers=headers)
+        request = requests.get(
+            SEARCH_URL.format(REGION), params=params, headers=headers
+        )
 
     try:
         request.raise_for_status()
@@ -61,7 +65,9 @@ def amazon(text, reply, _parsed=False):
         return None
 
     # get the first item from the results on the amazon page
-    results = results.find('ul', {'id': 's-results-list-atf'}).find_all('li', {'class': 's-result-item'})
+    results = results.find('ul', {'id': 's-results-list-atf'}).find_all(
+        'li', {'class': 's-result-item'}
+    )
     item = results[0]
     asin = item['data-asin']
 
@@ -78,8 +84,12 @@ def amazon(text, reply, _parsed=False):
 
     # we use regex because we need to recognise text for this part
     # the other parts detect based on html tags, not text
-    if re.search(r"(Kostenlose Lieferung|Livraison gratuite|FREE Shipping|Envío GRATIS"
-                 r"|Spedizione gratuita)", item.text, re.I):
+    if re.search(
+        r"(Kostenlose Lieferung|Livraison gratuite|FREE Shipping|Envío GRATIS"
+        r"|Spedizione gratuita)",
+        item.text,
+        re.I,
+    ):
         tags.append("$(b)Free Shipping$(b)")
 
     try:
@@ -92,8 +102,14 @@ def amazon(text, reply, _parsed=False):
     # use a whole lot of BS4 and regex to get the ratings
     try:
         # get the rating
-        rating = item.find('i', {'class': 'a-icon-star'}).find('span', {'class': 'a-icon-alt'}).text
-        rating = re.search(r"([0-9]+(?:[.,][0-9])?).*5", rating).group(1).replace(",", ".")
+        rating = (
+            item.find('i', {'class': 'a-icon-star'})
+            .find('span', {'class': 'a-icon-alt'})
+            .text
+        )
+        rating = (
+            re.search(r"([0-9]+(?:[.,][0-9])?).*5", rating).group(1).replace(",", ".")
+        )
         # get the rating count
         pattern = re.compile(r'(product-reviews|#customerReviews)')
         num_ratings = item.find('a', {'href': pattern}).text.replace(".", ",")
@@ -115,7 +131,17 @@ def amazon(text, reply, _parsed=False):
     # finally, assemble everything into the final string, and return it!
     if not _parsed:
         return colors.parse(
-            "".join("$(b){}$(b) ({}) - {}{} - {}".format(title, price, rating_str, tag_str, url).splitlines())
+            "".join(
+                "$(b){}$(b) ({}) - {}{} - {}".format(
+                    title, price, rating_str, tag_str, url
+                ).splitlines()
+            )
         )
 
-    return colors.parse("".join("$(b){}$(b) ({}) - {}{}".format(title, price, rating_str, tag_str).splitlines()))
+    return colors.parse(
+        "".join(
+            "$(b){}$(b) ({}) - {}{}".format(
+                title, price, rating_str, tag_str
+            ).splitlines()
+        )
+    )

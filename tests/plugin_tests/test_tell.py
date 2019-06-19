@@ -11,6 +11,7 @@ Session = scoped_session(sessionmaker())
 def test_tellcmd():
     from cloudbot.util import database
     from plugins import tell
+
     database = importlib.reload(database)
     tell = importlib.reload(tell)
     metadata = database.metadata
@@ -35,27 +36,13 @@ def test_tellcmd():
     sender = Prefix("TestUser", "user", "example.com")
 
     def _test(text, output):
-        tell.tell_cmd(
-            text,
-            sender.nick,
-            session,
-            mock_conn,
-            sender.mask,
-            mock_event,
-        )
+        tell.tell_cmd(text, sender.nick, session, mock_conn, sender.mask, mock_event)
 
         mock_event.notice.assert_called_with(output)
 
         mock_event.reset_mock()
 
-    tell.tell_cmd(
-        "OtherUser",
-        sender.nick,
-        session,
-        mock_conn,
-        sender.mask,
-        mock_event,
-    )
+    tell.tell_cmd("OtherUser", sender.nick, session, mock_conn, sender.mask, mock_event)
 
     mock_event.notice_doc.assert_called_once_with()
 
@@ -63,36 +50,27 @@ def test_tellcmd():
 
     _test(
         "OtherUser some message",
-        "Your message has been saved, and OtherUser will be notified once they are active."
+        "Your message has been saved, and OtherUser will be notified once they are active.",
     )
 
     for _ in range(9):
         _test(
             "OtherUser some message",
-            "Your message has been saved, and OtherUser will be notified once they are active."
+            "Your message has been saved, and OtherUser will be notified once they are active.",
         )
 
     _test(
         "OtherUser some message",
-        "Sorry, OtherUser has too many messages queued already."
+        "Sorry, OtherUser has too many messages queued already.",
     )
 
     mock_event.is_nick_valid.return_value = False
 
-    _test(
-        "OtherUser some message",
-        "Invalid nick 'OtherUser'."
-    )
+    _test("OtherUser some message", "Invalid nick 'OtherUser'.")
 
     mock_event.is_nick_valid.return_value = True
-    _test(
-        sender.nick + " some message",
-        "Have you looked in a mirror lately?"
-    )
+    _test(sender.nick + " some message", "Have you looked in a mirror lately?")
 
     with patch('plugins.tell.can_send_to_user') as mocked:
         mocked.return_value = False
-        _test(
-            "OtherUser some message",
-            "You may not send a tell to that user."
-        )
+        _test("OtherUser some message", "You may not send a tell to that user.")

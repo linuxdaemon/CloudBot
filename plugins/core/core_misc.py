@@ -75,13 +75,22 @@ async def onjoin(conn, bot):
         nickserv_account_name = nickserv.get('nickserv_user', '')
         nickserv_command = nickserv.get('nickserv_command', 'IDENTIFY')
         if nickserv_password:
-            if "censored_strings" in bot.config and nickserv_password in bot.config['censored_strings']:
+            if (
+                "censored_strings" in bot.config
+                and nickserv_password in bot.config['censored_strings']
+            ):
                 bot.config['censored_strings'].remove(nickserv_password)
             if nickserv_account_name:
-                conn.message(nickserv_name, "{} {} {}".format(nickserv_command,
-                                                              nickserv_account_name, nickserv_password))
+                conn.message(
+                    nickserv_name,
+                    "{} {} {}".format(
+                        nickserv_command, nickserv_account_name, nickserv_password
+                    ),
+                )
             else:
-                conn.message(nickserv_name, "{} {}".format(nickserv_command, nickserv_password))
+                conn.message(
+                    nickserv_name, "{} {}".format(nickserv_command, nickserv_password)
+                )
             if "censored_strings" in bot.config:
                 bot.config['censored_strings'].append(nickserv_password)
             await asyncio.sleep(1)
@@ -106,7 +115,9 @@ async def onjoin(conn, bot):
         conn.join(log_chan)
 
     conn.ready = True
-    logger.info("[%s|misc] Bot has finished sending join commands for network.", conn.name)
+    logger.info(
+        "[%s|misc] Bot has finished sending join commands for network.", conn.name
+    )
 
 
 @hook.irc_raw('376')
@@ -147,4 +158,6 @@ async def on_invalid_nick(conn):
     nick = conn.config['nick']
     conn.nick = nick
     conn.cmd("NICK", conn.nick)
-    await asyncio.sleep(30)  # Just in case, we make sure to wait at least 30 seconds between sending this
+    await asyncio.sleep(
+        30
+    )  # Just in case, we make sure to wait at least 30 seconds between sending this

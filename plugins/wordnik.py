@@ -16,7 +16,7 @@ ATTRIB_NAMES = {
     'century': 'Century/Wordnik',
     'wiktionary': 'Wiktionary/Wordnik',
     'gcide': 'GCIDE/Wordnik',
-    'wordnet': 'Wordnet/Wordnik'
+    'wordnet': 'Wordnet/Wordnik',
 }
 
 
@@ -33,10 +33,7 @@ def define(text):
     word = sanitize(text)
     url = API_URL + "word.json/{}/definitions".format(word)
 
-    params = {
-        'api_key': api_key,
-        'limit': 1
-    }
+    params = {'api_key': api_key, 'limit': 1}
     request = requests.get(url, params=params)
     request.raise_for_status()
     json = request.json()
@@ -59,10 +56,7 @@ def word_usage(text):
         return "This command requires an API key from wordnik.com."
     word = sanitize(text)
     url = API_URL + "word.json/{}/examples".format(word)
-    params = {
-        'api_key': api_key,
-        'limit': 10
-    }
+    params = {'api_key': api_key, 'limit': 10}
 
     json = requests.get(url, params=params).json()
     if json:
@@ -83,10 +77,7 @@ def pronounce(text):
     word = sanitize(text)
     url = API_URL + "word.json/{}/pronunciations".format(word)
 
-    params = {
-        'api_key': api_key,
-        'limit': 5
-    }
+    params = {'api_key': api_key, 'limit': 5}
     json = requests.get(url, params=params).json()
 
     if json:
@@ -97,11 +88,7 @@ def pronounce(text):
 
     url = API_URL + "word.json/{}/audio".format(word)
 
-    params = {
-        'api_key': api_key,
-        'limit': 1,
-        'useCanonical': 'false'
-    }
+    params = {'api_key': api_key, 'limit': 1, 'useCanonical': 'false'}
     json = requests.get(url, params=params).json()
 
     if json:
@@ -123,7 +110,7 @@ def synonym(text):
     params = {
         'api_key': api_key,
         'relationshipTypes': 'synonym',
-        'limitPerRelationshipType': 5
+        'limitPerRelationshipType': 5,
     }
     json = requests.get(url, params=params).json()
 
@@ -148,7 +135,7 @@ def antonym(text):
         'api_key': api_key,
         'relationshipTypes': 'antonym',
         'limitPerRelationshipType': 5,
-        'useCanonical': 'false'
+        'useCanonical': 'false',
     }
     json = requests.get(url, params=params).json()
 
@@ -175,15 +162,10 @@ def wordoftheday(text):
         date = match.group(1)
     url = API_URL + "words.json/wordOfTheDay"
     if date:
-        params = {
-            'api_key': api_key,
-            'date': date
-        }
+        params = {'api_key': api_key, 'date': date}
         day = date
     else:
-        params = {
-            'api_key': api_key,
-        }
+        params = {'api_key': api_key}
         day = "today"
 
     json = requests.get(url, params=params).json()
@@ -200,7 +182,8 @@ def wordoftheday(text):
         return " ".join(out.split())
 
     return "Sorry I couldn't find the word of the day, check out this awesome otter instead {}".format(
-        "http://i.imgur.com/pkuWlWx.gif")
+        "http://i.imgur.com/pkuWlWx.gif"
+    )
 
 
 # random word
@@ -211,11 +194,7 @@ def random_word():
     if not api_key:
         return "This command requires an API key from wordnik.com."
     url = API_URL + "words.json/randomWord"
-    params = {
-        'api_key': api_key,
-        'hasDictionarydef': 'true',
-        'vulgar': 'true'
-    }
+    params = {'api_key': api_key, 'hasDictionarydef': 'true', 'vulgar': 'true'}
     json = requests.get(url, params=params).json()
     if json:
         word = json['word']

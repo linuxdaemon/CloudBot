@@ -150,7 +150,7 @@ def imguralbum(text, conn):
         'title': '{} presents: "{}"'.format(conn.nick, text or "random images"),
         'ids': ",".join([item.id for item in items]),
         'layout': 'blog',
-        'account_url': None
+        'account_url': None,
     }
     album = container.api.create_album(params)
 

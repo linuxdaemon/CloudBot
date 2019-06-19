@@ -9,7 +9,9 @@ from cloudbot import hook
 from cloudbot.bot import bot
 from cloudbot.util import timeformat
 
-TWITTER_RE = re.compile(r"(?:(?:www.twitter.com|twitter.com)/(?:[-_a-zA-Z0-9]+)/status/)([0-9]+)", re.I)
+TWITTER_RE = re.compile(
+    r"(?:(?:www.twitter.com|twitter.com)/(?:[-_a-zA-Z0-9]+)/status/)([0-9]+)", re.I
+)
 
 
 def _get_conf_value(conf, field):
@@ -142,7 +144,9 @@ def twitter(text, reply, conn):
             tweet = user_timeline[tweet_number]
         except IndexError:
             tweet_count = len(user_timeline)
-            return "The user \x02{}\x02 only has \x02{}\x02 tweets.".format(user.screen_name, tweet_count)
+            return "The user \x02{}\x02 only has \x02{}\x02 tweets.".format(
+                user.screen_name, tweet_count
+            )
 
     elif re.match(r'^#\w+$', text):
         # user is searching by hashtag
@@ -176,7 +180,9 @@ def format_tweet(tweet, user):
 
     time = timeformat.time_since(tweet.created_at, datetime.utcnow())
 
-    return "{}@\x02{}\x02 ({}): {} ({} ago)".format(prefix, user.screen_name, user.name, html.unescape(text), time)
+    return "{}@\x02{}\x02 ({}): {} ({} ago)".format(
+        prefix, user.screen_name, user.name, html.unescape(text), time
+    )
 
 
 @hook.command("twuser", "twinfo")
@@ -212,6 +218,15 @@ def twuser(text, reply):
     else:
         desc_str = ""
 
-    return "{}@\x02{}\x02 ({}){} has \x02{:,}\x02 tweets and \x02{:,}\x02 followers.{}" \
-           "".format(prefix, user.screen_name, user.name, loc_str, user.statuses_count, user.followers_count,
-                     desc_str)
+    return (
+        "{}@\x02{}\x02 ({}){} has \x02{:,}\x02 tweets and \x02{:,}\x02 followers.{}"
+        "".format(
+            prefix,
+            user.screen_name,
+            user.name,
+            loc_str,
+            user.statuses_count,
+            user.followers_count,
+            desc_str,
+        )
+    )

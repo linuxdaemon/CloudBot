@@ -16,7 +16,9 @@ ed_url = "http://encyclopediadramatica.se/"
 def drama(text, reply):
     """<phrase> - gets the first paragraph of the Encyclopedia Dramatica article on <phrase>"""
 
-    search_response = requests.get(api_url, params={"action": "opensearch", "search": text})
+    search_response = requests.get(
+        api_url, params={"action": "opensearch", "search": text}
+    )
 
     try:
         search_response.raise_for_status()

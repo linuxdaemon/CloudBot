@@ -38,7 +38,9 @@ def correction(match, conn, nick, chan, message):
                 mod_msg = msg
                 fmt = "<{}> {}"
 
-            mod_msg = ireplace(re.escape(mod_msg), find_esc, "\x02" + replace_esc + "\x02")
+            mod_msg = ireplace(
+                re.escape(mod_msg), find_esc, "\x02" + replace_esc + "\x02"
+            )
 
             mod_msg = unescape_re.sub(r"\1", mod_msg)
 

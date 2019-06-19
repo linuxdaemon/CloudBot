@@ -8,10 +8,7 @@ from cloudbot import hook
 Status = namedtuple('Status', 'prefix mode level')
 ChanMode = namedtuple('ChanMode', 'char type')
 
-DEFAULT_STATUS = (
-    Status('@', 'o', 2),
-    Status('+', 'v', 1),
-)
+DEFAULT_STATUS = (Status('@', 'o', 2), Status('+', 'v', 1))
 
 
 @hook.on_start
@@ -68,7 +65,9 @@ def handle_extbans(value, serv_info):
 def on_isupport(conn, irc_paramlist):
     serv_info = conn.memory["server_info"]
     token_data = serv_info["isupport_tokens"]
-    tokens = irc_paramlist[1:-1]  # strip the nick and trailing ':are supported by this server' message
+    tokens = irc_paramlist[
+        1:-1
+    ]  # strip the nick and trailing ':are supported by this server' message
     for token in tokens:
         name, _, value = token.partition('=')
         name = name.upper()

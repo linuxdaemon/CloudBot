@@ -46,13 +46,20 @@ def twitch_lookup(location, reply):
             title = data["streams"][0]["channel"]["status"]
             playing = data["streams"][0]["game"]
             v = data["streams"][0]["viewers"]
-            viewers = "\x033\x02Online now!\x02\x0f " + str(v) + " viewer" + ("s" if v != 1 else "")
+            viewers = (
+                "\x033\x02Online now!\x02\x0f "
+                + str(v)
+                + " viewer"
+                + ("s" if v != 1 else "")
+            )
             return html.unescape(fmt.format(title, channel, playing, viewers))
 
         try:
             data = http.get_json("https://api.twitch.tv/kraken/channels/" + channel)
         except Exception:
-            reply("Unable to get channel data. Maybe channel is on justin.tv instead of twitch.tv?")
+            reply(
+                "Unable to get channel data. Maybe channel is on justin.tv instead of twitch.tv?"
+            )
             raise
         title = data['status']
         playing = data['game']
@@ -91,4 +98,9 @@ def twitch(text, reply):
         location = text
     else:
         return "Not a valid channel name."
-    return twitch_lookup(location, reply).split("(")[-1].split(")")[0].replace("Online now! ", "")
+    return (
+        twitch_lookup(location, reply)
+        .split("(")[-1]
+        .split(")")[0]
+        .replace("Online now! ", "")
+    )

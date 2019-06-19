@@ -21,6 +21,7 @@ class Priority(IntEnum):
 @unique
 class Action(Enum):
     """Defines the action to take after executing a hook"""
+
     HALTTYPE = 0  # Once this hook executes, no other hook of that type should run
     HALTALL = 1  # Once this hook executes, No other hook should run
     CONTINUE = 2  # Normal execution of all hooks
@@ -222,7 +223,9 @@ def _add_hook(func, hook):
     if not hasattr(func, "_cloudbot_hook"):
         func._cloudbot_hook = {}
     else:
-        assert hook.type not in func._cloudbot_hook  # in this case the hook should be using the add_hook method
+        assert (
+            hook.type not in func._cloudbot_hook
+        )  # in this case the hook should be using the add_hook method
     func._cloudbot_hook[hook.type] = hook
 
 
@@ -268,8 +271,12 @@ def irc_raw(triggers_param, **kwargs):
         hook.add_hook(triggers_param, kwargs)
         return func
 
-    if callable(triggers_param):  # this decorator is being used directly, which isn't good
-        raise TypeError("@irc_raw() must be used as a function that returns a decorator")
+    if callable(
+        triggers_param
+    ):  # this decorator is being used directly, which isn't good
+        raise TypeError(
+            "@irc_raw() must be used as a function that returns a decorator"
+        )
 
     # this decorator is being used as a function, so return a decorator
     return _raw_hook
@@ -290,7 +297,9 @@ def event(types_param, **kwargs):
         return func
 
     if callable(types_param):  # this decorator is being used directly, which isn't good
-        raise TypeError("@irc_raw() must be used as a function that returns a decorator")
+        raise TypeError(
+            "@irc_raw() must be used as a function that returns a decorator"
+        )
 
     # this decorator is being used as a function, so return a decorator
     return _event_hook
@@ -312,7 +321,9 @@ def regex(regex_param, **kwargs):
         return func
 
     if callable(regex_param):  # this decorator is being used directly, which isn't good
-        raise TypeError("@regex() hook must be used as a function that returns a decorator")
+        raise TypeError(
+            "@regex() hook must be used as a function that returns a decorator"
+        )
 
     # this decorator is being used as a function, so return a decorator
     return _regex_hook
@@ -324,12 +335,15 @@ def sieve(param=None, **kwargs):
     """
 
     def _sieve_hook(func):
-        assert len(inspect.signature(func).parameters) == 3, \
-            "Sieve plugin has incorrect argument count. Needs params: bot, input, plugin"
+        assert (
+            len(inspect.signature(func).parameters) == 3
+        ), "Sieve plugin has incorrect argument count. Needs params: bot, input, plugin"
 
         hook = _get_hook(func, "sieve")
         if hook is None:
-            hook = _Hook(func, "sieve")  # there's no need to have a specific SieveHook object
+            hook = _Hook(
+                func, "sieve"
+            )  # there's no need to have a specific SieveHook object
             _add_hook(func, hook)
 
         hook._add_hook(kwargs)
@@ -356,7 +370,9 @@ def periodic(interval, **kwargs):
         return func
 
     if callable(interval):  # this decorator is being used directly, which isn't good
-        raise TypeError("@periodic() hook must be used as a function that returns a decorator")
+        raise TypeError(
+            "@periodic() hook must be used as a function that returns a decorator"
+        )
 
     # this decorator is being used as a function, so return a decorator
     return _periodic_hook

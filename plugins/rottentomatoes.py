@@ -18,10 +18,7 @@ def rotten_tomatoes(text, reply):
         return "No Rotten Tomatoes API key set."
 
     title = text.strip()
-    params = {
-        'q': title,
-        'apikey': api_key
-    }
+    params = {'q': title, 'apikey': api_key}
 
     try:
         request = requests.get(movie_search_url, params=params)
@@ -45,15 +42,16 @@ def rotten_tomatoes(text, reply):
     url = web.try_shorten(movie['links']['alternate'])
 
     if critics_score == -1:
-        return "\x02{}\x02 - Critics Rating: \x02No Reviews\x02, " \
-               "Audience Rating: \x02{}%\x02 - {}".format(title, audience_score, url)
+        return (
+            "\x02{}\x02 - Critics Rating: \x02No Reviews\x02, "
+            "Audience Rating: \x02{}%\x02 - {}".format(title, audience_score, url)
+        )
 
-    review_params = {
-        'review_type': 'all',
-        'apikey': api_key
-    }
+    review_params = {'review_type': 'all', 'apikey': api_key}
 
-    review_request = requests.get(movie_reviews_url.format(movie_id), params=review_params)
+    review_request = requests.get(
+        movie_reviews_url.format(movie_id), params=review_params
+    )
     try:
         review_request.raise_for_status()
     except HTTPError as e:
@@ -69,5 +67,9 @@ def rotten_tomatoes(text, reply):
     fresh = int(critics_score * review_count / 100)
     rotten = review_count - fresh
 
-    return "\x02{}\x02 - Critics Rating: \x02{}%\x02 ({} liked, {} disliked), " \
-           "Audience Rating: \x02{}%\x02 - {}".format(title, critics_score, fresh, rotten, audience_score, url)
+    return (
+        "\x02{}\x02 - Critics Rating: \x02{}%\x02 ({} liked, {} disliked), "
+        "Audience Rating: \x02{}%\x02 - {}".format(
+            title, critics_score, fresh, rotten, audience_score, url
+        )
+    )

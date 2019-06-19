@@ -94,7 +94,7 @@ async def geoip(text, reply, loop):
     data = {
         "cc": location_data.country.iso_code or "N/A",
         "country": location_data.country.name or "Unknown",
-        "city": location_data.city.name or "Unknown"
+        "city": location_data.city.name or "Unknown",
     }
 
     # add a region to the city if one is listed

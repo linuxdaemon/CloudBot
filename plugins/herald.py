@@ -17,7 +17,7 @@ table = Table(
     Column('name', String),
     Column('chan', String),
     Column('quote', String),
-    PrimaryKeyConstraint('name', 'chan')
+    PrimaryKeyConstraint('name', 'chan'),
 )
 
 herald_cache = defaultdict(dict)
@@ -49,7 +49,11 @@ def herald(text, nick, chan, db, reply):
         if greeting is None:
             return "no herald set, unable to delete."
 
-        query = table.delete().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower())
+        query = (
+            table.delete()
+            .where(table.c.name == nick.lower())
+            .where(table.c.chan == chan.lower())
+        )
         db.execute(query)
         db.commit()
 
@@ -58,10 +62,15 @@ def herald(text, nick, chan, db, reply):
         load_cache(db)
     else:
         res = db.execute(
-            table.update().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower()).values(quote=text)
+            table.update()
+            .where(table.c.name == nick.lower())
+            .where(table.c.chan == chan.lower())
+            .values(quote=text)
         )
         if res.rowcount == 0:
-            db.execute(table.insert().values(name=nick.lower(), chan=chan.lower(), quote=text))
+            db.execute(
+                table.insert().values(name=nick.lower(), chan=chan.lower(), quote=text)
+            )
 
         db.commit()
         reply("greeting successfully added")
@@ -76,7 +85,9 @@ def deleteherald(text, chan, db, reply):
     nick = text.strip()
 
     res = db.execute(
-        table.delete().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower())
+        table.delete()
+        .where(table.c.name == nick.lower())
+        .where(table.c.chan == chan.lower())
     )
 
     db.commit()

@@ -46,9 +46,7 @@ async def sasl_ack(conn):
             elif numeric == "906":
                 logger.warning("[%s|sasl] SASL auth aborted", conn.name)
             elif numeric == "907":
-                logger.warning(
-                    "[%s|sasl] SASL auth already completed", conn.name
-                )
+                logger.warning("[%s|sasl] SASL auth already completed", conn.name)
 
 
 @hook.irc_raw(["AUTHENTICATE", "908"])

@@ -16,7 +16,7 @@ table = Table(
     database.metadata,
     Column('nick', String),
     Column('acc', String),
-    PrimaryKeyConstraint('nick')
+    PrimaryKeyConstraint('nick'),
 )
 
 last_cache = []
@@ -81,7 +81,9 @@ def librefm(text, nick, db, event):
 
     if 'error' in response:
         # return "libre.fm Error: {}.".format(response["message"])
-        return "libre.fm Error: {} Code: {}.".format(response["error"]["#text"], response["error"]["code"])
+        return "libre.fm Error: {} Code: {}.".format(
+            response["error"]["#text"], response["error"]["code"]
+        )
 
     if 'track' not in response['recenttracks'] or response['recenttracks']['track']:
         return "No recent tracks for user \"{}\" found.".format(user)
@@ -91,7 +93,11 @@ def librefm(text, nick, db, event):
     if isinstance(tracks, list):
         track = tracks[0]
 
-        if "@attr" in track and "nowplaying" in track["@attr"] and track["@attr"]["nowplaying"] == "true":
+        if (
+            "@attr" in track
+            and "nowplaying" in track["@attr"]
+            and track["@attr"]["nowplaying"] == "true"
+        ):
             # if the user is listening to something, the first track (a dict) of the
             # tracks list will contain an item with the "@attr" key.
             # this item will will contain another item with the "nowplaying" key
@@ -133,7 +139,9 @@ def librefm(text, nick, db, event):
     out += ending
 
     if text and not dontsave:
-        res = db.execute(table.update().values(acc=user).where(table.c.nick == nick.lower()))
+        res = db.execute(
+            table.update().values(acc=user).where(table.c.nick == nick.lower())
+        )
         if res.rowcount <= 0:
             db.execute(table.insert().values(nick=nick.lower(), acc=user))
 
@@ -237,7 +245,9 @@ def toptrack(text, nick):
         track_name = data["toptracks"]["track"][r]["name"]
         artist_name = data["toptracks"]["track"][r]["artist"]["name"]
         play_count = data["toptracks"]["track"][r]["playcount"]
-        out += "{} by {} listened to {:,} times. ".format(track_name, artist_name, int(play_count))
+        out += "{} by {} listened to {:,} times. ".format(
+            track_name, artist_name, int(play_count)
+        )
     return out
 
 

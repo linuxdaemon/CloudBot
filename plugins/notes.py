@@ -1,7 +1,16 @@
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import Table, Column, String, Boolean, Integer, DateTime, PrimaryKeyConstraint, not_
+from sqlalchemy import (
+    Table,
+    Column,
+    String,
+    Boolean,
+    Integer,
+    DateTime,
+    PrimaryKeyConstraint,
+    not_,
+)
 from sqlalchemy.sql import select
 
 from cloudbot import hook
@@ -17,55 +26,66 @@ table = Table(
     Column('priority', Integer),
     Column('deleted', Boolean),
     Column('added', DateTime),
-    PrimaryKeyConstraint('note_id', 'connection', 'user')
+    PrimaryKeyConstraint('note_id', 'connection', 'user'),
 )
 
 
 def read_all_notes(db, server, user, show_deleted=False):
     if show_deleted:
-        query = select([table.c.note_id, table.c.text, table.c.added]) \
-            .where(table.c.connection == server) \
-            .where(table.c.user == user.lower()) \
+        query = (
+            select([table.c.note_id, table.c.text, table.c.added])
+            .where(table.c.connection == server)
+            .where(table.c.user == user.lower())
             .order_by(table.c.added)
+        )
     else:
-        query = select([table.c.note_id, table.c.text, table.c.added]) \
-            .where(table.c.connection == server) \
-            .where(table.c.user == user.lower()) \
-            .where(not_(table.c.deleted)) \
+        query = (
+            select([table.c.note_id, table.c.text, table.c.added])
+            .where(table.c.connection == server)
+            .where(table.c.user == user.lower())
+            .where(not_(table.c.deleted))
             .order_by(table.c.added)
+        )
     return db.execute(query).fetchall()
 
 
 def delete_all_notes(db, server, user):
-    query = table.update() \
-        .where(table.c.connection == server) \
-        .where(table.c.user == user.lower()) \
+    query = (
+        table.update()
+        .where(table.c.connection == server)
+        .where(table.c.user == user.lower())
         .values(deleted=True)
+    )
     db.execute(query)
     db.commit()
 
 
 def read_note(db, server, user, note_id):
-    query = select([table.c.note_id, table.c.text, table.c.added]) \
-        .where(table.c.connection == server) \
-        .where(table.c.user == user.lower()) \
+    query = (
+        select([table.c.note_id, table.c.text, table.c.added])
+        .where(table.c.connection == server)
+        .where(table.c.user == user.lower())
         .where(table.c.note_id == note_id)
+    )
     return db.execute(query).fetchone()
 
 
 def delete_note(db, server, user, note_id):
-    query = table.update() \
-        .where(table.c.connection == server) \
-        .where(table.c.user == user.lower()) \
-        .where(table.c.note_id == note_id) \
+    query = (
+        table.update()
+        .where(table.c.connection == server)
+        .where(table.c.user == user.lower())
+        .where(table.c.note_id == note_id)
         .values(deleted=True)
+    )
     db.execute(query)
     db.commit()
 
 
 def add_note(db, server, user, text):
-    id_query = select([sqlalchemy.sql.expression.func.max(table.c.note_id).label("maxid")]) \
-        .where(table.c.user == user.lower())
+    id_query = select(
+        [sqlalchemy.sql.expression.func.max(table.c.note_id).label("maxid")]
+    ).where(table.c.user == user.lower())
     max_id = db.execute(id_query).scalar()
 
     if max_id is None:
@@ -79,7 +99,7 @@ def add_note(db, server, user, text):
         user=user.lower(),
         text=text,
         deleted=False,
-        added=datetime.today()
+        added=datetime.today(),
     )
     db.execute(query)
     db.commit()

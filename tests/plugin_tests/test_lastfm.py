@@ -27,29 +27,24 @@ def test_api():
         with pytest.raises(requests.ConnectionError):
             api_request('track.getTopTags')
 
-        reqs.add(
-            reqs.GET, "http://ws.audioscrobbler.com/2.0/",
-            json={"data": "thing"}
-        )
+        reqs.add(reqs.GET, "http://ws.audioscrobbler.com/2.0/", json={"data": "thing"})
 
         res, _ = api_request('track.getTopTags')
 
         assert res["data"] == "thing"
 
     with RequestsMock() as reqs:
-        reqs.add(
-            reqs.GET, "http://ws.audioscrobbler.com/2.0/",
-            body="<html></html>"
-        )
+        reqs.add(reqs.GET, "http://ws.audioscrobbler.com/2.0/", body="<html></html>")
 
         with pytest.raises(JSONDecodeError):
             api_request("track.getTopTags")
 
     with RequestsMock() as reqs:
         reqs.add(
-            reqs.GET, "http://ws.audioscrobbler.com/2.0/",
+            reqs.GET,
+            "http://ws.audioscrobbler.com/2.0/",
             body="<html></html>",
-            status=403
+            status=403,
         )
 
         with pytest.raises(HTTPError):
