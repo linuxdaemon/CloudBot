@@ -78,7 +78,7 @@ SEARCH = (
     ("(https://foo.bar)", "https://foo.bar"),
     ("[https://example.com]", "https://example.com"),
     (
-        "<a hreh=\"https://example.com/test.page?#test\">",
+        '<a hreh="https://example.com/test.page?#test">',
         "https://example.com/test.page?#test",
     ),
     (
@@ -104,11 +104,11 @@ def test_search():
 
 
 ENCODINGS = (
-    (b'<meta charset="utf8">', codecs.lookup('utf8')),
-    (b'', None),
+    (b'<meta charset="utf8">', codecs.lookup("utf8")),
+    (b"", None),
     (
         b'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-        codecs.lookup('utf8'),
+        codecs.lookup("utf8"),
     ),
 )
 
@@ -150,7 +150,7 @@ TESTS = {
 @pytest.mark.parametrize(
     "match,test_str,res",
     [(url_re.search(a), b.format(c), c) for a, (b, c) in TESTS.items()],
-    ids=lambda case: str(getattr(case, 'string', case))[:100],
+    ids=lambda case: str(getattr(case, "string", case))[:100],
 )
 def test_link_announce(match, test_str, res):
     with RequestsMock() as reqs:
@@ -165,7 +165,7 @@ def test_link_announce(match, test_str, res):
 
 
 def test_link_announce_404():
-    url = 'http://example.com'
+    url = "http://example.com"
     with RequestsMock() as reqs:
         reqs.add(reqs.GET, url, status=404)
 
@@ -179,7 +179,7 @@ def test_link_announce_404():
 
 
 @pytest.mark.parametrize(
-    'body,encoding',
+    "body,encoding",
     [
         (
             b"""
@@ -188,7 +188,7 @@ def test_link_announce_404():
             <title>foobar</title>
             </head>
             """,
-            'utf8',
+            "utf8",
         ),
         (
             b"""
@@ -197,7 +197,7 @@ def test_link_announce_404():
             <title>foobar</title>
             </head>
             """,
-            'utf8',
+            "utf8",
         ),
         (
             b"""
@@ -206,7 +206,7 @@ def test_link_announce_404():
             <title>foobar</title>
             </head>
             """,
-            'ISO-8859-1',
+            "ISO-8859-1",
         ),
         (
             b"""
@@ -214,10 +214,10 @@ def test_link_announce_404():
             <title>foobar</title>
             </head>
             """,
-            'ISO-8859-1',
+            "ISO-8859-1",
         ),
     ],
 )
 def test_change_encoding(body, encoding):
     # ISO-8859-1 is the default encoding requests would return if none is found
-    assert parse_content(body, 'ISO-8859-1').original_encoding == encoding
+    assert parse_content(body, "ISO-8859-1").original_encoding == encoding

@@ -22,19 +22,19 @@ def dig(text, nick, notice):
     r = requests.get(url)
     r.raise_for_status()
     results = r.json()
-    if results['header']['rcode'] == "NXDOMAIN":
+    if results["header"]["rcode"] == "NXDOMAIN":
         return "no dns record for {} was found".format(domain)
     notice("The following records were found for \x02{}\x02: ".format(domain), nick)
-    for r in range(len(results['answer'])):
-        domain = results['answer'][r]['name']
-        rtype = results['answer'][r]['type']
-        ttl = results['answer'][r]['ttl']
+    for r in range(len(results["answer"])):
+        domain = results["answer"][r]["name"]
+        rtype = results["answer"][r]["type"]
+        ttl = results["answer"][r]["ttl"]
         if rtype == "MX":
-            rdata = results['answer'][r]['rdata'][1]
+            rdata = results["answer"][r]["rdata"][1]
         elif rtype == "TXT":
-            rdata = results['answer'][r]['rdata'][0]
+            rdata = results["answer"][r]["rdata"][0]
         else:
-            rdata = results['answer'][r]['rdata']
+            rdata = results["answer"][r]["rdata"]
         notice(
             "name: \x02{}\x02 type: \x02{}\x02 ttl: \x02{}\x02 rdata: \x02{}\x02".format(
                 domain, rtype, ttl, rdata

@@ -56,13 +56,13 @@ def clean_name(n):
     :type n: str
     :rtype: str
     """
-    return re.sub('[^A-Za-z0-9_]+', '', n.replace(" ", "_"))
+    return re.sub("[^A-Za-z0-9_]+", "", n.replace(" ", "_"))
 
 
 def get_cmd_regex(event):
     conn = event.conn
     is_pm = event.chan.lower() == event.nick.lower()
-    command_prefix = re.escape(conn.config.get('command_prefix', '.'))
+    command_prefix = re.escape(conn.config.get("command_prefix", "."))
     conn_nick = re.escape(event.conn.nick)
     cmd_re = re.compile(
         r"""
@@ -72,7 +72,7 @@ def get_cmd_regex(event):
             (?P<prefix>["""
         + command_prefix
         + r"""])"""
-        + ('?' if is_pm else '')
+        + ("?" if is_pm else "")
         + r"""
             |
             """
@@ -129,7 +129,7 @@ class CloudBot:
         self.memory = collections.defaultdict()
 
         # declare and create data folder
-        self.data_dir = os.path.abspath('data')
+        self.data_dir = os.path.abspath("data")
         if not os.path.exists(self.data_dir):
             logger.debug("Data folder not found, creating.")
             os.mkdir(self.data_dir)
@@ -145,13 +145,13 @@ class CloudBot:
 
         # this doesn't REALLY need to be here but it's nice
         self.user_agent = self.config.get(
-            'user_agent',
-            'CloudBot/3.0 - CloudBot Refresh '
-            '<https://github.com/CloudBotIRC/CloudBot/>',
+            "user_agent",
+            "CloudBot/3.0 - CloudBot Refresh "
+            "<https://github.com/CloudBotIRC/CloudBot/>",
         )
 
         # setup db
-        db_path = self.config.get('database', 'sqlite:///cloudbot.db')
+        db_path = self.config.get("database", "sqlite:///cloudbot.db")
         self.db_engine = create_engine(db_path)
         self.db_factory = sessionmaker(bind=self.db_engine)
         self.db_session = scoped_session(self.db_factory)
@@ -204,14 +204,14 @@ class CloudBot:
 
     def create_connections(self):
         """ Create a BotConnection for all the networks defined in the config """
-        for config in self.config['connections']:
+        for config in self.config["connections"]:
             # strip all spaces and capitalization from the connection name
-            name = clean_name(config['name'])
-            nick = config['nick']
+            name = clean_name(config["name"])
+            nick = config["nick"]
             _type = config.get("type", "irc")
 
             self.connections[name] = self.get_client(_type)(
-                self, name, nick, config=config, channels=config['channels']
+                self, name, nick, config=config, channels=config["channels"]
             )
             logger.debug("[%s] Created connection.", name)
 
@@ -298,9 +298,9 @@ class CloudBot:
         Load all clients from the "clients" directory
         """
         client_dir = self.base_dir / "cloudbot" / "clients"
-        for path in client_dir.rglob('*.py'):
+        for path in client_dir.rglob("*.py"):
             rel_path = path.relative_to(self.base_dir)
-            mod_path = '.'.join(rel_path.parts).rsplit('.', 1)[0]
+            mod_path = ".".join(rel_path.parts).rsplit(".", 1)[0]
             importlib.import_module(mod_path)
 
     async def process(self, event):
@@ -364,10 +364,10 @@ class CloudBot:
             cmd_match = get_cmd_regex(event).match(event.content)
 
             if cmd_match:
-                command_prefix = event.conn.config.get('command_prefix', '.')
-                prefix = cmd_match.group('prefix') or command_prefix[0]
-                command = cmd_match.group('command').lower()
-                text = cmd_match.group('text').strip()
+                command_prefix = event.conn.config.get("command_prefix", ".")
+                prefix = cmd_match.group("prefix") or command_prefix[0]
+                command = cmd_match.group("command").lower()
+                text = cmd_match.group("text").strip()
                 cmd_event = partial(
                     CommandEvent,
                     text=text,

@@ -8,28 +8,28 @@ from cloudbot import hook
 from cloudbot.util import colors, database
 
 table = Table(
-    'horoscope',
+    "horoscope",
     database.metadata,
-    Column('nick', String, primary_key=True),
-    Column('sign', String),
+    Column("nick", String, primary_key=True),
+    Column("sign", String),
 )
 
 BASE_URL = URL("http://www.horoscope.com/us/horoscopes/general/")
 DAILY_URL = BASE_URL / "horoscope-general-daily-today.aspx"
 
 SIGN_MAP = {
-    'aries': '1',
-    'taurus': '2',
-    'gemini': '3',
-    'cancer': '4',
-    'leo': '5',
-    'virgo': '6',
-    'libra': '7',
-    'scorpio': '8',
-    'sagittarius': '9',
-    'capricorn': '10',
-    'aquarius': '11',
-    'pisces': '12',
+    "aries": "1",
+    "taurus": "2",
+    "gemini": "3",
+    "cancer": "4",
+    "leo": "5",
+    "virgo": "6",
+    "libra": "7",
+    "scorpio": "8",
+    "sagittarius": "9",
+    "capricorn": "10",
+    "aquarius": "11",
+    "pisces": "12",
 }
 
 
@@ -92,7 +92,7 @@ def parse_or_lookup(text, db, nick, event):
 
 
 def parse_page(content):
-    soup = BeautifulSoup(content, 'lxml')
+    soup = BeautifulSoup(content, "lxml")
     container = soup.find("main", class_="main-horoscope")
     para = container.p
     return para.text
@@ -102,7 +102,7 @@ def parse_page(content):
 def horoscope(text, db, bot, nick, event):
     """[sign] - get your horoscope"""
 
-    headers = {'User-Agent': bot.user_agent}
+    headers = {"User-Agent": bot.user_agent}
 
     sign, dontsave = parse_or_lookup(text, db, nick, event)
 

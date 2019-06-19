@@ -18,30 +18,30 @@ from cloudbot import hook
 from cloudbot.util import database
 
 qtable = Table(
-    'new_quote',
+    "new_quote",
     database.metadata,
-    Column('chan', String),
-    Column('nick', String),
-    Column('add_nick', String),
-    Column('msg', String),
-    Column('time', REAL),
-    Column('deleted', Boolean, default=False),
-    PrimaryKeyConstraint('chan', 'nick', 'msg'),
+    Column("chan", String),
+    Column("nick", String),
+    Column("add_nick", String),
+    Column("msg", String),
+    Column("time", REAL),
+    Column("deleted", Boolean, default=False),
+    PrimaryKeyConstraint("chan", "nick", "msg"),
 )
 
 
 @hook.on_start()
 def migrate_table(db, logger):
     old_table = Table(
-        'quote',
+        "quote",
         database.metadata,
-        Column('chan', String(25)),
-        Column('nick', String(25)),
-        Column('add_nick', String(25)),
-        Column('msg', String(500)),
-        Column('time', REAL),
-        Column('deleted', String(5), default=0),
-        PrimaryKeyConstraint('chan', 'nick', 'time'),
+        Column("chan", String(25)),
+        Column("nick", String(25)),
+        Column("add_nick", String(25)),
+        Column("msg", String(500)),
+        Column("time", REAL),
+        Column("deleted", String(5), default=0),
+        PrimaryKeyConstraint("chan", "nick", "time"),
     )
 
     if not old_table.exists():
@@ -61,12 +61,12 @@ def migrate_table(db, logger):
         qtable.insert().values(
             [
                 {
-                    'chan': row['chan'],
-                    'nick': row['nick'],
-                    'add_nick': row['add_nick'],
-                    'msg': row['msg'],
-                    'time': row['time'],
-                    'deleted': row['deleted'] in (1, '1', True),
+                    "chan": row["chan"],
+                    "nick": row["nick"],
+                    "add_nick": row["add_nick"],
+                    "msg": row["msg"],
+                    "time": row["time"],
+                    "deleted": row["deleted"] in (1, "1", True),
                 }
                 for row in old_quotes
             ]
@@ -126,7 +126,7 @@ def get_quote_num(num, count, name):
         num = count + num + 1 if num + count > -1 else count + 1
     if num and num > count:  # If there are not enough quotes, raise an error
         raise Exception(
-            "I only have {} quote{} for {}.".format(count, ('s', '')[count == 1], name)
+            "I only have {} quote{} for {}.".format(count, ("s", "")[count == 1], name)
         )
     if num and num == 0:  # If the number is zero, set it to one
         num = 1
@@ -222,7 +222,7 @@ def get_quote_by_chan(db, chan, num=False):
     return format_quote(data, num, count)
 
 
-@hook.command('q', 'quote')
+@hook.command("q", "quote")
 def quote(text, nick, chan, db, notice, event):
     """[#chan] [nick] [#n] OR add <nick> <message> - gets the [#n]th quote by <nick> (defaulting to random)
     OR adds <message> as a quote for <nick> in the caller's channel"""
@@ -238,7 +238,7 @@ def quote(text, nick, chan, db, notice, event):
 
     if retrieve:
         selected, num = retrieve.groups()
-        by_chan = True if selected.startswith('#') else False
+        by_chan = True if selected.startswith("#") else False
         if by_chan:
             return get_quote_by_chan(db, selected, num)
 

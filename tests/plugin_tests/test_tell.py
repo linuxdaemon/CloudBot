@@ -16,11 +16,11 @@ def test_tellcmd():
     tell = importlib.reload(tell)
     metadata = database.metadata
 
-    assert 'tells' in metadata.tables
-    assert 'tell_ignores' in metadata.tables
-    assert 'tell_user_ignores' in metadata.tables
+    assert "tells" in metadata.tables
+    assert "tell_ignores" in metadata.tables
+    assert "tell_user_ignores" in metadata.tables
 
-    db_engine = create_engine('sqlite:///:memory:')
+    db_engine = create_engine("sqlite:///:memory:")
     Session.configure(bind=db_engine)
     metadata.create_all(db_engine)
     session = Session()
@@ -71,6 +71,6 @@ def test_tellcmd():
     mock_event.is_nick_valid.return_value = True
     _test(sender.nick + " some message", "Have you looked in a mirror lately?")
 
-    with patch('plugins.tell.can_send_to_user') as mocked:
+    with patch("plugins.tell.can_send_to_user") as mocked:
         mocked.return_value = False
         _test("OtherUser some message", "You may not send a tell to that user.")

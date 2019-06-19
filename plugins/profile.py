@@ -17,12 +17,12 @@ cat_pages = defaultdict(dict)
 confirm_keys = defaultdict(dict)
 
 table = Table(
-    'profile',
+    "profile",
     database.metadata,
-    Column('chan', String),
-    Column('nick', String),
-    Column('category', String),
-    Column('text', String),
+    Column("chan", String),
+    Column("nick", String),
+    Column("category", String),
+    Column("text", String),
 )
 
 profile_cache = {}
@@ -95,7 +95,7 @@ def profile(text, chan, notice, nick):
     if not unpck:
         cats = list(user_profile.keys())
 
-        pager = paginated_list(cats, ', ', pager_cls=CommandPager)
+        pager = paginated_list(cats, ", ", pager_cls=CommandPager)
         cat_pages[chan_cf][nick_cf] = pager
         page = pager.next()
         page[0] = "Categories: {}".format(page[0])
@@ -229,7 +229,7 @@ def profileclear(nick, chan, text, notice, db):
     )
     confirm_keys[chan.casefold()][nick.casefold()] = key
     notice(
-        "Are you sure you want to clear all of your profile data in {}? use \".profileclear {}\" to confirm".format(
+        'Are you sure you want to clear all of your profile data in {}? use ".profileclear {}" to confirm'.format(
             chan, key
         )
     )

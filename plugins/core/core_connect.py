@@ -15,8 +15,8 @@ def conn_nick(conn):
 def conn_user(conn):
     conn.cmd(
         "USER",
-        conn.config.get('user', 'cloudbot'),
+        conn.config.get("user", "cloudbot"),
         "3",
         "*",
-        conn.config.get('realname', 'CloudBot - https://git.io/CloudBot'),
+        conn.config.get("realname", "CloudBot - https://git.io/CloudBot"),
     )

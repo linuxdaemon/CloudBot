@@ -21,20 +21,20 @@ async def sieve_suite(bot, event, _hook):
     conn = event.conn
 
     # check acls
-    acl = conn.config.get('acls', {}).get(_hook.function_name)
+    acl = conn.config.get("acls", {}).get(_hook.function_name)
     if acl:
-        if 'deny-except' in acl:
-            allowed_channels = list(map(str.lower, acl['deny-except']))
+        if "deny-except" in acl:
+            allowed_channels = list(map(str.lower, acl["deny-except"]))
             if event.chan.lower() not in allowed_channels:
                 return None
-        if 'allow-except' in acl:
-            denied_channels = list(map(str.lower, acl['allow-except']))
+        if "allow-except" in acl:
+            denied_channels = list(map(str.lower, acl["allow-except"]))
             if event.chan.lower() in denied_channels:
                 return None
 
     # check disabled_commands
     if _hook.type == "command":
-        disabled_commands = conn.config.get('disabled_commands', [])
+        disabled_commands = conn.config.get("disabled_commands", [])
         if event.triggered_command in disabled_commands:
             return None
 
@@ -55,10 +55,10 @@ async def sieve_suite(bot, event, _hook):
     if _hook.type == "command":
         uid = "!".join([conn.name, event.chan, event.nick]).lower()
 
-        tokens = conn.config.get('ratelimit', {}).get('tokens', 17.5)
-        restore_rate = conn.config.get('ratelimit', {}).get('restore_rate', 2.5)
-        message_cost = conn.config.get('ratelimit', {}).get('message_cost', 5)
-        strict = conn.config.get('ratelimit', {}).get('strict', True)
+        tokens = conn.config.get("ratelimit", {}).get("tokens", 17.5)
+        restore_rate = conn.config.get("ratelimit", {}).get("restore_rate", 2.5)
+        message_cost = conn.config.get("ratelimit", {}).get("message_cost", 5)
+        strict = conn.config.get("ratelimit", {}).get("strict", True)
 
         if uid not in buckets:
             bucket = TokenBucket(tokens, restore_rate)

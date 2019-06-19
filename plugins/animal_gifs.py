@@ -13,10 +13,10 @@ DOG_PAGES = ("Dogs.html", "Dogs2.html", "Dogs3.html")  # Pugs  # Puppies
 
 def get_gifs(url):
     soup = get_soup(url)
-    container = soup.find('div', class_="row")
+    container = soup.find("div", class_="row")
     gifs = [
         urljoin(url, elem["data-src"])
-        for elem in container.find_all('img', {'data-src': True})
+        for elem in container.find_all("img", {"data-src": True})
     ]
     return gifs
 

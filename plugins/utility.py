@@ -29,17 +29,17 @@ from cloudbot.util import formatting, web, colors
 
 COLORS = collections.OrderedDict(
     [
-        ('red', '\x0304'),
-        ('orange', '\x0307'),
-        ('yellow', '\x0308'),
-        ('green', '\x0309'),
-        ('cyan', '\x0303'),
-        ('ltblue', '\x0310'),
-        ('rylblue', '\x0312'),
-        ('blue', '\x0302'),
-        ('magenta', '\x0306'),
-        ('pink', '\x0313'),
-        ('maroon', '\x0305'),
+        ("red", "\x0304"),
+        ("orange", "\x0307"),
+        ("yellow", "\x0308"),
+        ("green", "\x0309"),
+        ("cyan", "\x0303"),
+        ("ltblue", "\x0310"),
+        ("rylblue", "\x0312"),
+        ("blue", "\x0302"),
+        ("magenta", "\x0306"),
+        ("pink", "\x0313"),
+        ("maroon", "\x0305"),
     ]
 )
 
@@ -47,11 +47,11 @@ leet_text = {}
 
 # helper functions
 
-strip_re = re.compile(r'[\u0003\u0002\u001F\u000F](?:,?\d{1,2}(?:,\d{1,2})?)?')
+strip_re = re.compile(r"[\u0003\u0002\u001F\u000F](?:,?\d{1,2}(?:,\d{1,2})?)?")
 
 
 def strip(string):
-    return strip_re.sub('', string)
+    return strip_re.sub("", string)
 
 
 def translate(text, dic):
@@ -133,7 +133,7 @@ def fullwidth(text):
     """<string> - Converts <string> to full width characters."""
     HALFWIDTH_TO_FULLWIDTH = str.maketrans(
         '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"#$%&()*+,-./:;<=>?@[]^_`{|}~',
-        '０１２３４５６７８９ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！゛＃＄％＆（）＊＋、ー。／：；〈＝〉？＠［］＾＿‘｛｜｝～',
+        "０１２３４５６７８９ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ！゛＃＄％＆（）＊＋、ー。／：；〈＝〉？＠［］＾＿‘｛｜｝～",
     )
     return text.translate(HALFWIDTH_TO_FULLWIDTH)
 
@@ -158,7 +158,7 @@ def base64_encode(text):
 def base64_decode(text, notice):
     """<string> - Decode <string> with base64."""
     try:
-        decoded = base64.b64decode(text.encode()).decode(errors='ignore')
+        decoded = base64.b64decode(text.encode()).decode(errors="ignore")
     except binascii.Error:
         notice("Invalid base64 string '{}'".format(text))
         return
@@ -221,9 +221,9 @@ def reverse(text):
 @hook.command("hash")
 def hash_command(text):
     """<string> - Returns hashes of <string>."""
-    return ', '.join(
+    return ", ".join(
         x + ": " + getattr(hashlib, x)(text.encode("utf-8")).hexdigest()
-        for x in ['md5', 'sha1', 'sha256']
+        for x in ["md5", "sha1", "sha256"]
     )
 
 
@@ -239,7 +239,7 @@ def munge(text):
 @hook.command
 def leet(text):
     """<text> - Makes <text> more 1337h4x0rz."""
-    output = ''.join(
+    output = "".join(
         random.choice(leet_text[ch]) if ch.isalpha() else ch for ch in text.lower()
     )
     return output
@@ -327,21 +327,21 @@ def wrainbow(text):
     """<text> - Gives each word in <text> rainbow colors."""
     text = str(text)
     col = list(COLORS.items())
-    text = strip(text).split(' ')
+    text = strip(text).split(" ")
     out = []
     l = len(COLORS)
     for i, t in enumerate(text):
         out.append(col[i % l][1] + t)
-    return ' '.join(out)
+    return " ".join(out)
 
 
 @hook.command
 def usa(text):
     """<text> - Makes <text> more patriotic."""
     text = strip(text)
-    c = [COLORS['red'], '\x0300', COLORS['blue']]
+    c = [COLORS["red"], "\x0300", COLORS["blue"]]
     l = len(c)
-    out = ''
+    out = ""
     for i, t in enumerate(text):
         out += c[i % l] + t
     return out

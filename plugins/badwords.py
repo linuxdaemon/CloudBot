@@ -8,12 +8,12 @@ from cloudbot.event import EventType
 from cloudbot.util import database
 
 table = Table(
-    'badwords',
+    "badwords",
     database.metadata,
-    Column('word', String),
-    Column('nick', String),
-    Column('chan', String),
-    PrimaryKeyConstraint('word', 'chan'),
+    Column("word", String),
+    Column("nick", String),
+    Column("chan", String),
+    PrimaryKeyConstraint("word", "chan"),
 )
 
 badcache = defaultdict(list)
@@ -37,7 +37,7 @@ def load_bad(db):
         words.append(word)
 
     new_regex = re.compile(
-        r'(\s|^|[^\w\s])({0})(\s|$|[^\w\s])'.format('|'.join(words)), re.IGNORECASE
+        r"(\s|^|[^\w\s])({0})(\s|$|[^\w\s])".format("|".join(words)), re.IGNORECASE
     )
 
     matcher.regex = new_regex
@@ -51,7 +51,7 @@ def add_bad(text, nick, db):
     """<word> <channel> - adds a bad word to the auto kick list must specify a channel with each word"""
     splt = text.lower().split(None, 1)
     word, channel = splt
-    if not channel.startswith('#'):
+    if not channel.startswith("#"):
         return "Please specify a valid channel name after the bad word."
 
     word = re.escape(word)
@@ -77,7 +77,7 @@ def del_bad(text, db):
     """<word> <channel> - removes the specified word from the specified channels bad word list"""
     splt = text.lower().split(None, 1)
     word, channel = splt
-    if not channel.startswith('#'):
+    if not channel.startswith("#"):
         return "Please specify a valid channel name after the bad word."
 
     db.execute(
@@ -92,11 +92,11 @@ def del_bad(text, db):
 @hook.command("listbad", permissions=["badwords"])
 def list_bad(text):
     """<channel> - Returns a list of bad words specify a channel to see words for a particular channel"""
-    text = text.split(' ')[0].lower()
-    if not text.startswith('#'):
+    text = text.split(" ")[0].lower()
+    if not text.startswith("#"):
         return "Please specify a valid channel name"
 
-    return '|'.join(badcache[text])
+    return "|".join(badcache[text])
 
 
 @hook.event([EventType.message, EventType.action], singlethread=True)

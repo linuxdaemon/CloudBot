@@ -17,7 +17,7 @@ def load_quotes(bot):
         vsquotes.extend(quote.strip() for quote in fp.readlines())
 
 
-@hook.command('smart', 'verysmart', 'vs', 'iamverysmart', 'iavs', autohelp=False)
+@hook.command("smart", "verysmart", "vs", "iamverysmart", "iavs", autohelp=False)
 def verysmart():
     """- Return a random choice from the quote list."""
     return random.choice(vsquotes)

@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-__all__ = ('KeyFoldDict', 'KeyFoldMixin')
+__all__ = ("KeyFoldDict", "KeyFoldMixin")
 
 
 # noinspection PyUnresolvedReferences
@@ -45,7 +45,7 @@ class KeyFoldMixin:
         """
         if args:
             mapping = args[0]
-            if hasattr(mapping, 'keys'):
+            if hasattr(mapping, "keys"):
                 for k in mapping.keys():
                     self[k] = mapping[k]
             else:

@@ -192,7 +192,7 @@ def strip_irc(string):
     :rtype str
     """
 
-    return IRC_COLOR_RE.sub('', string)
+    return IRC_COLOR_RE.sub("", string)
 
 
 def strip_all(string):

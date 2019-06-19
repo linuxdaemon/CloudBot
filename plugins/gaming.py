@@ -15,12 +15,12 @@ import re
 
 from cloudbot import hook
 
-whitespace_re = re.compile(r'\s+')
+whitespace_re = re.compile(r"\s+")
 valid_diceroll = re.compile(
-    r'^([+-]?(?:\d+|\d*d(?:\d+|F))(?:[+-](?:\d+|\d*d(?:\d+|F)))*)( .+)?$', re.I
+    r"^([+-]?(?:\d+|\d*d(?:\d+|F))(?:[+-](?:\d+|\d*d(?:\d+|F)))*)( .+)?$", re.I
 )
-sign_re = re.compile(r'[+-]?(?:\d*d)?(?:\d+|F)', re.I)
-split_re = re.compile(r'([\d+-]*)d?(F|\d*)', re.I)
+sign_re = re.compile(r"[+-]?(?:\d*d)?(?:\d+|F)", re.I)
+split_re = re.compile(r"([\d+-]*)d?(F|\d*)", re.I)
 
 
 def clamp(n, min_value, max_value):
@@ -39,7 +39,7 @@ def n_rolls(count, n):
     :type count: int
     :type n: int | str
     """
-    if n in ('f', 'F'):
+    if n in ("f", "F"):
         return [random.randint(-1, 1) for _ in range(min(count, 100))]
 
     if count < 100:
@@ -74,7 +74,7 @@ def dice(text, notice):
     if "d" not in text:
         return
 
-    spec = whitespace_re.sub('', text)
+    spec = whitespace_re.sub("", text)
     if not valid_diceroll.match(spec):
         notice("Invalid dice roll '{}'".format(text))
         return
@@ -124,9 +124,9 @@ def choose(text, event):
 
     :type text: str
     """
-    choices = re.findall(r'([^,]+)', text.strip())
+    choices = re.findall(r"([^,]+)", text.strip())
     if len(choices) == 1:
-        choices = choices[0].split(' or ')
+        choices = choices[0].split(" or ")
         if len(choices) == 1:
             event.notice_doc()
             return

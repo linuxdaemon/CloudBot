@@ -13,8 +13,8 @@ from cloudbot.util.formatting import pluralize_auto
 from cloudbot.util.pager import paginated_list, CommandPager
 
 search_pages = defaultdict(dict)
-user_re = re.compile(r'^(?:/?u(?:ser)?/)?(?P<name>.+)$', re.IGNORECASE)
-sub_re = re.compile(r'^(?:/?r/)?(?P<name>.+)$', re.IGNORECASE)
+user_re = re.compile(r"^(?:/?u(?:ser)?/)?(?P<name>.+)$", re.IGNORECASE)
+sub_re = re.compile(r"^(?:/?r/)?(?P<name>.+)$", re.IGNORECASE)
 
 user_url = "http://reddit.com/user/{}/"
 subreddit_url = "http://reddit.com/r/{}/"
@@ -41,13 +41,13 @@ post_re = re.compile(
 def get_user(text):
     match = user_re.match(text)
     if match:
-        return match.group('name')
+        return match.group("name")
 
 
 def get_sub(text):
     match = sub_re.match(text)
     if match:
-        return match.group('name')
+        return match.group("name")
 
 
 def api_request(url):
@@ -74,8 +74,8 @@ def format_output(item, show_url=False):
     raw_time = datetime.fromtimestamp(int(item["created_utc"]))
     item["timesince"] = timeformat.time_since(raw_time, count=1, simple=True)
 
-    item["comments"] = formatting.pluralize_auto(item["num_comments"], 'comment')
-    item["points"] = formatting.pluralize_auto(item["score"], 'point')
+    item["comments"] = formatting.pluralize_auto(item["num_comments"], "comment")
+    item["points"] = formatting.pluralize_auto(item["score"], "point")
 
     if item["over_18"]:
         item["warning"] = colors.parse(" $(b, red)NSFW$(clear)")
@@ -195,9 +195,9 @@ def moderates(text, chan, conn, reply):
         raise
 
     data = r.json()
-    subs = data['data']
+    subs = data["data"]
     out = colors.parse("$(b){}$(b) moderates these public subreddits: ".format(user))
-    pager = paginated_list([sub['sr'] for sub in subs], pager_cls=CommandPager)
+    pager = paginated_list([sub["sr"] for sub in subs], pager_cls=CommandPager)
     search_pages[conn.name][chan.casefold()] = pager
     page = pager.next()
     if len(pager) > 1:
@@ -223,33 +223,33 @@ def get_user_data(page, user, reply):
 def karma(text, reply):
     """<reddituser> - will return the information about the specified reddit username"""
     user = get_user(text)
-    data = get_user_data('about.json', user, reply)
-    data = data['data']
+    data = get_user_data("about.json", user, reply)
+    data = data["data"]
 
     out = "$(b){}$(b) ".format(user)
 
     parts = [
         "$(b){:,}$(b) link karma and $(b){:,}$(b) comment karma".format(
-            data['link_karma'], data['comment_karma']
+            data["link_karma"], data["comment_karma"]
         )
     ]
 
-    if data['is_gold']:
+    if data["is_gold"]:
         parts.append("has reddit gold")
 
-    if data['is_mod']:
+    if data["is_mod"]:
         parts.append("moderates a subreddit")
 
-    if data['has_verified_email']:
+    if data["has_verified_email"]:
         parts.append("email has been verified")
 
     parts.append(
         "cake day is {}".format(
-            datetime.fromtimestamp(data['created_utc']).strftime('%B %d')
+            datetime.fromtimestamp(data["created_utc"]).strftime("%B %d")
         )
     )
 
-    account_age = datetime.now() - datetime.fromtimestamp(data['created'])
+    account_age = datetime.now() - datetime.fromtimestamp(data["created"])
     age = account_age.days
     age_unit = "day"
     if age > 365:
@@ -257,19 +257,19 @@ def karma(text, reply):
         age_unit = "year"
 
     parts.append("redditor for {}.".format(pluralize_auto(age, age_unit)))
-    return colors.parse(out + ' | '.join(parts))
+    return colors.parse(out + " | ".join(parts))
 
 
 @hook.command("cakeday", singlethread=True)
 def cake_day(text, reply):
     """<reddituser> - will return the cakeday for the given reddit username."""
     user = get_user(text)
-    data = get_user_data('about.json', user, reply)
+    data = get_user_data("about.json", user, reply)
     out = colors.parse("$(b){}'s$(b) ".format(user))
     out += "cake day is {}, ".format(
-        datetime.fromtimestamp(data['data']['created_utc']).strftime('%B %d')
+        datetime.fromtimestamp(data["data"]["created_utc"]).strftime("%B %d")
     )
-    account_age = datetime.now() - datetime.fromtimestamp(data['data']['created'])
+    account_age = datetime.now() - datetime.fromtimestamp(data["data"]["created"])
     age = account_age.days
     age_unit = "day"
     if age > 365:
@@ -295,7 +295,7 @@ def get_sub_data(url, sub, reply):
     try:
         r.raise_for_status()
     except HTTPError as e:
-        reply(statuscheck(e.response.status_code, 'r/' + sub))
+        reply(statuscheck(e.response.status_code, "r/" + sub))
         raise
 
     return r.json()
@@ -308,11 +308,11 @@ def submods(text, chan, conn, reply):
     url = subreddit_url + "about/moderators.json"
     data = get_sub_data(url, sub, reply)
     moderators = []
-    for mod in data['data']['children']:
-        username = mod['name']
+    for mod in data["data"]["children"]:
+        username = mod["name"]
         # Showing the modtime makes the message too long for larger subs
         # if you want to show this information add modtime.days to out below
-        modtime = datetime.now() - datetime.fromtimestamp(mod['date'])
+        modtime = datetime.now() - datetime.fromtimestamp(mod["date"])
         modtime = time_format(modtime.days)
         moderators.append("{} ({}{})".format(username, modtime[0], modtime[1]))
     pager = paginated_list(moderators, pager_cls=CommandPager)
@@ -333,14 +333,14 @@ def subinfo(text, reply):
     sub = get_sub(text)
     url = subreddit_url + "about.json"
     data = get_sub_data(url, sub, reply)
-    if data['kind'] == "Listing":
+    if data["kind"] == "Listing":
         return "It appears r/{} does not exist.".format(sub)
-    name = data['data']['display_name']
-    title = data['data']['title']
-    nsfw = data['data']['over18']
-    subscribers = data['data']['subscribers']
-    active = data['data']['accounts_active']
-    sub_age = datetime.now() - datetime.fromtimestamp(data['data']['created'])
+    name = data["data"]["display_name"]
+    title = data["data"]["title"]
+    nsfw = data["data"]["over18"]
+    subscribers = data["data"]["subscribers"]
+    active = data["data"]["accounts_active"]
+    sub_age = datetime.now() - datetime.fromtimestamp(data["data"]["created"])
     age, age_unit = time_format(sub_age.days)
     out = (
         "/r/$(b){}$(clear) - {} - a community for {}{}, there are {:,} subscribers and {:,} people online "

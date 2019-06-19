@@ -17,16 +17,16 @@ from cloudbot import hook
 from cloudbot.util import database
 
 table = Table(
-    'notes',
+    "notes",
     database.metadata,
-    Column('note_id', Integer),
-    Column('connection', String),
-    Column('user', String),
-    Column('text', String),
-    Column('priority', Integer),
-    Column('deleted', Boolean),
-    Column('added', DateTime),
-    PrimaryKeyConstraint('note_id', 'connection', 'user'),
+    Column("note_id", Integer),
+    Column("connection", String),
+    Column("user", String),
+    Column("text", String),
+    Column("priority", Integer),
+    Column("deleted", Boolean),
+    Column("added", DateTime),
+    PrimaryKeyConstraint("note_id", "connection", "user"),
 )
 
 
@@ -109,7 +109,7 @@ def format_note(data):
     note_id, note_text, added = data
 
     # format timestamp
-    added_string = added.strftime('%d %b, %Y')
+    added_string = added.strftime("%d %b, %Y")
 
     return "\x02Note #{}:\x02 {} - \x02{}\x02".format(note_id, note_text, added_string)
 
@@ -126,7 +126,7 @@ def note(text, conn, nick, db, notice):
         cmd = parts[0].lower()
         args = parts[1:]
 
-    if cmd in ['add', 'new']:
+    if cmd in ["add", "new"]:
         # user is adding a note
         if not args:
             return "No text provided!"
@@ -139,7 +139,7 @@ def note(text, conn, nick, db, notice):
         notice("Note added!")
         return
 
-    if cmd in ['del', 'delete', 'remove']:
+    if cmd in ["del", "delete", "remove"]:
         # user is deleting a note
         if not args:
             return "No note ID provided!"
@@ -158,14 +158,14 @@ def note(text, conn, nick, db, notice):
         notice("Note #{} deleted!".format(note_id))
         return
 
-    if cmd == 'clear':
+    if cmd == "clear":
         # user is deleting all notes
         delete_all_notes(db, conn.name, nick)
 
         notice("All notes deleted!")
         return
 
-    if cmd == 'get':
+    if cmd == "get":
         # user is getting a single note
         if not args:
             return "No note ID provided!"
@@ -182,7 +182,7 @@ def note(text, conn, nick, db, notice):
         notice(text)
         return
 
-    if cmd in ['share', 'show']:
+    if cmd in ["share", "show"]:
         # user is sharing a single note
         if not args:
             return "No note ID provided!"
@@ -198,7 +198,7 @@ def note(text, conn, nick, db, notice):
         text = format_note(n)
         return text
 
-    if cmd == 'list':
+    if cmd == "list":
         # user is getting all notes
         notes = read_all_notes(db, conn.name, nick)
 
@@ -212,7 +212,7 @@ def note(text, conn, nick, db, notice):
             # show the note
             text = format_note(n)
             notice(text)
-    elif cmd == 'listall':
+    elif cmd == "listall":
         # user is getting all notes including deleted ones
         notes = read_all_notes(db, conn.name, nick, show_deleted=True)
 

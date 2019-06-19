@@ -5,12 +5,12 @@ from cloudbot import hook
 from cloudbot.bot import bot
 from cloudbot.util import web
 
-api_root = 'http://api.rottentomatoes.com/api/public/v1.0/'
-movie_search_url = api_root + 'movies.json'
-movie_reviews_url = api_root + 'movies/{}/reviews.json'
+api_root = "http://api.rottentomatoes.com/api/public/v1.0/"
+movie_search_url = api_root + "movies.json"
+movie_reviews_url = api_root + "movies/{}/reviews.json"
 
 
-@hook.command('rottentomatoes', 'rt')
+@hook.command("rottentomatoes", "rt")
 def rotten_tomatoes(text, reply):
     """<title> - gets ratings for <title> from Rotten Tomatoes"""
     api_key = bot.config.get_api_key("rottentomatoes")
@@ -18,7 +18,7 @@ def rotten_tomatoes(text, reply):
         return "No Rotten Tomatoes API key set."
 
     title = text.strip()
-    params = {'q': title, 'apikey': api_key}
+    params = {"q": title, "apikey": api_key}
 
     try:
         request = requests.get(movie_search_url, params=params)
@@ -31,15 +31,15 @@ def rotten_tomatoes(text, reply):
         return "Error searching: {}".format(request.status_code)
 
     results = request.json()
-    if results['total'] == 0:
-        return 'No results.'
+    if results["total"] == 0:
+        return "No results."
 
-    movie = results['movies'][0]
-    title = movie['title']
-    movie_id = movie['id']
-    critics_score = movie['ratings']['critics_score']
-    audience_score = movie['ratings']['audience_score']
-    url = web.try_shorten(movie['links']['alternate'])
+    movie = results["movies"][0]
+    title = movie["title"]
+    movie_id = movie["id"]
+    critics_score = movie["ratings"]["critics_score"]
+    audience_score = movie["ratings"]["audience_score"]
+    url = web.try_shorten(movie["links"]["alternate"])
 
     if critics_score == -1:
         return (
@@ -47,7 +47,7 @@ def rotten_tomatoes(text, reply):
             "Audience Rating: \x02{}%\x02 - {}".format(title, audience_score, url)
         )
 
-    review_params = {'review_type': 'all', 'apikey': api_key}
+    review_params = {"review_type": "all", "apikey": api_key}
 
     review_request = requests.get(
         movie_reviews_url.format(movie_id), params=review_params
@@ -62,7 +62,7 @@ def rotten_tomatoes(text, reply):
 
     reviews = review_request.json()
 
-    review_count = reviews['total']
+    review_count = reviews["total"]
 
     fresh = int(critics_score * review_count / 100)
     rotten = review_count - fresh

@@ -58,12 +58,12 @@ def scrape_scores(conn, chan, game, text):
         text = " "
 
     response = http.get_html(
-        'http://scores.espn.go.com/{}/bottomline/scores'.format(game), decode=False
+        "http://scores.espn.go.com/{}/bottomline/scores".format(game), decode=False
     )
     score = response.text_content()
-    raw = score.replace('%20', ' ')
-    raw = raw.replace('^', '')
-    raw = raw.replace('&', '\n')
+    raw = score.replace("%20", " ")
+    raw = raw.replace("^", "")
+    raw = raw.replace("&", "\n")
     pattern = re.compile(r"{}_s_left\d+=(.*)".format(game))
     scores = []
     for match in re.findall(pattern, raw):

@@ -25,11 +25,11 @@ def test_api():
 
     with RequestsMock() as reqs:
         with pytest.raises(requests.ConnectionError):
-            api_request('track.getTopTags')
+            api_request("track.getTopTags")
 
         reqs.add(reqs.GET, "http://ws.audioscrobbler.com/2.0/", json={"data": "thing"})
 
-        res, _ = api_request('track.getTopTags')
+        res, _ = api_request("track.getTopTags")
 
         assert res["data"] == "thing"
 

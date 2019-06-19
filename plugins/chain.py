@@ -9,11 +9,11 @@ from cloudbot.util import database
 from cloudbot.util.formatting import chunk_str, pluralize_auto
 
 commands = Table(
-    'chain_commands',
+    "chain_commands",
     database.metadata,
-    Column('hook', String),
-    Column('allowed', Boolean, default=True),
-    PrimaryKeyConstraint('hook', 'allowed'),
+    Column("hook", String),
+    Column("allowed", Boolean, default=True),
+    PrimaryKeyConstraint("hook", "allowed"),
 )
 
 allow_cache = {}
@@ -35,7 +35,7 @@ def format_hook_name(_hook):
 
 def get_hook_from_command(bot, hook_name):
     manager = bot.plugin_manager
-    if '.' in hook_name:
+    if "." in hook_name:
         for _hook in manager.commands.values():
             if format_hook_name(_hook) == hook_name:
                 return _hook
@@ -74,7 +74,7 @@ def chainallow(text, db, notice_doc, bot):
     hook_name = format_hook_name(_hook)
 
     if subcmd == "add":
-        values = {'hook': hook_name}
+        values = {"hook": hook_name}
         if args:
             allow = args.pop(0).lower()
             if allow == "allow":
@@ -84,7 +84,7 @@ def chainallow(text, db, notice_doc, bot):
             else:
                 return notice_doc()
 
-            values['allowed'] = allow
+            values["allowed"] = allow
 
         updated = True
         res = db.execute(
@@ -116,11 +116,11 @@ def chainallow(text, db, notice_doc, bot):
 
 
 def parse_chain(text, bot):
-    parts = text.split('|')
+    parts = text.split("|")
     cmds = []
 
     for part in parts:
-        cmd, _, args = part.strip().partition(' ')
+        cmd, _, args = part.strip().partition(" ")
         _hook = get_hook_from_command(bot, cmd)
         cmds.append([cmd, _hook, args or ""])
 
@@ -138,7 +138,7 @@ def wrap_event(_hook, event, cmd, args):
         text=args.strip(),
         triggered_command=cmd,
         hook=_hook,
-        cmd_prefix='',
+        cmd_prefix="",
     )
     return cmd_event
 

@@ -108,7 +108,7 @@ def remove_user_from_group(user, group, event):
     permission_manager = event.conn.permissions
     changed_masks = permission_manager.remove_group_user(group.lower(), user.lower())
 
-    mask_list = formatting.get_text_list(changed_masks, 'and')
+    mask_list = formatting.get_text_list(changed_masks, "and")
     event.reply("Removed {} from {}".format(mask_list, group))
     event.admin_log(
         "{} used deluser remove {} from {}.".format(event.nick, mask_list, group)
@@ -182,7 +182,7 @@ async def add_permissions_user(text, nick, conn, bot, notice, reply, admin_log):
     user = split[0]
     group = split[1]
 
-    if not re.search('.+!.+@.+', user):
+    if not re.search(".+!.+@.+", user):
         # TODO: When we have presence tracking, check if there are any users in the channel with the nick given
         notice("The user must be in the format 'nick!user@host'")
         return
@@ -288,7 +288,7 @@ async def cycle(text, conn, chan, notice):
         conn.join(target)
 
 
-@hook.command('nick', permissions=['botcontrol'])
+@hook.command("nick", permissions=["botcontrol"])
 async def change_nick(text, conn, notice, is_nick_valid):
     """<nick> - changes my nickname to <nick>
 
@@ -316,7 +316,7 @@ async def raw(text, conn, notice):
 
 def get_chan(chan, text):
     stripped_text = text.strip()
-    if stripped_text.startswith("#") and ' ' in stripped_text:
+    if stripped_text.startswith("#") and " " in stripped_text:
         return stripped_text.split(None, 1)
 
     return chan, stripped_text
@@ -331,7 +331,7 @@ async def say(text, conn, chan, nick, admin_log):
     :type chan: str
     """
     channel, text = get_chan(chan, text)
-    admin_log("{} used SAY to make me SAY \"{}\" in {}.".format(nick, text, channel))
+    admin_log('{} used SAY to make me SAY "{}" in {}.'.format(nick, text, channel))
     conn.message(channel, text)
 
 
@@ -345,9 +345,7 @@ async def send_message(text, conn, nick, admin_log):
     split = text.split(None, 1)
     channel = split[0]
     text = split[1]
-    admin_log(
-        "{} used MESSAGE to make me SAY \"{}\" in {}.".format(nick, text, channel)
-    )
+    admin_log('{} used MESSAGE to make me SAY "{}" in {}.'.format(nick, text, channel))
     conn.message(channel, text)
 
 
@@ -360,14 +358,14 @@ async def me(text, conn, chan, nick, admin_log):
     :type chan: str
     """
     channel, text = get_chan(chan, text)
-    admin_log("{} used ME to make me ACT \"{}\" in {}.".format(nick, text, channel))
+    admin_log('{} used ME to make me ACT "{}" in {}.'.format(nick, text, channel))
     conn.ctcp(channel, "ACTION", text)
 
 
 @hook.command(autohelp=False, permissions=["botcontrol"])
 async def listchans(conn, chan, message, notice):
     """- Lists the current channels the bot is in"""
-    chans = ', '.join(sorted(conn.channels, key=lambda x: x.strip('#').lower()))
+    chans = ", ".join(sorted(conn.channels, key=lambda x: x.strip("#").lower()))
     lines = formatting.chunk_str("I am currently in: {}".format(chans))
     func = notice if chan[:1] == "#" else message
     for line in lines:

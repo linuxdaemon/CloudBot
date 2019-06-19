@@ -8,41 +8,41 @@ table_status = defaultdict(lambda: None)
 USE_FLIPPERS = True
 
 replacements = {
-    'a': 'ɐ',
-    'b': 'q',
-    'c': 'ɔ',
-    'd': 'p',
-    'e': 'ǝ',
-    'f': 'ɟ',
-    'g': 'ƃ',
-    'h': 'ɥ',
-    'i': 'ᴉ',
-    'j': 'ɾ',
-    'k': 'ʞ',
-    'l': 'ן',
-    'm': 'ɯ',
-    'n': 'u',
-    'o': 'o',
-    'p': 'd',
-    'q': 'b',
-    'r': 'ɹ',
-    's': 's',
-    't': 'ʇ',
-    'u': 'n',
-    'v': 'ʌ',
-    'w': 'ʍ',
-    'x': 'x',
-    'y': 'ʎ',
-    'z': 'z',
-    '?': '¿',
-    '.': '˙',
-    ',': '\'',
-    '(': ')',
-    '<': '>',
-    '[': ']',
-    '{': '}',
-    '\'': ',',
-    '_': '‾',
+    "a": "ɐ",
+    "b": "q",
+    "c": "ɔ",
+    "d": "p",
+    "e": "ǝ",
+    "f": "ɟ",
+    "g": "ƃ",
+    "h": "ɥ",
+    "i": "ᴉ",
+    "j": "ɾ",
+    "k": "ʞ",
+    "l": "ן",
+    "m": "ɯ",
+    "n": "u",
+    "o": "o",
+    "p": "d",
+    "q": "b",
+    "r": "ɹ",
+    "s": "s",
+    "t": "ʇ",
+    "u": "n",
+    "v": "ʌ",
+    "w": "ʍ",
+    "x": "x",
+    "y": "ʎ",
+    "z": "z",
+    "?": "¿",
+    ".": "˙",
+    ",": "'",
+    "(": ")",
+    "<": ">",
+    "[": "]",
+    "{": "}",
+    "'": ",",
+    "_": "‾",
 }
 
 # append an inverted form of replacements to itself, so flipping works both ways
@@ -56,7 +56,7 @@ table_flipper = "┻━┻ ︵ヽ(`Д´)ﾉ︵ ┻━┻"
 def flip(text, reply, message, chan):
     """<text> - Flips <text> over."""
     if USE_FLIPPERS:
-        if text in ['table', 'tables']:
+        if text in ["table", "tables"]:
             message(
                 random.choice(
                     [
@@ -95,7 +95,7 @@ def table(text, message):
 @hook.command
 def fix(text, reply, message, chan):
     """<text> - fixes a flipped over table. ┬─┬ノ(ಠ_ಠノ)"""
-    if text in ['table', 'tables']:
+    if text in ["table", "tables"]:
         if table_status.pop(chan, False) is True:
             message("┬─┬ノ(ಠ_ಠノ)")
         else:

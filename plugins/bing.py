@@ -39,7 +39,7 @@ def do_lookup(bot, text, reply, key):
 
     rating = NSFW_FILTER if show_nsfw else DEFAULT_FILTER
 
-    api_key = bot.config.get_api_key('bing_azure')
+    api_key = bot.config.get_api_key("bing_azure")
     if not api_key:
         reply("Error: No Bing Azure API details.")
         return
@@ -61,7 +61,7 @@ def do_lookup(bot, text, reply, key):
         raise
 
     # I'm not even going to pretend to know why results are in ['d']['results'][0]
-    j = request.json()['d']['results'][0]
+    j = request.json()["d"]["results"][0]
 
     if not j[key]:
         reply("No results.")
@@ -73,7 +73,7 @@ def do_lookup(bot, text, reply, key):
 @hook.command("bing", "b")
 def bing(text, bot, reply):
     """<query> - returns the first bing search result for <query>"""
-    data = do_lookup(bot, text, reply, 'Web')
+    data = do_lookup(bot, text, reply, "Web")
     if not data:
         return
 
@@ -85,7 +85,7 @@ def bing(text, bot, reply):
     url = unescape(result["Url"])
 
     return colors.parse(
-        '\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is removing '
+        "\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is removing "
         'the free search tier.\x02  {} -- $(b){}$(b): "{}"'.format(url, title, desc)
     )
 
@@ -93,7 +93,7 @@ def bing(text, bot, reply):
 @hook.command("bingimage", "bis")
 def bingimage(text, reply):
     """<query> - returns the first bing image search result for <query>"""
-    data = do_lookup(bot, text, reply, 'Image')
+    data = do_lookup(bot, text, reply, "Image")
     if not data:
         return
 
@@ -118,6 +118,6 @@ def bingimage(text, reply):
     tag_text = ", ".join(tags)
 
     return (
-        '\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is '
-        'removing the free search tier.\x02 {} ({})'
+        "\x02Notice: The Bing API will stop working sometime soon because Microsoft is greedy as fuck and is "
+        "removing the free search tier.\x02 {} ({})"
     ).format(unescape(result["MediaUrl"]), tag_text)

@@ -36,7 +36,7 @@ async def on_kick(conn, chan, target, loop):
     # if the bot has been kicked, remove from the channel list
     if target == conn.nick:
         bot_left_channel(conn, chan)
-        if conn.config.get('auto_rejoin', False):
+        if conn.config.get("auto_rejoin", False):
             loop.call_later(5, conn.join, chan)
             loop.call_later(
                 5,

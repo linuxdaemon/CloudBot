@@ -105,7 +105,7 @@ def quiet(text, chan, nick, event):
     if mode_cmd("+q", "quiet", text, chan, nick, event, False):
         return
 
-    if not do_extban('m', "quiet", text, chan, nick, event, True):
+    if not do_extban("m", "quiet", text, chan, nick, event, True):
         event.notice("Unable to set +q or a mute extban on this network.")
 
 
@@ -115,7 +115,7 @@ def unquiet(text, chan, nick, event):
     if mode_cmd("-q", "unquiet", text, chan, nick, event, False):
         return
 
-    if not do_extban('m', "unquiet", text, chan, nick, event, False):
+    if not do_extban("m", "unquiet", text, chan, nick, event, False):
         event.notice("Unable to unset +q or a mute extban on this network.")
 
 

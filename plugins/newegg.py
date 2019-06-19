@@ -89,15 +89,15 @@ def newegg_url(match):
 
     # newegg thinks it's so damn smart blocking my scraper
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) '
-        'Version/5.1 Mobile/9A334 Safari/7534.48.3',
-        'Referer': 'http://www.newegg.com/',
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) "
+        "Version/5.1 Mobile/9A334 Safari/7534.48.3",
+        "Referer": "http://www.newegg.com/",
     }
 
     request = requests.get(API_PRODUCT.format(item_id), headers=headers)
     request.raise_for_status()
     item = request.json()
-    return format_item(item['Basic'], show_url=False)
+    return format_item(item["Basic"], show_url=False)
 
 
 # @hook.command()
@@ -109,16 +109,16 @@ def newegg(text, admin_log, reply):
 
     # newegg thinks it's so damn smart blocking my scraper
     headers = {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) '
-        'Version/5.1 Mobile/9A334 Safari/7534.48.3',
-        'Referer': 'http://www.newegg.com/',
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) "
+        "Version/5.1 Mobile/9A334 Safari/7534.48.3",
+        "Referer": "http://www.newegg.com/",
     }
 
     # submit the search request
     try:
         request = requests.post(
-            'http://www.ows.newegg.com/Search.egg/Advanced',
-            data=json.dumps(request).encode('utf-8'),
+            "http://www.ows.newegg.com/Search.egg/Advanced",
+            data=json.dumps(request).encode("utf-8"),
             headers=headers,
         )
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:

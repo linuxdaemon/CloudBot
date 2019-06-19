@@ -58,27 +58,27 @@ url_re = re.compile(
 )
 
 HEADERS = {
-    'Accept-Language': 'en-US,en;q=0.5',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/53.0.2785.116 Safari/537.36',
+    "Accept-Language": "en-US,en;q=0.5",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/53.0.2785.116 Safari/537.36",
 }
 
 MAX_RECV = 1000000
 
 
 def get_encoding(soup):
-    meta_charset = soup.find('meta', charset=True)
+    meta_charset = soup.find("meta", charset=True)
 
     if meta_charset:
-        return meta_charset['charset']
+        return meta_charset["charset"]
 
     meta_content_type = soup.find(
-        'meta',
-        {'http-equiv': lambda t: t and t.lower() == 'content-type', 'content': True},
+        "meta",
+        {"http-equiv": lambda t: t and t.lower() == "content-type", "content": True},
     )
     if meta_content_type:
         return requests.utils.get_encoding_from_headers(
-            {'content-type': meta_content_type['content']}
+            {"content-type": meta_content_type["content"]}
         )
 
     return None

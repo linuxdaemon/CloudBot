@@ -118,11 +118,11 @@ async def cmdinfo(text, bot, notice):
 
     hook_name = cmd_hook.plugin.title + "." + cmd_hook.function_name
     info = "Command: {}, Aliases: [{}], Hook name: {}".format(
-        cmd_hook.name, ', '.join(cmd_hook.aliases), hook_name
+        cmd_hook.name, ", ".join(cmd_hook.aliases), hook_name
     )
 
     if cmd_hook.permissions:
-        info += ", Permissions: [{}]".format(', '.join(cmd_hook.permissions))
+        info += ", Permissions: [{}]".format(", ".join(cmd_hook.permissions))
 
     notice(info)
 

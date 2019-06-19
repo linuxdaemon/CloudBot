@@ -36,7 +36,7 @@ class Config(OrderedDict):
         try:
             return self._api_keys[name]
         except LookupError:
-            self._api_keys[name] = value = self.get('api_keys', {}).get(name, default)
+            self._api_keys[name] = value = self.get("api_keys", {}).get(name, default)
             return value
 
     def load_config(self):
@@ -66,7 +66,7 @@ class Config(OrderedDict):
 
     def save_config(self):
         """saves the contents of the config dict to the config file"""
-        with open(self.path, 'w') as f:
+        with open(self.path, "w") as f:
             json.dump(self, f, indent=4)
 
         logger.info("Config saved to file.")

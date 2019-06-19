@@ -20,9 +20,9 @@ def test_core_connects():
     bot = MockBot()
     client = MockClient(
         bot,
-        'foo',
-        'FooBot',
-        config={'connection': {'server': 'example.com', 'password': 'foobar123'}},
+        "foo",
+        "FooBot",
+        config={"connection": {"server": "example.com", "password": "foobar123"}},
     )
 
     client.connect()
@@ -30,10 +30,10 @@ def test_core_connects():
     from plugins.core.core_connect import conn_pass, conn_nick, conn_user
 
     conn_pass(client)
-    client.send.assert_called_with('PASS foobar123')
+    client.send.assert_called_with("PASS foobar123")
     conn_nick(client)
-    client.send.assert_called_with('NICK FooBot')
+    client.send.assert_called_with("NICK FooBot")
     conn_user(client)
     client.send.assert_called_with(
-        'USER cloudbot 3 * :CloudBot - https://git.io/CloudBot'
+        "USER cloudbot 3 * :CloudBot - https://git.io/CloudBot"
     )

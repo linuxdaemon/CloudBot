@@ -11,8 +11,8 @@ SEARCH_URL = "http://www.amazon.{}/s/"
 REGION = "com"
 
 AMAZON_RE = re.compile(
-    r'''.*ama?zo?n\.(com|co\.uk|com\.au|de|fr|ca|cn|es|it)/.*/(?:exec/obidos/ASIN/|o/|gp/product/|
-(?:(?:[^"\'/]*)/)?dp/|)(B[A-Z0-9]{9})''',
+    r""".*ama?zo?n\.(com|co\.uk|com\.au|de|fr|ca|cn|es|it)/.*/(?:exec/obidos/ASIN/|o/|gp/product/|
+(?:(?:[^"\'/]*)/)?dp/|)(B[A-Z0-9]{9})""",
     re.I,
 )
 
@@ -33,11 +33,11 @@ def amazon_url(match, reply):
 def amazon(text, reply, _parsed=False):
     """<query> - Searches Amazon for query"""
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, '
-        'like Gecko) Chrome/41.0.2228.0 Safari/537.36',
-        'Referer': 'http://www.amazon.com/',
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, "
+        "like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+        "Referer": "http://www.amazon.com/",
     }
-    params = {'url': 'search-alias', 'field-keywords': text.strip()}
+    params = {"url": "search-alias", "field-keywords": text.strip()}
     if _parsed:
         # input is from a link parser, we need a specific URL
         request = requests.get(
@@ -57,7 +57,7 @@ def amazon(text, reply, _parsed=False):
     soup = BeautifulSoup(request.text)
 
     # check if there are any results on the amazon page
-    results = soup.find('div', {'id': 'atfResults'})
+    results = soup.find("div", {"id": "atfResults"})
     if not results:
         if not _parsed:
             return "No results found."
@@ -65,21 +65,21 @@ def amazon(text, reply, _parsed=False):
         return None
 
     # get the first item from the results on the amazon page
-    results = results.find('ul', {'id': 's-results-list-atf'}).find_all(
-        'li', {'class': 's-result-item'}
+    results = results.find("ul", {"id": "s-results-list-atf"}).find_all(
+        "li", {"class": "s-result-item"}
     )
     item = results[0]
-    asin = item['data-asin']
+    asin = item["data-asin"]
 
     # here we use dirty html scraping to get everything we need
-    title = formatting.truncate(item.find('h2', {'class': 's-access-title'}).text, 60)
+    title = formatting.truncate(item.find("h2", {"class": "s-access-title"}).text, 60)
     tags = []
 
     # tags!
-    if item.find('i', {'class': 'a-icon-prime'}):
+    if item.find("i", {"class": "a-icon-prime"}):
         tags.append("$(b)Prime$(b)")
 
-    if item.find('i', {'class': 'sx-bestseller-badge-primary'}):
+    if item.find("i", {"class": "sx-bestseller-badge-primary"}):
         tags.append("$(b)Bestseller$(b)")
 
     # we use regex because we need to recognise text for this part
@@ -93,26 +93,26 @@ def amazon(text, reply, _parsed=False):
         tags.append("$(b)Free Shipping$(b)")
 
     try:
-        price = item.find('span', {'class': ['s-price', 'a-color-price']}).text
+        price = item.find("span", {"class": ["s-price", "a-color-price"]}).text
     except AttributeError:
-        for i in item.find_all('sup', class_='sx-price-fractional'):
-            i.string.replace_with('.' + i.string)
-        price = item.find('span', {'class': 'sx-price'}).text
+        for i in item.find_all("sup", class_="sx-price-fractional"):
+            i.string.replace_with("." + i.string)
+        price = item.find("span", {"class": "sx-price"}).text
 
     # use a whole lot of BS4 and regex to get the ratings
     try:
         # get the rating
         rating = (
-            item.find('i', {'class': 'a-icon-star'})
-            .find('span', {'class': 'a-icon-alt'})
+            item.find("i", {"class": "a-icon-star"})
+            .find("span", {"class": "a-icon-alt"})
             .text
         )
         rating = (
             re.search(r"([0-9]+(?:[.,][0-9])?).*5", rating).group(1).replace(",", ".")
         )
         # get the rating count
-        pattern = re.compile(r'(product-reviews|#customerReviews)')
-        num_ratings = item.find('a', {'href': pattern}).text.replace(".", ",")
+        pattern = re.compile(r"(product-reviews|#customerReviews)")
+        num_ratings = item.find("a", {"href": pattern}).text.replace(".", ",")
         # format the rating and count into a nice string
         rating_str = "{}/5 stars ({} ratings)".format(rating, num_ratings)
     except AttributeError:

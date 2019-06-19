@@ -16,17 +16,17 @@ from sqlalchemy import (
 from cloudbot import hook
 from cloudbot.util import database
 
-karmaplus_re = re.compile(r'^.*\+\+$')
-karmaminus_re = re.compile('^.*--$')
+karmaplus_re = re.compile(r"^.*\+\+$")
+karmaminus_re = re.compile("^.*--$")
 
 karma_table = Table(
-    'karma',
+    "karma",
     database.metadata,
-    Column('name', String),
-    Column('chan', String),
-    Column('thing', String),
-    Column('score', Integer),
-    PrimaryKeyConstraint('name', 'chan', 'thing'),
+    Column("name", String),
+    Column("chan", String),
+    Column("thing", String),
+    Column("score", Integer),
+    PrimaryKeyConstraint("name", "chan", "thing"),
 )
 
 
@@ -34,7 +34,7 @@ karma_table = Table(
 def remove_non_channel_points(db):
     """Temporary on_start hook to remove non-channel points"""
     db.execute(
-        karma_table.delete().where(sqlalchemy.not_(karma_table.c.chan.startswith('#')))
+        karma_table.delete().where(sqlalchemy.not_(karma_table.c.chan.startswith("#")))
     )
     db.commit()
 
@@ -72,7 +72,7 @@ def addpoint(text, nick, chan, db):
 @hook.regex(karmaplus_re)
 def re_addpt(match, nick, chan, db, notice):
     """no useful help txt"""
-    thing = match.group().split('++')[0]
+    thing = match.group().split("++")[0]
     if thing:
         addpoint(thing, nick, chan, db)
     else:
@@ -128,7 +128,7 @@ def minuspts(nick, chan, db):
 @hook.regex(karmaminus_re)
 def re_rmpt(match, nick, chan, db, notice):
     """no useful help txt"""
-    thing = match.group().split('--')[0]
+    thing = match.group().split("--")[0]
     if thing:
         rmpoint(thing, nick, chan, db)
     else:
@@ -175,7 +175,7 @@ def points_cmd(text, chan, db):
 
 
 def parse_lookup(text, db, chan, name):
-    if text in ('global', '-global'):
+    if text in ("global", "-global"):
         items = db.execute(
             select([karma_table.c.thing, karma_table.c.score])
         ).fetchall()
@@ -193,7 +193,7 @@ def parse_lookup(text, db, chan, name):
 
 def do_list(text, db, chan, loved=True):
     counts = defaultdict(int)
-    out, items = parse_lookup(text, db, chan, 'loved' if loved else 'hated')
+    out, items = parse_lookup(text, db, chan, "loved" if loved else "hated")
     if items:
         for item in items:
             thing = item[0]
@@ -202,7 +202,7 @@ def do_list(text, db, chan, loved=True):
 
         scores = counts.items()
         sorts = sorted(scores, key=operator.itemgetter(1), reverse=loved)[:10]
-        out = out.format(len(sorts), chan) + ' \u2022 '.join(
+        out = out.format(len(sorts), chan) + " \u2022 ".join(
             "{} with {} points".format(thing[0], thing[1]) for thing in sorts
         )
         return out

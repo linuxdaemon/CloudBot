@@ -27,32 +27,32 @@ duck = ["\\_o< ", "\\_O< ", "\\_0< ", "\\_\u00f6< ", "\\_\u00f8< ", "\\_\u00f3< 
 duck_noise = ["QUACK!", "FLAP FLAP!", "quack!"]
 
 table = Table(
-    'duck_hunt',
+    "duck_hunt",
     database.metadata,
-    Column('network', String),
-    Column('name', String),
-    Column('shot', Integer),
-    Column('befriend', Integer),
-    Column('chan', String),
-    PrimaryKeyConstraint('name', 'chan', 'network'),
+    Column("network", String),
+    Column("name", String),
+    Column("shot", Integer),
+    Column("befriend", Integer),
+    Column("chan", String),
+    PrimaryKeyConstraint("name", "chan", "network"),
 )
 
 optout = Table(
-    'nohunt',
+    "nohunt",
     database.metadata,
-    Column('network', String),
-    Column('chan', String),
-    PrimaryKeyConstraint('chan', 'network'),
+    Column("network", String),
+    Column("chan", String),
+    PrimaryKeyConstraint("chan", "network"),
 )
 
 status_table = Table(
-    'duck_status',
+    "duck_status",
     database.metadata,
-    Column('network', String),
-    Column('chan', String),
-    Column('active', Boolean, default=False),
-    Column('duck_kick', Boolean, default=False),
-    PrimaryKeyConstraint('network', 'chan'),
+    Column("network", String),
+    Column("chan", String),
+    Column("active", Boolean, default=False),
+    Column("duck_kick", Boolean, default=False),
+    PrimaryKeyConstraint("network", "chan"),
 )
 
 
@@ -77,8 +77,8 @@ class ChannelState:
 
     def should_deploy(self, conn):
         """Should we deploy a duck?"""
-        msg_delay = get_config(conn, 'minimum_messages', 10)
-        mask_req = get_config(conn, 'minimum_users', 5)
+        msg_delay = get_config(conn, "minimum_messages", 10)
+        mask_req = get_config(conn, "minimum_users", 5)
         return (
             self.game_on
             and self.duck_status == 0
@@ -101,7 +101,7 @@ opt_out = defaultdict(list)
 
 
 def _get_conf_value(conf, field):
-    return conf['plugins']['duckhunt'][field]
+    return conf["plugins"]["duckhunt"][field]
 
 
 def get_config(conn, field, default):
@@ -148,11 +148,11 @@ def load_status(db):
     """
     rows = db.execute(status_table.select())
     for row in rows:
-        net = row['network']
-        chan = row['chan']
+        net = row["network"]
+        chan = row["chan"]
         status = get_state_table(net, chan)
-        status.game_on = row['active']
-        status.no_duck_kick = row['duck_kick']
+        status.game_on = row["active"]
+        status.no_duck_kick = row["duck_kick"]
         if status.game_on:
             set_ducktime(chan, net)
 
@@ -318,14 +318,14 @@ def no_duck_kick(db, text, chan, conn, notice_doc):
     if is_opt_out(conn.name, chan):
         return
 
-    if text.lower() == 'enable':
+    if text.lower() == "enable":
         set_game_state(db, conn, chan, duck_kick=True)
         return (
             "users will now be kicked for shooting or befriending non-existent ducks. The bot needs to have "
             "appropriate flags to be able to kick users for this to work."
         )
 
-    if text.lower() == 'disable':
+    if text.lower() == "disable":
         set_game_state(db, conn, chan, duck_kick=False)
         return "kicking for non-existent ducks has been disabled."
 
@@ -336,15 +336,15 @@ def no_duck_kick(db, text, chan, conn, notice_doc):
 def generate_duck():
     """Try and randomize the duck message so people can't highlight on it/script against it."""
     rt = random.randint(1, len(duck_tail) - 1)
-    dtail = duck_tail[:rt] + u' \u200b ' + duck_tail[rt:]
+    dtail = duck_tail[:rt] + " \u200b " + duck_tail[rt:]
 
     dbody = random.choice(duck)
     rb = random.randint(1, len(dbody) - 1)
-    dbody = dbody[:rb] + u'\u200b' + dbody[rb:]
+    dbody = dbody[:rb] + "\u200b" + dbody[rb:]
 
     dnoise = random.choice(duck_noise)
     rn = random.randint(1, len(dnoise) - 1)
-    dnoise = dnoise[:rn] + u'\u200b' + dnoise[rn:]
+    dnoise = dnoise[:rn] + "\u200b" + dnoise[rn:]
 
     return dtail, dbody, dnoise
 
@@ -421,10 +421,10 @@ def dbupdate(nick, chan, db, conn, shoot, friend):
     """
     values = {}
     if shoot:
-        values['shot'] = shoot
+        values["shot"] = shoot
 
     if friend:
-        values['befriend'] = friend
+        values["befriend"] = friend
 
     if not values:
         raise ValueError("No new values specified for 'friend' or 'shot'")
@@ -463,10 +463,10 @@ def update_score(nick, chan, db, conn, shoot=0, friend=0):
 
     if score:
         dbupdate(nick, chan, db, conn, score[0] + shoot, score[1] + friend)
-        return {'shoot': score[0] + shoot, 'friend': score[1] + friend}
+        return {"shoot": score[0] + shoot, "friend": score[1] + friend}
 
     dbadd_entry(nick, chan, db, conn, shoot, friend)
-    return {'shoot': shoot, 'friend': friend}
+    return {"shoot": shoot, "friend": friend}
 
 
 def attack(event, nick, chan, db, conn, attack_type):
@@ -589,7 +589,7 @@ def befriend(nick, chan, db, conn, event):
         return attack(event, nick, chan, db, conn, "befriend")
 
 
-def top_list(prefix, data, join_char=' • '):
+def top_list(prefix, data, join_char=" • "):
     r"""
     >>> foods = [('Spam', 1), ('Eggs', 4)]
     >>> top_list("Top Foods: ", foods)
@@ -599,7 +599,7 @@ def top_list(prefix, data, join_char=' • '):
     return truncate(
         prefix
         + join_char.join(
-            "\x02{}\x02: {:,}".format(k[:1] + '\u200b' + k[1:], v)
+            "\x02{}\x02: {:,}".format(k[:1] + "\u200b" + k[1:], v)
             for k, v in sorted_data
         ),
         sep=join_char,
@@ -676,13 +676,13 @@ def get_average_scores(db, score_type: ScoreType, conn):
 
 
 SCORE_TYPES = {
-    'friend': ScoreType('befriend', 'befriend', 'friend', 'friended'),
-    'killer': ScoreType('killer', 'shot', 'killer', 'killed'),
+    "friend": ScoreType("befriend", "befriend", "friend", "friended"),
+    "killer": ScoreType("killer", "shot", "killer", "killed"),
 }
 
 DISPLAY_FUNCS = {
-    'average': get_average_scores,
-    'global': get_global_scores,
+    "average": get_average_scores,
+    "global": get_global_scores,
     None: get_channel_scores,
 }
 
@@ -704,7 +704,7 @@ def display_scores(score_type: ScoreType, event, text, chan, conn, db):
         return
 
     scores_dict = call_with_args(
-        func, {'db': db, 'score_type': score_type, 'conn': conn, 'chan': chan}
+        func, {"db": db, "score_type": score_type, "conn": conn, "chan": chan}
     )
 
     if not scores_dict:
@@ -725,7 +725,7 @@ def friends(text, event, chan, conn, db):
     :type conn: cloudbot.client.Client
     :type db: sqlalchemy.orm.Session
     """
-    return display_scores(SCORE_TYPES['friend'], event, text, chan, conn, db)
+    return display_scores(SCORE_TYPES["friend"], event, text, chan, conn, db)
 
 
 @hook.command("killers", autohelp=False)
@@ -740,7 +740,7 @@ def killers(text, event, chan, conn, db):
     :type conn: cloudbot.client.Client
     :type db: sqlalchemy.orm.Session
     """
-    return display_scores(SCORE_TYPES['killer'], event, text, chan, conn, db)
+    return display_scores(SCORE_TYPES["killer"], event, text, chan, conn, db)
 
 
 @hook.command("duckforgive", permissions=["op", "ignore"])
@@ -780,12 +780,12 @@ def hunt_opt_out(text, chan, db, conn):
     if text == "list":
         return ", ".join(opt_out)
 
-    if len(text.split(' ')) < 2:
+    if len(text.split(" ")) < 2:
         return "please specify add or remove and a valid channel name"
 
     command = text.split()[0]
     channel = text.split()[1]
-    if not channel.startswith('#'):
+    if not channel.startswith("#"):
         return "Please specify a valid channel."
 
     if command.lower() == "add":

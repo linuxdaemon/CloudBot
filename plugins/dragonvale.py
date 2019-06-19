@@ -13,8 +13,8 @@ egg_calc_url = "http://www.dragonvalebreedingguide.com/dragonvale-calculator"
 
 
 def striphtml(data):
-    string = re.compile(r'<.*?>')
-    return string.sub('', data)
+    string = re.compile(r"<.*?>")
+    return string.sub("", data)
 
 
 @hook.command("dragon", "ds")
@@ -59,11 +59,11 @@ def egg_calculator(text):
         time = time_parse(timer.strip())
         if not time:
             return "invalid time format"
-    params = {'time': time, 'time2': time2, 'avail': 1}
+    params = {"time": time, "time2": time2, "avail": 1}
     r = requests.get(egg_calc_url, params=params, timeout=5)
     soup = BeautifulSoup(r.text)
     dragons = []
-    for line in soup.findAll('td', {'class': 'views-field views-field-title'}):
+    for line in soup.findAll("td", {"class": "views-field views-field-title"}):
         dragons.append(line.text.replace("\n", "").strip())
 
     return ", ".join(dragons)

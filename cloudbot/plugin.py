@@ -152,7 +152,7 @@ class PluginManager:
         file_name = file_path.name
         # Resolve the path relative to the current directory
         plugin_path = file_path.relative_to(self.bot.base_dir)
-        title = '.'.join(plugin_path.parts[1:]).rsplit('.', 1)[0]
+        title = ".".join(plugin_path.parts[1:]).rsplit(".", 1)[0]
 
         if "plugin_loading" in self.bot.config:
             pl = self.bot.config.get("plugin_loading")
@@ -735,7 +735,7 @@ class Hook:
 
         # don't process args starting with "_"
         self.required_args = [
-            arg for arg in sig.parameters.keys() if not arg.startswith('_')
+            arg for arg in sig.parameters.keys() if not arg.startswith("_")
         ]
 
         if asyncio.iscoroutine(self.function) or asyncio.iscoroutinefunction(

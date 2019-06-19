@@ -5,10 +5,10 @@ from collections import namedtuple
 
 from cloudbot import hook
 
-Status = namedtuple('Status', 'prefix mode level')
-ChanMode = namedtuple('ChanMode', 'char type')
+Status = namedtuple("Status", "prefix mode level")
+ChanMode = namedtuple("ChanMode", "char type")
 
-DEFAULT_STATUS = (Status('@', 'o', 2), Status('+', 'v', 1))
+DEFAULT_STATUS = (Status("@", "o", 2), Status("+", "v", 1))
 
 
 @hook.on_start
@@ -31,8 +31,8 @@ def clear_isupport(conn):
 
 
 def handle_prefixes(data, serv_info):
-    modes, prefixes = data.split(')', 1)
-    modes = modes.strip('(')
+    modes, prefixes = data.split(")", 1)
+    modes = modes.strip("(")
     statuses = enumerate(reversed(list(zip(modes, prefixes))))
     parsed = {}
     for lvl, (mode, prefix) in statuses:
@@ -45,9 +45,9 @@ def handle_prefixes(data, serv_info):
 
 def handle_chan_modes(value, serv_info):
     types = "ABCD"
-    modelist = serv_info.setdefault('channel_modes', {})
+    modelist = serv_info.setdefault("channel_modes", {})
     modelist.clear()
-    for i, modes in enumerate(value.split(',')):
+    for i, modes in enumerate(value.split(",")):
         if i >= len(types):
             break
 
@@ -56,12 +56,12 @@ def handle_chan_modes(value, serv_info):
 
 
 def handle_extbans(value, serv_info):
-    pfx, extbans = value.split(',', 1)
+    pfx, extbans = value.split(",", 1)
     serv_info["extbans"] = extbans
     serv_info["extban_prefix"] = pfx
 
 
-@hook.irc_raw('005', singlethread=True)
+@hook.irc_raw("005", singlethread=True)
 def on_isupport(conn, irc_paramlist):
     serv_info = conn.memory["server_info"]
     token_data = serv_info["isupport_tokens"]
@@ -69,7 +69,7 @@ def on_isupport(conn, irc_paramlist):
         1:-1
     ]  # strip the nick and trailing ':are supported by this server' message
     for token in tokens:
-        name, _, value = token.partition('=')
+        name, _, value = token.partition("=")
         name = name.upper()
         token_data[name] = value or None
         if name == "PREFIX":

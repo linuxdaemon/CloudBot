@@ -61,7 +61,7 @@ test_multiword_replace_result = "<replace1> likes [replace2]"
 test_ireplace_input = "The quick brown FOX fox FOX jumped over the lazy dog"
 
 test_chunk_str_input = "The quick brown fox jumped over the lazy dog"
-test_chunk_str_result = ['The quick', 'brown fox', 'jumped', 'over the', 'lazy dog']
+test_chunk_str_result = ["The quick", "brown fox", "jumped", "over the", "lazy dog"]
 
 
 def test_munge():
@@ -86,21 +86,21 @@ def test_pluralize():
 
 
 @pytest.mark.parametrize(
-    'item,count,output',
+    "item,count,output",
     [
-        ('foo', 1, '1 foo'),
-        ('bar', 2, '2 bars'),
-        ('foos', 2, '2 fooses'),
-        ('leaf', 2, '2 leaves'),
-        ('city', 2, '2 cities'),
-        ('day', 2, '2 days'),
-        ('foe', 2, '2 foes'),
-        ('volcano', 2, '2 volcanoes'),
-        ('radius', 2, '2 radii'),
-        ('hoof', 2, '2 hooves'),
-        ('axis', 2, '2 axes'),
-        ('automaton', 2, '2 automata'),
-        ('tree', 2, '2 trees'),
+        ("foo", 1, "1 foo"),
+        ("bar", 2, "2 bars"),
+        ("foos", 2, "2 fooses"),
+        ("leaf", 2, "2 leaves"),
+        ("city", 2, "2 cities"),
+        ("day", 2, "2 days"),
+        ("foe", 2, "2 foes"),
+        ("volcano", 2, "2 volcanoes"),
+        ("radius", 2, "2 radii"),
+        ("hoof", 2, "2 hooves"),
+        ("axis", 2, "2 axes"),
+        ("automaton", 2, "2 automata"),
+        ("tree", 2, "2 trees"),
     ],
 )
 def test_auto_pluralize(item, count, output):
@@ -189,35 +189,35 @@ def test_chunk_str():
 
 
 def test_get_text_list():
-    assert get_text_list(['a', 'b', 'c', 'd']) == 'a, b, c or d'
-    assert get_text_list(['a', 'b', 'c'], 'and') == 'a, b and c'
-    assert get_text_list(['a', 'b'], 'and') == 'a and b'
-    assert get_text_list(['a']) == 'a'
-    assert get_text_list([]) == ''
+    assert get_text_list(["a", "b", "c", "d"]) == "a, b, c or d"
+    assert get_text_list(["a", "b", "c"], "and") == "a, b and c"
+    assert get_text_list(["a", "b"], "and") == "a and b"
+    assert get_text_list(["a"]) == "a"
+    assert get_text_list([]) == ""
 
 
 def test_smart_split():
     assert list(smart_split(r'This is "a person\'s" test.')) == [
-        'This',
-        'is',
+        "This",
+        "is",
         '"a person\\\'s"',
-        'test.',
+        "test.",
     ]
     assert list(smart_split(r"Another 'person\'s' test.")) == [
-        'Another',
+        "Another",
         "'person\\'s'",
-        'test.',
+        "test.",
     ]
     assert list(smart_split(r'A "\"funky\" style" test.')) == [
-        'A',
+        "A",
         '"\\"funky\\" style"',
-        'test.',
+        "test.",
     ]
 
 
 def test_gen_md_table():
-    headers = ['ColumnA', 'Column B']
-    data = [['1', '2'], ['3', '4']]
+    headers = ["ColumnA", "Column B"]
+    data = [["1", "2"], ["3", "4"]]
     assert (
         gen_markdown_table(headers, data)
         == dedent(

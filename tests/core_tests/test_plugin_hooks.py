@@ -64,7 +64,7 @@ def load_plugin(plugin_path):
     file_name = file_path.name
     # Resolve the path relative to the current directory
     plugin_path = file_path.relative_to(Path().resolve())
-    title = '.'.join(plugin_path.parts[1:]).rsplit('.', 1)[0]
+    title = ".".join(plugin_path.parts[1:]).rsplit(".", 1)[0]
 
     module_name = "plugins.{}".format(title)
 
@@ -83,12 +83,12 @@ def get_plugins():
 
 
 def pytest_generate_tests(metafunc):
-    if 'plugin' in metafunc.fixturenames:  # pragma: no cover
+    if "plugin" in metafunc.fixturenames:  # pragma: no cover
         plugins = get_plugins()
         metafunc.parametrize(
-            'plugin', plugins, ids=[plugin.title for plugin in plugins]
+            "plugin", plugins, ids=[plugin.title for plugin in plugins]
         )
-    elif 'hook' in metafunc.fixturenames:
+    elif "hook" in metafunc.fixturenames:
         plugins = get_plugins()
         hooks = [
             hook
@@ -97,7 +97,7 @@ def pytest_generate_tests(metafunc):
             for hook in hook_list
         ]
         metafunc.parametrize(
-            'hook',
+            "hook",
             hooks,
             ids=[
                 "{}.{}".format(hook.plugin.title, hook.function_name) for hook in hooks
@@ -106,27 +106,27 @@ def pytest_generate_tests(metafunc):
 
 
 HOOK_ATTR_TYPES = {
-    'permissions': (list, set, frozenset, tuple),
-    'single_thread': bool,
-    'action': Action,
-    'priority': int,
-    'auto_help': bool,
-    'run_on_cmd': bool,
-    'only_no_match': bool,
-    'interval': Number,
-    'initial_interval': Number,
+    "permissions": (list, set, frozenset, tuple),
+    "single_thread": bool,
+    "action": Action,
+    "priority": int,
+    "auto_help": bool,
+    "run_on_cmd": bool,
+    "only_no_match": bool,
+    "interval": Number,
+    "initial_interval": Number,
 }
 
 
 @pytest.mark.parametrize(
-    'text', ['- Foo', '<text> - Uses <text>', '[text] - Thing with [text]']
+    "text", ["- Foo", "<text> - Uses <text>", "[text] - Thing with [text]"]
 )
 def test_doc_re_matches(text):
     assert DOC_RE.match(text)
 
 
 @pytest.mark.parametrize(
-    'text', ['-- Foo', '<text> -- Uses <text>', '<text - Uses text>', 'Foobar', '-Baz']
+    "text", ["-- Foo", "<text> -- Uses <text>", "<text - Uses text>", "Foobar", "-Baz"]
 )
 def test_doc_re_no_match(text):
     assert not DOC_RE.match(text)
@@ -163,7 +163,7 @@ def test_hook_doc(hook):
         found_blank = False
         for line in hook.function.__doc__.strip().splitlines():
             stripped = line.strip()
-            if stripped.startswith(':'):
+            if stripped.startswith(":"):
                 assert found_blank
             elif not stripped:
                 found_blank = True
@@ -183,7 +183,7 @@ def test_hook_args(hook):
         event = Event(bot=bot)
     elif hook.type == "command":
         event = CommandEvent(
-            bot=bot, hook=hook, text="", triggered_command="", cmd_prefix='.'
+            bot=bot, hook=hook, text="", triggered_command="", cmd_prefix="."
         )
     elif hook.type == "regex":
         event = RegexEvent(bot=bot, hook=hook, match=None)

@@ -17,15 +17,15 @@ async def bf(text):
     :type text: str
     """
 
-    program = re.sub('[^][<>+-.,]', '', text)
+    program = re.sub("[^][<>+-.,]", "", text)
 
     # create a dict of brackets pairs, for speed later on
     brackets = {}
     open_brackets = []
     for pos, c in enumerate(program):
-        if c == '[':
+        if c == "[":
             open_brackets.append(pos)
-        elif c == ']':
+        elif c == "]":
             if open_brackets:
                 brackets[pos] = open_brackets[-1]
                 brackets[open_brackets[-1]] = pos
@@ -46,29 +46,29 @@ async def bf(text):
     # the main program loop:
     while ip < len(program):
         c = program[ip]
-        if c == '+':
+        if c == "+":
             memory[mp] = (memory[mp] + 1) % 256
-        elif c == '-':
+        elif c == "-":
             memory[mp] = (memory[mp] - 1) % 256
-        elif c == '>':
+        elif c == ">":
             mp += 1
             if mp > rightmost:
                 rightmost = mp
                 if mp >= len(memory):
                     # no restriction on memory growth!
                     memory.extend([0] * BUFFER_SIZE)
-        elif c == '<':
+        elif c == "<":
             mp -= 1 % len(memory)
-        elif c == '.':
+        elif c == ".":
             output += chr(memory[mp])
             if len(output) > 500:
                 break
-        elif c == ',':
+        elif c == ",":
             memory[mp] = random.randint(1, 255)
-        elif c == '[':
+        elif c == "[":
             if memory[mp] == 0:
                 ip = brackets[ip]
-        elif c == ']':
+        elif c == "]":
             if memory[mp] != 0:
                 ip = brackets[ip]
 
@@ -80,7 +80,7 @@ async def bf(text):
             output += "(exceeded {} iterations)".format(MAX_STEPS)
             break
 
-    stripped_output = re.sub(r'[\x00-\x1F]', '', output)
+    stripped_output = re.sub(r"[\x00-\x1F]", "", output)
 
     if not stripped_output:
         if output:

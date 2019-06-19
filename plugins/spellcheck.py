@@ -23,7 +23,7 @@ def spell(text):
             finish = start + len(err.word)
             # get some suggestions for it
             suggestions = err.suggest()
-            s_string = '/'.join(suggestions[:3])
+            s_string = "/".join(suggestions[:3])
             s_string = "\x02{}\x02".format(s_string)
             # calculate the offset for the next word
             offset = (offset + len(s_string)) - len(err.word)
@@ -33,7 +33,7 @@ def spell(text):
     # input is a word
     is_correct = en_dict.check(text)
     suggestions = en_dict.suggest(text)
-    s_string = ', '.join(suggestions[:10])
+    s_string = ", ".join(suggestions[:10])
     if is_correct:
         return '"{}" appears to be \x02valid\x02! (suggestions: {})'.format(
             text, s_string

@@ -135,7 +135,7 @@ ATTACKS = (
 
 def load_data(path, data_dict):
     data_dict.clear()
-    with path.open(encoding='utf-8') as f:
+    with path.open(encoding="utf-8") as f:
         data_dict.update(json.load(f))
 
 
@@ -152,9 +152,9 @@ def load_attacks(bot):
 
 def basic_format(nick, text, data, **kwargs):
     user = text
-    kwargs['user'] = user
-    kwargs['target'] = user
-    kwargs['nick'] = nick
+    kwargs["user"] = user
+    kwargs["target"] = user
+    kwargs["nick"] = nick
 
     if text:
         try:

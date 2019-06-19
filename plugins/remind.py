@@ -22,15 +22,15 @@ from cloudbot.util.timeformat import format_time, time_since
 from cloudbot.util.timeparse import time_parse
 
 table = Table(
-    'reminders',
+    "reminders",
     database.metadata,
-    Column('network', String),
-    Column('added_user', String),
-    Column('added_time', DateTime),
-    Column('added_chan', String),
-    Column('message', String),
-    Column('remind_time', DateTime),
-    PrimaryKeyConstraint('network', 'added_user', 'added_time'),
+    Column("network", String),
+    Column("added_user", String),
+    Column("added_time", DateTime),
+    Column("added_chan", String),
+    Column("message", String),
+    Column("remind_time", DateTime),
+    PrimaryKeyConstraint("network", "added_user", "added_time"),
 )
 
 reminder_cache = []
@@ -138,7 +138,7 @@ async def check_reminders(bot, async_call, db):
             await load_cache(async_call, db)
 
 
-@hook.command('remind', 'reminder', 'in')
+@hook.command("remind", "reminder", "in")
 async def remind(text, nick, chan, db, conn, event, async_call):
     """<1 minute, 30 seconds>: <do task> - reminds you to <do task> in <1 minute, 30 seconds>"""
 
@@ -197,7 +197,7 @@ async def remind(text, nick, chan, db, conn, event, async_call):
     await load_cache(async_call, db)
 
     remind_text = format_time(seconds, count=2)
-    output = "Alright, I'll remind you \"{}\" in $(b){}$(clear)!".format(
+    output = 'Alright, I\'ll remind you "{}" in $(b){}$(clear)!'.format(
         message, remind_text
     )
 

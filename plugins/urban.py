@@ -5,7 +5,7 @@ import requests
 from cloudbot import hook
 from cloudbot.util import formatting
 
-base_url = 'http://api.urbandictionary.com/v0'
+base_url = "http://api.urbandictionary.com/v0"
 define_url = base_url + "/define"
 random_url = base_url + "/random"
 
@@ -58,10 +58,10 @@ def urban(text, reply):
         page = request.json()
         id_num = None
 
-    definitions = page['list']
+    definitions = page["list"]
 
     if not definitions:
-        return 'Not found.'
+        return "Not found."
 
     if id_num:
         # try getting the requested definition
@@ -69,24 +69,24 @@ def urban(text, reply):
             definition = definitions[id_num - 1]
 
             def_text = " ".join(
-                definition['definition'].split()
+                definition["definition"].split()
             )  # remove excess spaces
             def_text = formatting.truncate(def_text, 200)
         except IndexError:
-            return 'Not found.'
+            return "Not found."
 
-        url = definition['permalink']
+        url = definition["permalink"]
 
         output = "[{}/{}] {} - {}".format(id_num, len(definitions), def_text, url)
 
     else:
         definition = random.choice(definitions)
 
-        def_text = " ".join(definition['definition'].split())  # remove excess spaces
+        def_text = " ".join(definition["definition"].split())  # remove excess spaces
         def_text = formatting.truncate(def_text, 200)
 
-        name = definition['word']
-        url = definition['permalink']
+        name = definition["word"]
+        url = definition["permalink"]
         output = "\x02{}\x02: {} - {}".format(name, def_text, url)
 
     return output

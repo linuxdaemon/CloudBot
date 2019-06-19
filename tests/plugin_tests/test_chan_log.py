@@ -8,7 +8,7 @@ def test_format_exception_chain():
         yield repr(exc)
         yield "  args = {!r}".format(exc.args)
         yield "  with_traceback = {!r}".format(exc.with_traceback)
-        yield ''
+        yield ""
 
     err = ValueError("Test")
     err1 = ValueError("Test 2")

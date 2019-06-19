@@ -15,13 +15,13 @@ from cloudbot.util.formatting import gen_markdown_table
 from cloudbot.util.mapping import DefaultKeyFoldDict
 
 optout_table = Table(
-    'optout',
+    "optout",
     database.metadata,
-    Column('network', String),
-    Column('chan', String),
-    Column('hook', String),
-    Column('allow', Boolean, default=False),
-    PrimaryKeyConstraint('network', 'chan', 'hook'),
+    Column("network", String),
+    Column("chan", String),
+    Column("hook", String),
+    Column("allow", Boolean, default=False),
+    PrimaryKeyConstraint("network", "chan", "hook"),
 )
 
 optout_cache = DefaultKeyFoldDict(list)

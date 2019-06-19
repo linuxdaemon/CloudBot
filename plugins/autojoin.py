@@ -9,11 +9,11 @@ from cloudbot import hook
 from cloudbot.util import database
 
 table = Table(
-    'autojoin',
+    "autojoin",
     database.metadata,
-    Column('conn', String),
-    Column('chan', String),
-    PrimaryKeyConstraint('conn', 'chan'),
+    Column("conn", String),
+    Column("chan", String),
+    PrimaryKeyConstraint("conn", "chan"),
 )
 
 chan_cache = defaultdict(set)
@@ -30,14 +30,14 @@ def get_channels(db, conn):
 def load_cache(db):
     new_cache = defaultdict(set)
     for row in db.execute(table.select()):
-        new_cache[row['conn']].add(row['chan'])
+        new_cache[row["conn"]].add(row["chan"])
 
     with db_lock:
         chan_cache.clear()
         chan_cache.update(new_cache)
 
 
-@hook.irc_raw('376')
+@hook.irc_raw("376")
 async def do_joins(conn):
     while not conn.ready:
         await asyncio.sleep(1)
@@ -48,7 +48,7 @@ async def do_joins(conn):
         await asyncio.sleep(join_throttle)
 
 
-@hook.irc_raw('JOIN', singlethread=True)
+@hook.irc_raw("JOIN", singlethread=True)
 def add_chan(db, conn, chan, nick):
     chans = chan_cache[conn.name]
     chan = chan.casefold()
@@ -68,7 +68,7 @@ def add_chan(db, conn, chan, nick):
                 load_cache(db)
 
 
-@hook.irc_raw('PART', singlethread=True)
+@hook.irc_raw("PART", singlethread=True)
 def on_part(db, conn, chan, nick):
     if nick.casefold() == conn.nick.casefold():
         with db_lock:
@@ -85,6 +85,6 @@ def on_part(db, conn, chan, nick):
         load_cache(db)
 
 
-@hook.irc_raw('KICK', singlethread=True)
+@hook.irc_raw("KICK", singlethread=True)
 def on_kick(db, conn, chan, target):
     on_part(db, conn, chan, target)

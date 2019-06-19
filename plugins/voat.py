@@ -21,7 +21,7 @@ import requests
 from cloudbot import hook
 from cloudbot.util import timeformat, formatting
 
-voat_re = re.compile(r'.*(((www\.)?voat\.co/v)[^ ]+)', re.I)
+voat_re = re.compile(r".*(((www\.)?voat\.co/v)[^ ]+)", re.I)
 
 base_url = "https://voat.co/api/subversefrontpage?subverse={}"
 voat_fill_url = "https://voat.co/v/{}/comments/{}"
@@ -35,11 +35,11 @@ def format_output(item, show_url=False):
         item["Title"] = formatting.truncate(item["Title"], 70)
     item["link"] = voat_fill_url.format(item["Subverse"], item["Id"])
 
-    raw_time = isodate.parse_date(item['Date'])
+    raw_time = isodate.parse_date(item["Date"])
     item["timesince"] = timeformat.time_since(raw_time, count=1, simple=True)
 
-    item["comments"] = formatting.pluralize_auto(item["CommentCount"], 'comment')
-    item["points"] = formatting.pluralize_auto(item["Likes"], 'point')
+    item["comments"] = formatting.pluralize_auto(item["CommentCount"], "comment")
+    item["points"] = formatting.pluralize_auto(item["Likes"], "point")
 
     if item["Type"] == 2:
         item["warning"] = " \x02Link\x02"
@@ -60,9 +60,9 @@ def format_output(item, show_url=False):
 
 @hook.regex(voat_re)
 def voat_url(match, bot):
-    headers = {'User-Agent': bot.user_agent, 'content-type': 'text/json'}
+    headers = {"User-Agent": bot.user_agent, "content-type": "text/json"}
     url = match.group(1)
-    url = url.split('/')
+    url = url.split("/")
     url = "https://voat.co/api/singlesubmission?id={}".format(url[4])
 
     # the voat API gets grumpy if we don't include headers
@@ -77,7 +77,7 @@ def voat_url(match, bot):
 async def voat(text, bot, loop, reply):
     """<subverse> [n] - gets a random post from <subverse>, or gets the [n]th post in the subverse"""
     id_num = None
-    headers = {'User-Agent': bot.user_agent, 'content-type': 'text/json'}
+    headers = {"User-Agent": bot.user_agent, "content-type": "text/json"}
 
     if text:
         # clean and split the input

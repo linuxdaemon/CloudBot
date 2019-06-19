@@ -14,7 +14,7 @@ def snopes(text):
     """<topic> - Searches snopes for an urban legend about <topic>."""
 
     try:
-        params = {'sp_q': text, 'sp_c': "1"}
+        params = {"sp_q": text, "sp_c": "1"}
         request = requests.get(search_url, params=params)
         request.raise_for_status()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:

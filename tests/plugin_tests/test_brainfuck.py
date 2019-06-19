@@ -4,22 +4,22 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    'text,output',
+    "text,output",
     [
-        ('', 'No output'),
-        ('[', 'Unbalanced brackets'),
-        (']', 'Unbalanced brackets'),
+        ("", "No output"),
+        ("[", "Unbalanced brackets"),
+        ("]", "Unbalanced brackets"),
         (
-            '++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..'
-            '+++.>>.<-.<.+++.------.--------.>>+.>++.',
-            'Hello World!',
+            "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++.."
+            "+++.>>.<-.<.+++.------.--------.>>+.>++.",
+            "Hello World!",
         ),
-        ('+[>.]+', 'No printable output'),
-        ('++++[>.]+', 'No printable output'),
-        ('++++[>++]+.', '(no output)(exceeded 1000000 iterations)'),
-        ('++++[>,]+.', '(no output)(exceeded 1000000 iterations)'),
-        ('[>,]>+.', 'No printable output'),
-        ('..' * 500, 'No printable output'),
+        ("+[>.]+", "No printable output"),
+        ("++++[>.]+", "No printable output"),
+        ("++++[>++]+.", "(no output)(exceeded 1000000 iterations)"),
+        ("++++[>,]+.", "(no output)(exceeded 1000000 iterations)"),
+        ("[>,]>+.", "No printable output"),
+        (".." * 500, "No printable output"),
     ],
 )
 def test_brainfuck(text, output):

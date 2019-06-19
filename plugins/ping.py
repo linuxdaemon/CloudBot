@@ -27,7 +27,7 @@ win_ping_regex = re.compile(r"Minimum = (\d+)ms, Maximum = (\d+)ms, Average = (\
 def ping(text, reply):
     """<host> [count] - pings <host> [count] times"""
 
-    args = text.split(' ')
+    args = text.split(" ")
     host = args[0]
 
     # check for a second argument and set the ping count

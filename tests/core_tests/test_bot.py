@@ -4,11 +4,11 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    'text,result',
+    "text,result",
     (
-        ('connection', 'connection'),
-        ('c onn ection', 'c_onn_ection'),
-        ('c+onn ection', 'conn_ection'),
+        ("connection", "connection"),
+        ("c onn ection", "c_onn_ection"),
+        ("c+onn ection", "conn_ection"),
     ),
 )
 def test_clean_name(text, result):
@@ -27,7 +27,7 @@ def test_get_cmd_regex():
     from cloudbot.bot import get_cmd_regex
     from cloudbot.event import Event
 
-    event = Event(channel='TestUser', nick='TestUser', conn=MockConn('Bot'))
+    event = Event(channel="TestUser", nick="TestUser", conn=MockConn("Bot"))
     regex = get_cmd_regex(event)
     assert textwrap.dedent(regex.pattern) == textwrap.dedent(
         r"""

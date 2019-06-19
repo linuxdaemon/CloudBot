@@ -266,7 +266,7 @@ class User(MappingAttributeAdapter):
 
     @account.setter
     def account(self, value):
-        if value == '*':
+        if value == "*":
             value = None
 
         self._account = value
@@ -384,7 +384,7 @@ def get_chan_data(bot: cloudbot.bot.CloudBot):
     :type bot: cloudbot.bot.CloudBot
     """
     for conn in bot.connections.values():
-        if conn.connected and conn.type == 'irc':
+        if conn.connected and conn.type == "irc":
             assert isinstance(conn, IrcClient)
             init_chan_data(conn, False)
             update_conn_data(conn)
@@ -465,7 +465,7 @@ def parse_names_item(item, statuses, has_multi_prefix, has_userhost):
             # if we don't have multi prefix enabled
             break
 
-    user_status.sort(key=attrgetter('level'), reverse=True)
+    user_status.sort(key=attrgetter("level"), reverse=True)
 
     if has_userhost:
         prefix = Prefix.parse(item)
@@ -487,7 +487,7 @@ def replace_user_data(conn, chan_data):
     new_data = chan_data.data.pop("new_users", [])
     has_uh_i_n = is_cap_available(conn, "userhost-in-names")
     has_multi_pfx = is_cap_available(conn, "multi-prefix")
-    old_data = chan_data.data.pop('old_users', {})
+    old_data = chan_data.data.pop("old_users", {})
     new_names = set()
 
     for name in new_data:
@@ -513,23 +513,23 @@ def replace_user_data(conn, chan_data):
             del chan_data.users[old_nick]
 
 
-@hook.irc_raw(['353', '366'], singlethread=True)
+@hook.irc_raw(["353", "366"], singlethread=True)
 def on_names(conn, irc_paramlist, irc_command):
     """
     :type conn: cloudbot.client.Client
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
     :type irc_command: str
     """
-    chan = irc_paramlist[2 if irc_command == '353' else 1]
+    chan = irc_paramlist[2 if irc_command == "353" else 1]
     chan_data = get_chans(conn).getchan(chan)
-    if irc_command == '366':
+    if irc_command == "366":
         chan_data.receiving_names = False
         replace_user_data(conn, chan_data)
         return
 
     users = chan_data.data.setdefault("new_users", [])
     if not chan_data.receiving_names:
-        chan_data.data['old_users'] = old = ChannelMembersDict(chan_data)
+        chan_data.data["old_users"] = old = ChannelMembersDict(chan_data)
         old.update(chan_data.users)
 
         chan_data.receiving_names = True
@@ -554,7 +554,7 @@ class MappingSerializer:
 
         if isinstance(obj, Mapping):
             if id(obj) in self._seen_objects:
-                return '<{} with id {}>'.format(type(obj).__name__, id(obj))
+                return "<{} with id {}>".format(type(obj).__name__, id(obj))
 
             self._seen_objects.append(id(obj))
 
@@ -562,7 +562,7 @@ class MappingSerializer:
 
         if isinstance(obj, Iterable):
             if id(obj) in self._seen_objects:
-                return '<{} with id {}>'.format(type(obj).__name__, id(obj))
+                return "<{} with id {}>".format(type(obj).__name__, id(obj))
 
             self._seen_objects.append(id(obj))
 
@@ -668,7 +668,7 @@ def getdata_cmd(conn, chan, nick):
     return web.paste(MappingSerializer().serialize(memb, indent=2))
 
 
-@hook.irc_raw('JOIN')
+@hook.irc_raw("JOIN")
 def on_join(nick, user, host, conn, irc_paramlist):
     """
     :type nick: str
@@ -695,16 +695,16 @@ def on_join(nick, user, host, conn, irc_paramlist):
     user_data.join_channel(chan_data)
 
 
-ModeChange = namedtuple('ModeChange', 'mode adding param is_status')
+ModeChange = namedtuple("ModeChange", "mode adding param is_status")
 
 
 def _parse_mode_string(modes, params, status_modes, mode_types):
     new_modes = []
     adding = True
     for c in modes:
-        if c == '+':
+        if c == "+":
             adding = True
-        elif c == '-':
+        elif c == "-":
             adding = False
         else:
             is_status = c in status_modes
@@ -712,9 +712,9 @@ def _parse_mode_string(modes, params, status_modes, mode_types):
             if mode_type:
                 mode_type = mode_type.type
             else:
-                mode_type = 'B' if is_status else None
+                mode_type = "B" if is_status else None
 
-            if mode_type in "AB" or (mode_type == 'C' and adding):
+            if mode_type in "AB" or (mode_type == "C" and adding):
                 param = params.pop(0)
             else:
                 param = None
@@ -724,7 +724,7 @@ def _parse_mode_string(modes, params, status_modes, mode_types):
     return new_modes
 
 
-@hook.irc_raw('MODE')
+@hook.irc_raw("MODE")
 def on_mode(chan, irc_paramlist, conn):
     """
     :type chan: str
@@ -763,7 +763,7 @@ def on_mode(chan, irc_paramlist, conn):
         member.sort_status()
 
 
-@hook.irc_raw('PART')
+@hook.irc_raw("PART")
 def on_part(chan, nick, conn):
     """
     :type chan: str
@@ -778,7 +778,7 @@ def on_part(chan, nick, conn):
         del chan_data.users[nick]
 
 
-@hook.irc_raw('KICK')
+@hook.irc_raw("KICK")
 def on_kick(chan, target, conn):
     """
     :type chan: str
@@ -788,7 +788,7 @@ def on_kick(chan, target, conn):
     on_part(chan, target, conn)
 
 
-@hook.irc_raw('QUIT')
+@hook.irc_raw("QUIT")
 def on_quit(nick, conn):
     """
     :type nick: str
@@ -802,7 +802,7 @@ def on_quit(nick, conn):
             del chan.users[nick]
 
 
-@hook.irc_raw('NICK')
+@hook.irc_raw("NICK")
 def on_nick(nick, irc_paramlist, conn):
     """
     :type nick: str
@@ -820,7 +820,7 @@ def on_nick(nick, irc_paramlist, conn):
         chan_users[new_nick] = chan_users.pop(nick)
 
 
-@hook.irc_raw('ACCOUNT')
+@hook.irc_raw("ACCOUNT")
 def on_account(conn, nick, irc_paramlist):
     """
     :type nick: str
@@ -830,7 +830,7 @@ def on_account(conn, nick, irc_paramlist):
     get_users(conn).getuser(nick).account = irc_paramlist[0]
 
 
-@hook.irc_raw('CHGHOST')
+@hook.irc_raw("CHGHOST")
 def on_chghost(conn, nick, irc_paramlist):
     """
     :type nick: str
@@ -843,7 +843,7 @@ def on_chghost(conn, nick, irc_paramlist):
     user.host = host
 
 
-@hook.irc_raw('AWAY')
+@hook.irc_raw("AWAY")
 def on_away(conn, nick, irc_paramlist):
     """
     :type nick: str
@@ -860,7 +860,7 @@ def on_away(conn, nick, irc_paramlist):
     user.away_message = reason
 
 
-@hook.irc_raw('352')
+@hook.irc_raw("352")
 def on_who(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
@@ -880,7 +880,7 @@ def on_who(conn, irc_paramlist):
     user.is_oper = is_oper
 
 
-@hook.irc_raw('311')
+@hook.irc_raw("311")
 def on_whois_name(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
@@ -893,7 +893,7 @@ def on_whois_name(conn, irc_paramlist):
     user.realname = realname
 
 
-@hook.irc_raw('330')
+@hook.irc_raw("330")
 def on_whois_acct(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
@@ -903,7 +903,7 @@ def on_whois_acct(conn, irc_paramlist):
     get_users(conn).getuser(nick).account = acct
 
 
-@hook.irc_raw('301')
+@hook.irc_raw("301")
 def on_whois_away(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
@@ -915,7 +915,7 @@ def on_whois_away(conn, irc_paramlist):
     user.away_message = msg
 
 
-@hook.irc_raw('312')
+@hook.irc_raw("312")
 def on_whois_server(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList
@@ -925,7 +925,7 @@ def on_whois_server(conn, irc_paramlist):
     get_users(conn).getuser(nick).server = server
 
 
-@hook.irc_raw('313')
+@hook.irc_raw("313")
 def on_whois_oper(conn, irc_paramlist):
     """
     :type irc_paramlist: cloudbot.util.parsers.irc.ParamList

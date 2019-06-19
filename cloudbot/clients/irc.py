@@ -15,16 +15,16 @@ from cloudbot.util import async_util
 
 logger = logging.getLogger("cloudbot")
 
-irc_nick_re = re.compile(r'[A-Za-z0-9^{\}\[\]\-`_|\\]+')
+irc_nick_re = re.compile(r"[A-Za-z0-9^{\}\[\]\-`_|\\]+")
 
-irc_bad_chars = ''.join(
+irc_bad_chars = "".join(
     [chr(x) for x in list(range(0, 1)) + list(range(4, 32)) + list(range(127, 160))]
 )
-irc_clean_re = re.compile('[{}]'.format(re.escape(irc_bad_chars)))
+irc_clean_re = re.compile("[{}]".format(re.escape(irc_bad_chars)))
 
 
 def irc_clean(dirty):
-    return irc_clean_re.sub('', dirty)
+    return irc_clean_re.sub("", dirty)
 
 
 irc_command_to_event_type = {
@@ -40,12 +40,12 @@ def decode(bytestring):
     """
     Tries to decode a bytestring using multiple encoding formats
     """
-    for codec in ('utf-8', 'iso-8859-1', 'shift_jis', 'cp1252'):
+    for codec in ("utf-8", "iso-8859-1", "shift_jis", "cp1252"):
         try:
             return bytestring.decode(codec)
         except UnicodeDecodeError:
             continue
-    return bytestring.decode('utf-8', errors='ignore')
+    return bytestring.decode("utf-8", errors="ignore")
 
 
 @client("irc")
@@ -68,15 +68,15 @@ class IrcClient(Client):
         """
         super().__init__(bot, name, nick, channels=channels, config=config)
 
-        self.use_ssl = config['connection'].get('ssl', False)
-        self._ignore_cert_errors = config['connection'].get('ignore_cert', False)
-        self._timeout = config['connection'].get('timeout', 300)
-        self.server = config['connection']['server']
-        self.port = config['connection'].get('port', 6667)
+        self.use_ssl = config["connection"].get("ssl", False)
+        self._ignore_cert_errors = config["connection"].get("ignore_cert", False)
+        self._timeout = config["connection"].get("timeout", 300)
+        self.server = config["connection"]["server"]
+        self.port = config["connection"].get("port", 6667)
 
         local_bind = (
-            config['connection'].get('bind_addr', False),
-            config['connection'].get('bind_port', 0),
+            config["connection"].get("bind_addr", False),
+            config["connection"].get("bind_port", 0),
         )
         if local_bind[0] is False:
             local_bind = False
@@ -457,10 +457,10 @@ class _IrcProtocol(asyncio.Protocol):
             # Parse for CTCP
             if event_type is EventType.message and content_raw.startswith("\x01"):
                 possible_ctcp = content_raw[1:]
-                if content_raw.endswith('\x01'):
+                if content_raw.endswith("\x01"):
                     possible_ctcp = possible_ctcp[:-1]
 
-                if '\x01' in possible_ctcp:
+                if "\x01" in possible_ctcp:
                     logger.debug(
                         "[%s] Invalid CTCP message received, "
                         "treating it as a mornal message",

@@ -15,7 +15,7 @@ TWITTER_RE = re.compile(
 
 
 def _get_conf_value(conf, field):
-    return conf['plugins']['twitter'][field]
+    return conf["plugins"]["twitter"][field]
 
 
 def get_config(conn, field, default):
@@ -33,8 +33,8 @@ def get_config(conn, field, default):
             return default
 
 
-def get_tweet_mode(conn, default='extended'):
-    return get_config(conn, 'tweet_mode', default)
+def get_tweet_mode(conn, default="extended"):
+    return get_config(conn, "tweet_mode", default)
 
 
 def make_api():
@@ -91,7 +91,7 @@ def twitter(text, reply, conn):
 
     tweet_mode = get_tweet_mode(conn)
 
-    if re.match(r'^\d+$', text):
+    if re.match(r"^\d+$", text):
         # user is getting a tweet by id
 
         try:
@@ -107,10 +107,10 @@ def twitter(text, reply, conn):
 
         user = tweet.user
 
-    elif re.match(r'^\w{1,15}$', text) or re.match(r'^\w{1,15}\s+\d+$', text):
+    elif re.match(r"^\w{1,15}$", text) or re.match(r"^\w{1,15}\s+\d+$", text):
         # user is getting a tweet by name
 
-        if text.find(' ') == -1:
+        if text.find(" ") == -1:
             username = text
             tweet_number = 0
         else:
@@ -148,7 +148,7 @@ def twitter(text, reply, conn):
                 user.screen_name, tweet_count
             )
 
-    elif re.match(r'^#\w+$', text):
+    elif re.match(r"^#\w+$", text):
         # user is searching by hashtag
         search = tw_api.search(text, tweet_mode=tweet_mode)
 
@@ -214,7 +214,7 @@ def twuser(text, reply):
         loc_str = ""
 
     if user.description:
-        desc_str = " The users description is \"{}\"".format(user.description)
+        desc_str = ' The users description is "{}"'.format(user.description)
     else:
         desc_str = ""
 

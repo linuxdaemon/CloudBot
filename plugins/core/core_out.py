@@ -6,7 +6,7 @@ from cloudbot import hook
 from cloudbot.hook import Priority
 from cloudbot.util import colors
 
-NEW_LINE_TRANS_TBL = str.maketrans({'\r': None, '\n': None, '\0': None})
+NEW_LINE_TRANS_TBL = str.maketrans({"\r": None, "\n": None, "\0": None})
 
 
 @hook.irc_out(priority=Priority.HIGHEST)

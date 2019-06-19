@@ -19,10 +19,10 @@ def validate(text):
     if not urllib.parse.urlparse(text).scheme:
         text = "http://" + text
 
-    url = api_url + '?uri=' + text
+    url = api_url + "?uri=" + text
     url = web.try_shorten(url)
 
-    params = {'uri': text, 'output': 'json'}
+    params = {"uri": text, "output": "json"}
     request = requests.get(api_url, params=params)
     request.raise_for_status()
 
@@ -30,12 +30,12 @@ def validate(text):
         return "Failed to fetch info: {}".format(request.status_code)
 
     response = request.json()
-    response = response['messages']
+    response = response["messages"]
 
     for mess in response:
-        if mess.get('subType', None) == 'warning':
+        if mess.get("subType", None) == "warning":
             warning_count += 1
-        if mess.get('type', None) == 'error':
+        if mess.get("type", None) == "error":
             error_count += 1
 
     out_warning = "warnings" if warning_count > 1 else "warning"

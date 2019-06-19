@@ -45,13 +45,13 @@ def test_available_formats():
 def test_invalid_color():
     with pytest.raises(KeyError) as excinfo:
         get_color("cake")
-    assert 'not in the list of available colours' in str(excinfo.value)
+    assert "not in the list of available colours" in str(excinfo.value)
 
 
 def test_invalid_format():
     with pytest.raises(KeyError) as excinfo:
         get_format("cake")
-    assert 'not found in the list of available formats' in str(excinfo.value)
+    assert "not found in the list of available formats" in str(excinfo.value)
 
 
 def test_get_color():
@@ -64,10 +64,10 @@ def test_get_random_color():
     assert get_color("random", return_formatted=False) in list(IRC_COLOUR_DICT.values())
 
     with mock.patch(
-        'cloudbot.util.colors.randint',
+        "cloudbot.util.colors.randint",
         return_value=4,  # chosen by fair dice roll, guranteed to be random.
     ):
-        assert get_color('random') == '\x0304'
+        assert get_color("random") == "\x0304"
 
 
 def test_get_format():

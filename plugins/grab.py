@@ -13,12 +13,12 @@ from cloudbot.util.pager import paginated_list, CommandPager
 search_pages = defaultdict(dict)
 
 table = Table(
-    'grab',
+    "grab",
     database.metadata,
-    Column('name', String),
-    Column('time', String),
-    Column('quote', String),
-    Column('chan', String),
+    Column("name", String),
+    Column("time", String),
+    Column("quote", String),
+    Column("chan", String),
 )
 
 grab_cache = {}
@@ -116,7 +116,7 @@ def grab(text, nick, chan, db, conn):
 
 def format_grab(name, quote):
     # add nonbreaking space to nicks to avoid highlighting people with printed grabs
-    name = "{}{}{}".format(name[0], u"\u200B", name[1:])
+    name = "{}{}{}".format(name[0], "\u200B", name[1:])
     if quote.startswith("\x01ACTION") or quote.startswith("*"):
         quote = quote.replace("\x01ACTION", "").replace("\x01", "")
         out = "* {}{}".format(name, quote)

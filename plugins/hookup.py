@@ -12,12 +12,12 @@ from cloudbot.util.textgen import TextGenerator
 
 hookups = {}
 seen_table = table(
-    'seen_user',
-    column('name', String),
-    column('time', Float),
-    column('quote', String),
-    column('chan', String),
-    column('host', String),
+    "seen_user",
+    column("name", String),
+    column("time", Float),
+    column("quote", String),
+    column("chan", String),
+    column("host", String),
 )
 
 
@@ -49,8 +49,8 @@ def hookup(db, chan):
     people = list(set(row[0] for row in results))
     random.shuffle(people)
     person1, person2 = people[:2]
-    variables = {'user1': person1, 'user2': person2}
+    variables = {"user1": person1, "user2": person2}
     generator = TextGenerator(
-        hookups['templates'], hookups['parts'], variables=variables
+        hookups["templates"], hookups["parts"], variables=variables
     )
     return generator.generate_string()

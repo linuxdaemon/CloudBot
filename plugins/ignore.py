@@ -116,7 +116,7 @@ def get_user(conn, text):
     else:
         mask = "*!*@{host}".format_map(user)
 
-    if '@' not in mask:
+    if "@" not in mask:
         mask += "!*@*"
 
     return mask

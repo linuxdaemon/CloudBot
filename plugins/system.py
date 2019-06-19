@@ -14,7 +14,7 @@ import cloudbot
 
 
 def _get_repo_link(bot):
-    return bot.config.get('repo_link', 'https://github.com/snoonetIRC/CloudBot/')
+    return bot.config.get("repo_link", "https://github.com/snoonetIRC/CloudBot/")
 
 
 @hook.command(autohelp=False)
@@ -39,7 +39,7 @@ def system(reply, message):
     sys_os = platform.platform()
     python_implementation = platform.python_implementation()
     python_version = platform.python_version()
-    sys_architecture = '-'.join(platform.architecture())
+    sys_architecture = "-".join(platform.architecture())
     sys_cpu_count = platform.machine()
 
     reply(

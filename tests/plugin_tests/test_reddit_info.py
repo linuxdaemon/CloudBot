@@ -2,14 +2,14 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    'text,post_id',
+    "text,post_id",
     [
-        ('http://reddit.com/r/foo/comments/bar', 'bar'),
-        ('http://www.reddit.com/r/foo/comments/bar', 'bar'),
-        ('http://np.reddit.com/r/foo/comments/bar', 'bar'),
-        ('np.reddit.com/r/foo/comments/bar', 'bar'),
-        ('reddit.com/r/foo/comments/bar', 'bar'),
-        ('some random text: http://reddit.com/r/foo/comments/bar and more text', 'bar'),
+        ("http://reddit.com/r/foo/comments/bar", "bar"),
+        ("http://www.reddit.com/r/foo/comments/bar", "bar"),
+        ("http://np.reddit.com/r/foo/comments/bar", "bar"),
+        ("np.reddit.com/r/foo/comments/bar", "bar"),
+        ("reddit.com/r/foo/comments/bar", "bar"),
+        ("some random text: http://reddit.com/r/foo/comments/bar and more text", "bar"),
     ],
 )
 def test_post_re_match(text, post_id):
@@ -20,12 +20,12 @@ def test_post_re_match(text, post_id):
 
 
 @pytest.mark.parametrize(
-    'text',
+    "text",
     [
-        'https://reddit.com/r/foo',
-        'http://fakereddit.com/r/foo/comments/bar',
-        ' fakereddit.com/r/foo/comments/bar',
-        'fakereddit.com/r/foo/comments/bar',
+        "https://reddit.com/r/foo",
+        "http://fakereddit.com/r/foo/comments/bar",
+        " fakereddit.com/r/foo/comments/bar",
+        "fakereddit.com/r/foo/comments/bar",
     ],
 )
 def test_post_re_no_match(text):
@@ -35,7 +35,7 @@ def test_post_re_no_match(text):
 
 
 @pytest.mark.parametrize(
-    'text,output', [('test', 'test'), ('r/test', 'test'), ('/r/test', 'test')]
+    "text,output", [("test", "test"), ("r/test", "test"), ("/r/test", "test")]
 )
 def test_get_user(text, output):
     from plugins.reddit_info import get_sub
@@ -44,13 +44,13 @@ def test_get_user(text, output):
 
 
 @pytest.mark.parametrize(
-    'text,output',
+    "text,output",
     [
-        ('test', 'test'),
-        ('/u/test', 'test'),
-        ('u/test', 'test'),
-        ('/user/test', 'test'),
-        ('user/test', 'test'),
+        ("test", "test"),
+        ("/u/test", "test"),
+        ("u/test", "test"),
+        ("/user/test", "test"),
+        ("user/test", "test"),
     ],
 )
 def test_get_sub(text, output):

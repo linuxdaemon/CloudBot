@@ -10,7 +10,7 @@ from pathlib import Path
 original_wd = Path().resolve()
 
 # set up environment - we need to make sure we are in the install directory
-path0 = Path(sys.path[0] or '.').resolve()
+path0 = Path(sys.path[0] or ".").resolve()
 install_dir = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(install_dir))
 os.chdir(str(install_dir))
@@ -90,5 +90,5 @@ def main():
     logging.shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

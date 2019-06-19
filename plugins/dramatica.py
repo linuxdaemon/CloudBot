@@ -33,9 +33,9 @@ def drama(text, reply):
 
     if not data[1]:
         return "No results found."
-    article_name = data[1][0].replace(' ', '_')
+    article_name = data[1][0].replace(" ", "_")
 
-    url = ed_url + parse.quote(article_name, '')
+    url = ed_url + parse.quote(article_name, "")
 
     page_response = requests.get(url)
 
@@ -53,7 +53,7 @@ def drama(text, reply):
     for p in page.xpath('//div[@id="bodyContent"]/p'):
         if p.text_content():
             summary = " ".join(p.text_content().splitlines())
-            summary = re.sub(r'\[\d+\]', '', summary)
+            summary = re.sub(r"\[\d+\]", "", summary)
             summary = formatting.truncate(summary, 220)
             return "{} - {}".format(summary, url)
 

@@ -46,7 +46,7 @@ def namegen(text, bot, notice):
     # command to return a list of all available generators
     if inp == "list":
         message = "Available generators: "
-        message += formatting.get_text_list(all_modules, 'and')
+        message += formatting.get_text_list(all_modules, "and")
         notice(message)
         return
 
@@ -74,5 +74,5 @@ def namegen(text, bot, notice):
 
     # and finally return the final message :D
     return "Some names to ponder: {}.".format(
-        formatting.get_text_list(name_list, 'and')
+        formatting.get_text_list(name_list, "and")
     )

@@ -9,14 +9,14 @@ from cloudbot.event import EventType
 from cloudbot.util import timeformat, database
 
 table = Table(
-    'seen_user',
+    "seen_user",
     database.metadata,
-    Column('name', String),
-    Column('time', Float),
-    Column('quote', String),
-    Column('chan', String),
-    Column('host', String),
-    PrimaryKeyConstraint('name', 'chan'),
+    Column("name", String),
+    Column("time", Float),
+    Column("quote", String),
+    Column("chan", String),
+    Column("host", String),
+    PrimaryKeyConstraint("name", "chan"),
 )
 
 
@@ -27,7 +27,7 @@ def track_seen(event, db):
     """
     # keep private messages private
     now = time.time()
-    if event.chan[:1] == "#" and not re.findall('^s/.*/.*/$', event.content.lower()):
+    if event.chan[:1] == "#" and not re.findall("^s/.*/.*/$", event.content.lower()):
         res = db.execute(
             table.update()
             .where(and_(table.c.name == event.nick.lower(), table.c.chan == event.chan))
@@ -120,10 +120,10 @@ def seen(text, nick, chan, db, event, is_nick_valid):
     if last_seen:
         reltime = timeformat.time_since(last_seen[1])
         if last_seen[2][0:1] == "\x01":
-            return '{} was last seen {} ago: * {} {}'.format(
+            return "{} was last seen {} ago: * {} {}".format(
                 text, reltime, text, last_seen[2][8:-1]
             )
 
-        return '{} was last seen {} ago saying: {}'.format(text, reltime, last_seen[2])
+        return "{} was last seen {} ago saying: {}".format(text, reltime, last_seen[2])
 
     return "I've never seen {} talking in this channel.".format(text)

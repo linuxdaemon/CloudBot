@@ -20,35 +20,35 @@ from cloudbot.util import timeformat, database, web
 from cloudbot.util.formatting import gen_markdown_table
 
 table = Table(
-    'tells',
+    "tells",
     database.metadata,
-    Column('connection', String),
-    Column('sender', String),
-    Column('target', String),
-    Column('message', String),
-    Column('is_read', Boolean),
-    Column('time_sent', DateTime),
-    Column('time_read', DateTime),
+    Column("connection", String),
+    Column("sender", String),
+    Column("target", String),
+    Column("message", String),
+    Column("is_read", Boolean),
+    Column("time_sent", DateTime),
+    Column("time_read", DateTime),
 )
 
 disable_table = Table(
-    'tell_ignores',
+    "tell_ignores",
     database.metadata,
-    Column('conn', String),
-    Column('target', String),
-    Column('setter', String),
-    Column('set_at', DateTime),
-    PrimaryKeyConstraint('conn', 'target'),
+    Column("conn", String),
+    Column("target", String),
+    Column("setter", String),
+    Column("set_at", DateTime),
+    PrimaryKeyConstraint("conn", "target"),
 )
 
 ignore_table = Table(
-    'tell_user_ignores',
+    "tell_user_ignores",
     database.metadata,
-    Column('conn', String),
-    Column('set_at', DateTime),
-    Column('nick', String),
-    Column('mask', String),
-    PrimaryKeyConstraint('conn', 'nick', 'mask'),
+    Column("conn", String),
+    Column("set_at", DateTime),
+    Column("nick", String),
+    Column("mask", String),
+    PrimaryKeyConstraint("conn", "nick", "mask"),
 )
 
 disable_cache = defaultdict(set)
@@ -78,7 +78,7 @@ def load_disabled(db):
     """
     new_cache = defaultdict(set)
     for row in db.execute(disable_table.select()):
-        new_cache[row['conn']].add(row['target'].lower())
+        new_cache[row["conn"]].add(row["target"].lower())
 
     disable_cache.clear()
     disable_cache.update(new_cache)
@@ -91,7 +91,7 @@ def load_ignores(db):
     """
     new_cache = defaultdict(lambda: defaultdict(list))
     for row in db.execute(ignore_table.select()):
-        new_cache[row['conn'].lower()][row['nick'].lower()].append(row['mask'])
+        new_cache[row["conn"].lower()][row["nick"].lower()].append(row["mask"])
 
     ignore_cache.clear()
     ignore_cache.update(new_cache)
@@ -179,7 +179,7 @@ def list_disabled(db, conn):
     for row in db.execute(
         disable_table.select().where(disable_table.c.conn == conn.name.lower())
     ):
-        yield (row['conn'], row['target'], row['setter'], row['set_at'].ctime())
+        yield (row["conn"], row["target"], row["setter"], row["set_at"].ctime())
 
 
 def add_ignore(db, conn, nick, mask, now=None):
@@ -312,7 +312,7 @@ def tellinput(event, conn, db, nick, notice):
     :type conn: cloudbot.client.Client
     :type db: sqlalchemy.orm.Session
     """
-    if 'showtells' in event.content.lower():
+    if "showtells" in event.content.lower():
         return
 
     if tell_check(conn.name, nick):
@@ -371,7 +371,7 @@ def tell_cmd(text, nick, db, conn, mask, event):
     :type event: cloudbot.event.CommandEvent
     :rtype: None
     """
-    query = text.split(' ', 1)
+    query = text.split(" ", 1)
 
     if len(query) != 2:
         event.notice_doc()
@@ -416,7 +416,7 @@ def tell_disable(conn, db, text, nick, event):
     if not text or text.casefold() == nick.casefold():
         text = nick
         is_self = True
-    elif not check_permissions(event, 'botcontrol', 'ignore'):
+    elif not check_permissions(event, "botcontrol", "ignore"):
         event.notice("Sorry, you are not allowed to use this command.")
         return None
 
@@ -439,7 +439,7 @@ def tell_enable(conn, db, text, event, nick):
     if not text or text.casefold() == nick.casefold():
         text = nick
         is_self = True
-    elif not check_permissions(event, 'botcontrol', 'ignore'):
+    elif not check_permissions(event, "botcontrol", "ignore"):
         event.notice("Sorry, you are not allowed to use this command.")
         return None
 
@@ -460,7 +460,7 @@ def list_tell_disabled(conn, db):
     """- Returns the current list of people who are not able to recieve tells"""
     ignores = list(list_disabled(db, conn))
     md = gen_markdown_table(["Connection", "Target", "Setter", "Set At"], ignores)
-    return web.paste(md, 'md', 'hastebin')
+    return web.paste(md, "md", "hastebin")
 
 
 @hook.command("tellignore")
@@ -494,4 +494,4 @@ def list_tell_ignores(conn, nick):
     if not ignores:
         return "You are not ignoring tells from any users"
 
-    return "You are ignoring tell from: {}".format(', '.join(map(repr, ignores)))
+    return "You are ignoring tell from: {}".format(", ".join(map(repr, ignores)))
