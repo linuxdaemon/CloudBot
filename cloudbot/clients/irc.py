@@ -220,7 +220,7 @@ class IrcClient(Client):
         self.cmd("NICK", nick)
 
     def join(self, channel):
-        self.send("JOIN {}".format(channel))
+        self.cmd("JOIN", channel)
         if channel not in self.channels:
             self.channels.append(channel)
 

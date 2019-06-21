@@ -90,8 +90,7 @@ async def onjoin(conn, bot):
     oper_pw = conn.config.get('oper_pw', False)
     oper_user = conn.config.get('oper_user', False)
     if oper_pw and oper_user:
-        out = "OPER {} {}".format(oper_user, oper_pw)
-        conn.send(out)
+        conn.cmd("OPER", oper_user, oper_pw)
         # Make sure we finish oper-ing before continuing
         await asyncio.sleep(1)
 

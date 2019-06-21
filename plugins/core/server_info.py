@@ -19,7 +19,7 @@ def do_isupport(bot):
     for conn in bot.connections.values():
         if conn.connected:
             clear_isupport(conn)
-            conn.send("VERSION")
+            conn.cmd("VERSION")
 
 
 @hook.connect

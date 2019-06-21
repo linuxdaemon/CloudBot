@@ -122,7 +122,7 @@ def lag_check(bot, admin_log):
             if lag > timeout and last_act > timeout:
                 conn.memory["needs_reconnect"] = True
             elif ping_diff >= interval:
-                conn.send("PING :LAGCHECK{}".format(now))
+                conn.cmd("PING", "LAGCHECK{}".format(now))
                 if not conn.memory["lag_sent"]:
                     conn.memory["lag_sent"] = now
 

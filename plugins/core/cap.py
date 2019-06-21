@@ -39,7 +39,7 @@ async def handle_available_caps(conn, caplist, event, irc_paramlist, bot):
     if irc_paramlist[2] != '*':
         await asyncio.gather(*cap_queue.values())
         cap_queue.clear()
-        conn.send("CAP END")
+        conn.cmd("CAP", "END")
 
 
 HANDLERS = {}

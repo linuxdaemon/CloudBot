@@ -158,7 +158,7 @@ def topic(text, conn, chan, nick, event):
         msg = " ".join(split)
 
     event.admin_log(TOPIC_CHANGE.format(nick=nick, channel=chan, text=msg))
-    conn.send("TOPIC {} :{}".format(chan, msg))
+    conn.cmd("TOPIC", chan, msg)
 
 
 @hook.command(permissions=["op_kick", "op", "chanop"])
@@ -167,25 +167,19 @@ def kick(text, chan, conn, nick, event):
     split = text.split(" ")
 
     if split[0].startswith("#"):
-        channel = split[0]
-        target = split[1]
-        if len(split) > 2:
-            reason = " ".join(split[2:])
-            out = "KICK {} {} :{}".format(channel, target, reason)
-        else:
-            out = "KICK {} {}".format(channel, target)
+        channel = split.pop(0)
     else:
         channel = chan
-        target = split[0]
-        if len(split) > 1:
-            reason = " ".join(split[1:])
-            out = "KICK {} {} :{}".format(channel, target, reason)
-        else:
-            out = "KICK {} {}".format(channel, target)
 
+    target = split.pop(0)
     event.notice("Attempting to kick {} from {}...".format(target, channel))
     event.admin_log(KICK_LOG.format(nick=nick, target=target, channel=channel))
-    conn.send(out)
+
+    if split:
+        reason = " ".join(split)
+        conn.cmd("KICK", channel, target, reason)
+    else:
+        conn.cmd("KICK", channel, target)
 
 
 @hook.command(permissions=["op_rem", "op", "chanop"])
@@ -197,11 +191,10 @@ def remove(text, chan, conn, nick, event):
         reason = " ".join(split[1:]) + " requested by {}".format(nick)
     else:
         reason = "requested by {}.".format(nick)
-    out = "REMOVE {} {} :{}".format(user, chan, reason)
     event.admin_log(REMOVE_LOG.format(
         nick=nick, target=user, channel=chan, reason=reason
     ))
-    conn.send(out)
+    conn.cmd("REMOVE", user, chan, reason)
 
 
 @hook.command(permissions=["op_mute", "op", "chanop"], autohelp=False)
