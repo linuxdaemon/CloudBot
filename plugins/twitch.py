@@ -30,7 +30,7 @@ def twitch_lookup(location, reply):
             title = soup.find('span', {'class': 'real_title js-title'}).text
             playing = soup.find('a', {'class': 'game js-game'}).text
             views = soup.find('span', {'id': 'views-count'}).text + " view"
-            views = views + "s" if not views[0:2] == "1 " else views
+            views += "s" if not views[0:2] == "1 " else views
             return html.unescape(fmt.format(title, channel, playing, views))
 
         if _type == "c":
@@ -38,7 +38,7 @@ def twitch_lookup(location, reply):
             title = data['title']
             playing = data['game']
             views = str(data['views']) + " view"
-            views = views + "s" if views[0:2] != '1 ' else views
+            views += "s" if views[0:2] != '1 ' else views
             return html.unescape(fmt.format(title, channel, playing, views))
     else:
         data = http.get_json("https://api.twitch.tv/kraken/streams?channel=" + channel)
@@ -72,7 +72,7 @@ def multitwitch_url(match, reply):
         if not out:
             out = twitch_lookup(i, reply)
         else:
-            out = out + " \x02|\x02 " + twitch_lookup(i, reply)
+            out += " \x02|\x02 " + twitch_lookup(i, reply)
     return out
 
 

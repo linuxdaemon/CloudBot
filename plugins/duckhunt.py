@@ -847,14 +847,14 @@ def duck_merge(text, conn, db, message):
                 duckmerge[row["chan"]]["shot"] += row["shot"]
                 duckmerge[row["chan"]]["befriend"] += row["befriend"]
                 channelkey["update"].append(row["chan"])
-                duckmerge["TKILLS"] = duckmerge["TKILLS"] + row["shot"]
-                duckmerge["TFRIENDS"] = duckmerge["TFRIENDS"] + row["befriend"]
+                duckmerge["TKILLS"] += row["shot"]
+                duckmerge["TFRIENDS"] += row["befriend"]
             else:
                 duckmerge[row["chan"]]["shot"] = row["shot"]
                 duckmerge[row["chan"]]["befriend"] = row["befriend"]
                 channelkey["insert"].append(row["chan"])
-                duckmerge["TKILLS"] = duckmerge["TKILLS"] + row["shot"]
-                duckmerge["TFRIENDS"] = duckmerge["TFRIENDS"] + row["befriend"]
+                duckmerge["TKILLS"] += row["shot"]
+                duckmerge["TFRIENDS"] += row["befriend"]
     else:
         for row in oldnickscore:
             duckmerge[row["chan"]]["shot"] = row["shot"]
