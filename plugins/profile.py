@@ -7,7 +7,7 @@ from sqlalchemy import Column, String, Table, and_
 
 from cloudbot import hook
 from cloudbot.util import database
-from cloudbot.util.pager import paginated_list, CommandPager
+from cloudbot.util.pager import CommandPager, paginated_list
 
 category_re = r"[A-Za-z0-9]+"
 data_re = re.compile(r"({})\s(.+)".format(category_re))
@@ -112,7 +112,8 @@ def profile(text, chan, notice, nick):
     category = unpck.pop(0)
     cat_cf = category.casefold()
     if cat_cf not in user_profile:
-        notice("User {} has no profile data for category {} in this channel".format(pnick, category))
+        notice("User {} has no profile data "
+               "for category {} in this channel".format(pnick, category))
         return None
 
     content = user_profile[cat_cf]
@@ -136,14 +137,22 @@ def profileadd(text, chan, nick, notice, db):
     cat, data = match.groups()
     if cat.casefold() not in user_profile:
         db.execute(
-            table.insert().values(chan=chan.casefold(), nick=nick.casefold(), category=cat.casefold(), text=data))
+            table.insert().values(
+                chan=chan.casefold(), nick=nick.casefold(),
+                category=cat.casefold(), text=data
+            )
+        )
         db.commit()
         load_cache(db)
         return "Created new profile category {}".format(cat)
 
-    db.execute(table.update().values(text=data).where((and_(table.c.nick == nick.casefold(),
-                                                            table.c.chan == chan.casefold(),
-                                                            table.c.category == cat.casefold()))))
+    clause = and_(
+        table.c.nick == nick.casefold(),
+        table.c.chan == chan.casefold(),
+        table.c.category == cat.casefold()
+    )
+
+    db.execute(table.update().values(text=data).where(clause))
     db.commit()
     load_cache(db)
     return "Updated profile category {}".format(cat)

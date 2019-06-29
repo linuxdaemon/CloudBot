@@ -54,8 +54,9 @@ def get_data(user, currency="us"):
         if cfscrape:
             raise SteamError("Could not get user info: {}".format(e))
 
-        raise SteamError("Could not get user info: {} (You may have been blocked by CloudFlare, try installing the "
-                         "cfscrape module)".format(e))
+        raise SteamError("Could not get user info: {} "
+                         "(You may have been blocked by CloudFlare, "
+                         "try installing the cfscrape module)".format(e))
 
     # parse that page!
     soup = parse_soup(request.content)

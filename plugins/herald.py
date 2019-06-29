@@ -3,7 +3,7 @@ import re
 import time
 from collections import defaultdict
 
-from sqlalchemy import Table, Column, String, PrimaryKeyConstraint
+from sqlalchemy import Column, PrimaryKeyConstraint, String, Table, and_
 
 from cloudbot import hook
 from cloudbot.util import database
@@ -59,10 +59,15 @@ def herald(text, nick, chan, db, reply):
         return None
 
     res = db.execute(
-        table.update().where(table.c.name == nick.lower()).where(table.c.chan == chan.lower()).values(quote=text)
+        table.update().where(and_(
+            table.c.name == nick.lower(),
+            table.c.chan == chan.lower(),
+        )).values(quote=text)
     )
     if res.rowcount == 0:
-        db.execute(table.insert().values(name=nick.lower(), chan=chan.lower(), quote=text))
+        db.execute(table.insert().values(
+            name=nick.lower(), chan=chan.lower(), quote=text
+        ))
 
     db.commit()
     reply("greeting successfully added")

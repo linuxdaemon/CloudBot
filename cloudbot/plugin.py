@@ -623,14 +623,16 @@ class Plugin:
 
         :type bot: cloudbot.bot.CloudBot
         """
-        if self.tables:
-            # if there are any tables
+        if not self.tables:
+            return
 
-            logger.info("Registering tables for %s", self.title)
+        # if there are any tables
 
-            for table in self.tables:
-                if not await bot.loop.run_in_executor(None, table.exists, bot.db_engine):
-                    await bot.loop.run_in_executor(None, table.create, bot.db_engine)
+        logger.info("Registering tables for %s", self.title)
+
+        for table in self.tables:
+            if not await bot.loop.run_in_executor(None, table.exists, bot.db_engine):
+                await bot.loop.run_in_executor(None, table.create, bot.db_engine)
 
     def unregister_tables(self, bot):
         """

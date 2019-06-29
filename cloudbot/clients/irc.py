@@ -250,7 +250,8 @@ class IrcClient(Client):
         :type command: str
         :type params: (str)
         """
-        params = [str(param) for param in params]  # turn the tuple of parameters into a list
+        # turn the tuple of parameters into a list
+        params = [str(param) for param in params]
         self.send(str(Message(None, None, command, params)))
 
     def send(self, line, log=True):
@@ -440,7 +441,10 @@ class _IrcProtocol(asyncio.Protocol):
             if command == "INVITE":
                 return command_params[1]
 
-            if len(command_params) > 2 or not (command_params.has_trail and len(command_params) == 1):
+            if len(command_params) > 2:
+                return command_params[0]
+
+            if not (command_params.has_trail and len(command_params) == 1):
                 return command_params[0]
 
         return None
@@ -529,9 +533,11 @@ class _IrcProtocol(asyncio.Protocol):
         # Set up parsed message
         # TODO: Do we really want to send the raw `prefix` and `command_params` here?
         event = Event(
-            bot=self.bot, conn=self.conn, event_type=event_type, content_raw=content_raw, content=content,
-            target=target, channel=channel, nick=nick, user=user, host=host, mask=mask, irc_raw=str(message),
-            irc_prefix=mask, irc_command=command, irc_paramlist=command_params, irc_ctcp_text=ctcp_text
+            bot=self.bot, conn=self.conn, event_type=event_type,
+            content_raw=content_raw, content=content, target=target,
+            channel=channel, nick=nick, user=user, host=host, mask=mask,
+            irc_raw=str(message), irc_prefix=mask, irc_command=command,
+            irc_paramlist=command_params, irc_ctcp_text=ctcp_text
         )
 
         # handle the message, async

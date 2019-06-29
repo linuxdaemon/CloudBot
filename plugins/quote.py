@@ -115,7 +115,11 @@ def get_quote_num(num, count, name):
     if num and num < 0:  # Count back if possible
         num = count + num + 1 if num + count > -1 else count + 1
     if num and num > count:  # If there are not enough quotes, raise an error
-        raise QuoteLookupError("I only have {} quote{} for {}.".format(count, ('s', '')[count == 1], name))
+        raise QuoteLookupError(
+            "I only have {} quote{} for {}.".format(
+                count, ('s', '')[count == 1], name
+            )
+        )
     if num and num == 0:  # If the number is zero, set it to one
         num = 1
     if not num:  # If a number is not given, select a random one
