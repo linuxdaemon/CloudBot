@@ -168,7 +168,8 @@ def pronounce(text, event):
         raise
 
     out = colors.parse("$(b){}$(b): ").format(text)
-    out += " • ".join([i['raw'] for i in json])
+    items = [i['raw'] for i in json]
+    out += " • ".join(items)
 
     try:
         json = word_lookup(text, "audio", limit=1)
