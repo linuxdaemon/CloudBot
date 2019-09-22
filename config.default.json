@@ -54,7 +54,8 @@
                         "botcontrol",
                         "plpaste",
                         "permissions_users",
-                        "op"
+                        "op",
+                        "manage_patron"
                     ],
                     "users": [
                         "examplea!user@example.com",
@@ -72,7 +73,11 @@
                     ]
                 }
             },
-            "plugins": {},
+            "plugins": {
+                "perkserv": {
+                    "no_perk_msg": "Missing perk {perk_name}, please visit https://example.com"
+                }
+            },
             "command_prefix": "."
         }
     ],
