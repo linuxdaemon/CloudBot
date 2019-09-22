@@ -1,3 +1,5 @@
+import asyncio
+
 from sqlalchemy import Column, String, Table, and_, select
 
 from cloudbot import hook
@@ -155,8 +157,19 @@ def get_no_perk_msg(conn):
 
 
 @hook.command('hidle', autohelp=False, clients=['irc'])
-def cmd_hideidle(db, nick, conn):
-    if not check_perk(db, conn, nick, 'hideidle'):
+async def cmd_hideidle(db, nick, conn, event):
+    """- Add the hideidle mode to yourself
+
+    :type db: sqlalchemy.orm.Session
+    :type nick: str
+    :type conn: cloudbot.client.IrcClient
+    :type event: cloudbot.event.CommandEvent
+    """
+
+    # Allow the whois processing to happen in the background
+    await asyncio.sleep(2)
+    has_perk = await event.async_call(check_perk, db, conn, nick, 'hideidle')
+    if not has_perk:
         return get_no_perk_msg(conn).format(perk_name='hideidle')
 
     conn.cmd("SAMODE", nick, "+a")
