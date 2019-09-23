@@ -179,18 +179,19 @@ async def cmd_hideidle(db, nick, conn, event):
     conn.cmd("SAMODE", nick, "+a")
     return "Done"
 
+
 @hook.command('showidle', autohelp=False, clients=['irc'])
 async def cmd_showidle(db, nick, conn, event):
-	""" Remove the +a user mode from user. """
-	# Allow the whois processing in background
-	await asyncio.sleep(2)
-	account = conn.memory['users'].getuser(nick).account
-	if not account:
-		return "You must be logged into an account"
-	
-	has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
-	if not has_perk:
-		return get_no_perk_msg(conn).format(perk_name='hideidle')
+    """ Remove the +a user mode from user. """
+    # Allow the whois processing in background
+    await asyncio.sleep(2)
+    account = conn.memory['users'].getuser(nick).account
+    if not account:
+        return "You must be logged into an account"
 
-	conn.cmd("SAMODE", nick, "-a")
-	return "Done"
+    has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
+    if not has_perk:
+        return get_no_perk_msg(conn).format(perk_name='hideidle')
+
+    conn.cmd("SAMODE", nick, "-a")
+    return "Done"
