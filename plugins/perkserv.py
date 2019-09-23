@@ -176,7 +176,7 @@ async def perk_check(db, event, perk_name):
 
 @hook.command('hidle', autohelp=False, clients=['irc'])
 async def cmd_hideidle(db, nick, conn, event):
-    """- Add the hideidle mode to yourself
+    """- Add the hideidle mode to the user
 
     :type db: sqlalchemy.orm.Session
     :type nick: str
@@ -191,7 +191,14 @@ async def cmd_hideidle(db, nick, conn, event):
 
 @hook.command('showidle', autohelp=False, clients=['irc'])
 async def cmd_showidle(db, nick, conn, event):
-    """ Remove the +a user mode from user. """
+    """- Remove the hideidle mode from the user
+
+    :type db: sqlalchemy.orm.Session
+    :type nick: str
+    :type conn: cloudbot.client.IrcClient
+    :type event: cloudbot.event.CommandEvent
+    """
+
     if await perk_check(db, event, 'hideidle'):
         conn.cmd("SAMODE", nick, "-+a")
         return "Done"
