@@ -168,7 +168,8 @@ async def cmd_hideidle(db, nick, conn, event):
 
     # Allow the whois processing to happen in the background
     await asyncio.sleep(2)
-    has_perk = await event.async_call(check_perk, db, conn, nick, 'hideidle')
+    account = conn.memory['users'].getuser(nick).account
+    has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
     if not has_perk:
         return get_no_perk_msg(conn).format(perk_name='hideidle')
 
