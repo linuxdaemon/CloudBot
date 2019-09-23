@@ -156,6 +156,24 @@ def get_no_perk_msg(conn):
             return "No message configured (missing perk)"
 
 
+async def perk_check(db, event, perk_name):
+    # Allow the whois processing to happen in the background
+    await asyncio.sleep(2)
+    account = event.conn.memory['users'].getuser(event.nick).account
+    if not account:
+        event.reply("You must be logged into an account")
+        return False
+
+    has_perk = await event.async_call(
+        check_perk, db, event.conn, account, perk_name
+    )
+    if not has_perk:
+        event.reply(get_no_perk_msg(event.conn).format(perk_name=perk_name))
+        return False
+
+    return True
+
+
 @hook.command('hidle', autohelp=False, clients=['irc'])
 async def cmd_hideidle(db, nick, conn, event):
     """- Add the hideidle mode to yourself
@@ -166,32 +184,14 @@ async def cmd_hideidle(db, nick, conn, event):
     :type event: cloudbot.event.CommandEvent
     """
 
-    # Allow the whois processing to happen in the background
-    await asyncio.sleep(2)
-    account = conn.memory['users'].getuser(nick).account
-    if not account:
-        return "You must be logged into an account"
-
-    has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
-    if not has_perk:
-        return get_no_perk_msg(conn).format(perk_name='hideidle')
-
-    conn.cmd("SAMODE", nick, "+a")
-    return "Done"
+    if await perk_check(db, event, 'hideidle'):
+        conn.cmd("SAMODE", nick, "+a")
+        return "Done"
 
 
 @hook.command('showidle', autohelp=False, clients=['irc'])
 async def cmd_showidle(db, nick, conn, event):
     """ Remove the +a user mode from user. """
-    # Allow the whois processing in background
-    await asyncio.sleep(2)
-    account = conn.memory['users'].getuser(nick).account
-    if not account:
-        return "You must be logged into an account"
-
-    has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
-    if not has_perk:
-        return get_no_perk_msg(conn).format(perk_name='hideidle')
-
-    conn.cmd("SAMODE", nick, "-a")
-    return "Done"
+    if await perk_check(db, event, 'hideidle'):
+        conn.cmd("SAMODE", nick, "-+a")
+        return "Done"
