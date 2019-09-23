@@ -170,7 +170,7 @@ async def cmd_hideidle(db, nick, conn, event):
     await asyncio.sleep(2)
     account = conn.memory['users'].getuser(nick).account
     if not account:
-        return "You must be logged in to an account"
+        return "You must be logged into an account"
 
     has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
     if not has_perk:
@@ -184,9 +184,13 @@ async def cmd_showidle(db, nick, conn, event):
 	""" Remove the +a user mode from user. """
 	# Allow the whois processing in background
 	await asyncio.sleep(2)
-	has_perk = await event.async_call(check_perk, db, conn, nick, 'showidle')
+	account = conn.memory['users'].getuser(nick).account
+	if not account:
+		return "You must be logged into an account"
+	
+	has_perk = await event.async_call(check_perk, db, conn, account, 'hideidle')
 	if not has_perk:
-		return get_no_perk_msg(conn).format(perk_name='showidle')
+		return get_no_perk_msg(conn).format(perk_name='hideidle')
 
 	conn.cmd("SAMODE", nick, "-a")
 	return "Done"
