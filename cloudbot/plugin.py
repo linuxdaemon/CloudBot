@@ -46,15 +46,24 @@ def find_hooks(parent, module):
 def find_tables(code):
     """
     :type code: object
-    :rtype: list[sqlalchemy.Table]
+    :rtype: tuple[list[sqlalchemy.Table], list]
     """
     tables = []
+    mappers = []
     for obj in code.__dict__.values():
+        if isinstance(obj, type) and issubclass(obj, database.base):
+            try:
+                obj = obj.__table__
+            except AttributeError:
+                continue
+            else:
+                mappers.append(obj)
+
         if isinstance(obj, sqlalchemy.Table) and obj.metadata == database.metadata:
             # if it's a Table, and it's using our metadata, append it to the list
             tables.append(obj)
 
-    return tables
+    return tables, mappers
 
 
 class PluginManager:
@@ -638,9 +647,13 @@ class Plugin:
         self.hooks = find_hooks(self, code)
         # we need to find tables for each plugin so that they can be unloaded from the global metadata when the
         # plugin is reloaded
-        self.tables = find_tables(code)
+        self.tables, self.mapper_objs = find_tables(code)
         # Keep a reference to this in case another plugin needs to access it
         self.code = code
+
+    @staticmethod
+    def _make_table(bot, table):
+        table.create(bot.db_engine, checkfirst=True)
 
     async def create_tables(self, bot):
         """
@@ -654,8 +667,7 @@ class Plugin:
             logger.info("Registering tables for %s", self.title)
 
             for table in self.tables:
-                if not (await bot.loop.run_in_executor(None, table.exists, bot.db_engine)):
-                    await bot.loop.run_in_executor(None, table.create, bot.db_engine)
+                await bot.loop.run_in_executor(None, self._make_table, bot, table)
 
     def unregister_tables(self, bot):
         """
@@ -668,3 +680,6 @@ class Plugin:
 
             for table in self.tables:
                 bot.db_metadata.remove(table)
+
+            for obj in self.mapper_objs:
+                bot.db_metadata.remove(obj)
