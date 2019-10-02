@@ -60,7 +60,7 @@ class Channel(ProfileBase):
 
     def get_profile(self, nick) -> Optional['Profile']:
         for profile in self.profiles:
-            if profile.user == nick:
+            if profile.user.lower() == nick.lower():
                 return profile
 
         return None
@@ -144,37 +144,6 @@ class ProfileData(ProfileBase):
     )
 
 
-@hook.on_start()
-def setup(db):
-    db.query(ProfileData).delete()
-    db.query(Profile).delete()
-    db.query(ProfileField).delete()
-    db.query(Channel).delete()
-    db.commit()
-
-    channel = Channel(network='snootest', channel='##ldtest')
-    db.add(channel)
-
-    channel.autovoice_option = VoiceOption.IS_REGISTERED
-
-    channel.need_profile_to_view = True
-
-    age_field = ProfileField(channel=channel, name="age")
-    loc_field = ProfileField(channel=channel, name="location")
-
-    db.add(age_field)
-    db.add(loc_field)
-
-    profile = Profile(channel=channel, user='linuxinthecloud')
-
-    db.add(profile)
-
-    profile.set_field(db, age_field, '21')
-    profile.set_field(db, loc_field, 'USA')
-
-    db.commit()
-
-
 def get_field(channel: Channel, text):
     if not text:
         return None
@@ -218,7 +187,6 @@ def setup_profile(db, conn, chan, nick, text):
     else:
         profile.set_field(db, field, data)
 
-    print(profile)
     db.commit()
 
     return "Done."
@@ -247,7 +215,7 @@ def view_profile(db, conn, chan, nick, text):
     return "Profile: nick: {}".format(target) + " " + repr(data)
 
 
-@hook.command('profile_add_field')
+@hook.command('profile_add_field', permissions=['chanop'])
 def add_field(db, conn, chan, text):
     """<field> [description] - Add a field to this channel's profile template called <field> with [description] as
     the description. The field name can be enclosed in " (double-quote) to use a name with spaces
@@ -271,7 +239,7 @@ def add_field(db, conn, chan, text):
     return "Done."
 
 
-@hook.command(autohelp=False)
+@hook.command(autohelp=False, permissions=['chanop'])
 def enable_profiles(db, conn, chan):
     config = Channel.get(db, conn.name, chan)
 
