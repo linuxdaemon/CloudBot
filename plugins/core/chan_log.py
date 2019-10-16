@@ -4,7 +4,7 @@ from typing import Any, Iterable, List, Tuple
 from requests.exceptions import RequestException
 
 from cloudbot import hook
-from cloudbot.util import web
+from cloudbot.util import exc_util, web
 
 
 def get_attrs(obj: object) -> List[str]:
@@ -145,13 +145,8 @@ def format_error_chain(exc: Exception) -> Iterable[str]:
     :param exc: The exception to format
     :return: An iterable of lines of the formatted data from the exception
     """
-    while exc:
-        yield from format_error_data(exc)
-        # Get "direct cause of" or
-        # "during handling of ..., another exception occurred" stack
-        cause = getattr(exc, '__cause__', None)
-        context = getattr(exc, '__context__', None)
-        exc = cause or context
+    for err in exc_util.get_cause_chain(exc):
+        yield from format_error_data(err)
 
 
 def format_attrs(obj: object, ignore_dunder: bool = False) -> Iterable[str]:
