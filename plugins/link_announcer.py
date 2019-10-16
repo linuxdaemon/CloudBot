@@ -4,6 +4,7 @@ import requests
 
 from cloudbot import hook
 from cloudbot.hook import Priority, Action
+from cloudbot.util import exc_util
 from cloudbot.util.http import parse_soup
 
 MAX_TITLE = 100
@@ -98,9 +99,21 @@ def print_url_title(message, match, logger):
 
             content = r.raw.read(MAX_RECV, decode_content=True)
             encoding = r.encoding
+    except requests.exceptions.SSLError:
+        logger.debug("SSL Error during link announce", exc_info=1)
+        return
+    except requests.ConnectTimeout:
+        logger.debug("Connect timeout reached for %r", match.group())
+        return
     except requests.ReadTimeout:
         logger.debug("Read timeout reached for %r", match.group())
         return
+    except requests.ConnectionError as e:
+        if exc_util.match_any_in_chain(e, ConnectionError):
+            logger.debug("Connection error during link announce", exc_info=1)
+            return
+
+        raise
 
     html = parse_content(content, encoding)
 
