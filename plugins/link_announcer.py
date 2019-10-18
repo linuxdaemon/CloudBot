@@ -1,13 +1,23 @@
 import re
+import socket
+from ipaddress import IPv4Network, IPv6Network, ip_address, IPv4Address, IPv6Address
+from typing import Union
 
 import requests
+from yarl import URL
 
 from cloudbot import hook
-from cloudbot.hook import Priority, Action
+from cloudbot.hook import Action, Priority
 from cloudbot.util import exc_util
-from cloudbot.util.http import parse_soup
+from cloudbot.util.http import parse_soup, UrlOrStr
 
 MAX_TITLE = 100
+
+ALLOWED_PORTS = [80, 443]
+IP_BLACKLIST = [
+    IPv4Network('127.0.0.0/8'),
+    IPv6Network('::1/128'),
+]
 
 ENCODED_CHAR = r"%[A-F0-9]{2}"
 PATH_SEG_CHARS = r"[A-Za-z0-9!$&'*-.:;=@_~\u00A0-\U0010FFFD]|" + ENCODED_CHAR
@@ -35,11 +45,7 @@ url_re = re.compile(
     # Domain
     (?:
         # TODO Add support for IDNA hostnames as specified by RFC5891
-        (?:
-            [\-.0-9A-Za-z]+|  # host
-            \d{1,3}(?:\.\d{1,3}){3}|  # IPv4
-            \[[A-F0-9]{0,4}(?::[A-F0-9]{0,4}){2,7}\]  # IPv6
-        )
+        (?:[\-.0-9A-Za-z]+)
         (?<![.,?!\]])  # Invalid end chars
     )
     
@@ -90,15 +96,107 @@ def parse_content(content, encoding=None):
     return html
 
 
+ip_strip_re = re.compile(r'^\[?(.*)\]?$')
+
+IPAddress = Union[IPv4Address, IPv6Address]
+
+
+def is_ip_url(url: UrlOrStr) -> bool:
+    """
+    Returns whether a URL points to an IP address or a normal DNS name
+
+    >>> is_ip_url('https://127.0.0.1/test')
+    True
+    >>> is_ip_url('https://127.0.0.1:80/test')
+    True
+    >>> is_ip_url('https://8.8.8.8/test')
+    True
+    >>> is_ip_url('https://google.com/test')
+    False
+
+    :param url: URL object to check
+    :return: True if the URL's host is an IP address, False otherwise
+    """
+
+    url = URL(url)
+    stripped_host = ip_strip_re.match(url.host).group(1)
+    try:
+        ip_address(stripped_host)
+    except ValueError:
+        return False
+
+    return True
+
+
+def is_ip_in_blacklist(ip: IPAddress) -> bool:
+    return any(ip in net for net in IP_BLACKLIST)
+
+
+def get_ips_for_hostname(hostname):
+    try:
+        ais = socket.getaddrinfo(hostname, 0)
+    except socket.gaierror:
+        return []
+
+    return [ip_address(ai[4][0]) for ai in ais]
+
+
+def is_url_allowed(url):
+    url = URL(url)
+    if url.port and url.port not in ALLOWED_PORTS:
+        return False
+
+    if is_ip_url(url):
+        return False
+
+    for ip in get_ips_for_hostname(url.host):
+        if is_ip_in_blacklist(ip):
+            return False
+
+    return True
+
+
+class InsecureRequestException(Exception):
+    pass
+
+
+def checker(session: requests.Session):
+    def check_redirect(resp: requests.Response, **kwargs):
+        next_req = next(session.resolve_redirects(
+            resp, resp.request, yield_requests=True, **kwargs
+        ), None)
+        if next_req and not is_url_allowed(next_req.url):
+            raise InsecureRequestException()
+
+    return check_redirect
+
+
+def get_soup(url):
+    if not is_url_allowed(url):
+        return None
+
+    with requests.Session() as sesssion:
+        response = sesssion.get(
+            url, headers=HEADERS, stream=True, timeout=3,
+            hooks={'response': [checker(sesssion)]},
+        )
+        with response:
+            if not response.encoding or not response.ok:
+                return None
+
+            content = response.raw.read(MAX_RECV, decode_content=True)
+            encoding = response.encoding
+
+    html = parse_content(content, encoding)
+    return html
+
+
 @hook.regex(url_re, priority=Priority.LOW, action=Action.HALTTYPE, only_no_match=True)
 def print_url_title(message, match, logger):
     try:
-        with requests.get(match.group(), headers=HEADERS, stream=True, timeout=3) as r:
-            if not r.encoding or not r.ok:
-                return
-
-            content = r.raw.read(MAX_RECV, decode_content=True)
-            encoding = r.encoding
+        html = get_soup(match.group())
+    except InsecureRequestException:
+        return
     except requests.exceptions.SSLError:
         logger.debug("SSL Error during link announce", exc_info=1)
         return
@@ -115,9 +213,7 @@ def print_url_title(message, match, logger):
 
         raise
 
-    html = parse_content(content, encoding)
-
-    if html.title and html.title.text:
+    if html and html.title and html.title.text:
         title = html.title.text.strip()
 
         if len(title) > MAX_TITLE:

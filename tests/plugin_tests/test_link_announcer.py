@@ -9,6 +9,7 @@ from responses import RequestsMock
 from plugins.link_announcer import (
     MAX_TITLE,
     get_encoding,
+    is_url_allowed,
     parse_content,
     print_url_title,
     url_re,
@@ -203,39 +204,45 @@ def test_read_timeout(mock_requests):
 @pytest.mark.parametrize(
     'body,encoding',
     [
+        (b'<head><meta charset="utf8"><title>foobar</title></head>', 'utf8'),
         (
-            b"""\
-<head>
-<meta charset="utf8">
-<title>foobar</title>
-</head>""",
+            b'<head><meta http-equiv="content-type" content="text/plain; charset=utf8"><title>foobar</title></head>',
             'utf8',
         ),
         (
-            b"""\
-<head>
-<meta http-equiv="content-type", content="text/plain; charset=utf8">
-<title>foobar</title>
-</head>""",
-            'utf8',
-        ),
-        (
-            b"""\
-<head>
-<meta http-equiv="content-type", content="text/plain">
-<title>foobar</title>
-</head>""",
+            b'<head><meta http-equiv="content-type" content="text/plain"><title>foobar</title></head>',
             'ISO-8859-1',
         ),
-        (
-            b"""\
-<head>
-<title>foobar</title>
-</head>""",
-            'ISO-8859-1',
-        ),
+        (b'<head><title>foobar</title></head>', 'ISO-8859-1'),
     ],
 )
 def test_change_encoding(body, encoding):
     # ISO-8859-1 is the default encoding requests would return if none is found
     assert parse_content(body, 'ISO-8859-1').original_encoding == encoding
+
+
+@pytest.mark.parametrize(
+    'url,allow',
+    [
+        ('https://google.com/some/path', True),
+        ('https://google.com:22/some/path', False),
+        ('https://45.54.87.26/some/path', False),
+        ('https://example.com:443', True),
+        ('https://example.com:80', True),
+    ],
+)
+def test_is_url_allowed(url, allow):
+    assert is_url_allowed(url) == allow
+
+
+def test_blacklisted_port():
+    url = 'https://google.com:22/test'
+    match = url_re.search(url)
+    assert match
+    msg = MagicMock()
+    logger = MagicMock()
+
+    assert print_url_title(match=match, message=msg, logger=logger) is None
+
+    logger.assert_not_called()
+    msg.assert_not_called()
